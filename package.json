@@ -8,13 +8,16 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "sim": "tsx src/sim/cli.ts",
-    "duel": "tsx src/sim/duel.ts"
+    "duel": "tsx src/sim/duel.ts",
+    "dev": "vite",
+    "build": "vite build"
   },
   "devDependencies": {
-    "typescript": "^5.7.3",
-    "vitest": "^3.0.5",
+    "@types/node": "^22.13.1",
     "tsx": "^4.19.2",
-    "@types/node": "^22.13.1"
+    "typescript": "^5.7.3",
+    "vite": "^7.3.7",
+    "vitest": "^3.0.5"
   },
   "dependencies": {
     "zod": "^3.24.1"

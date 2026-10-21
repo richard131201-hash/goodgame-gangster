@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SUBMUNDO — Gangster Automata</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/web/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- TOP NAVIGATION BAR -->
+    <header class="app-header">
+      <div class="header-brand">
+        <div class="logo-emblem">♠</div>
+        <div class="brand-text">
+          <h1>SUBMUNDO</h1>
+          <span class="subtitle">GANGSTER COMBAT ENGINE • ESTILO CLÁSSICO 1v1</span>
+        </div>
+      </div>
+
+      <nav class="header-nav">
+        <button id="nav-arena-btn" class="nav-tab active">
+          <span class="tab-icon">⚔️</span> Duelo 1v1 (Arena)
+        </button>
+        <button id="nav-customizer-btn" class="nav-tab">
+          <span class="tab-icon">👔</span> Criador de Gangster
+        </button>
+        <button id="nav-sim-btn" class="nav-tab">
+          <span class="tab-icon">📊</span> Simulador de Balanceamento
+        </button>
+        <button id="audio-toggle-btn" class="nav-btn-icon" title="Ativar/Desativar Sons">
+          🔊
+        </button>
+      </nav>
+    </header>
+
+    <!-- MAIN VIEWS -->
+    <main class="app-main">
+
+      <!-- ============================================== -->
+      <!-- VIEW 1: ARENA 1v1 FOCADA (ESTILO GOODGAME GANGSTER) -->
+      <!-- ============================================== -->
+      <section id="arena-view" class="view-section active">
+        <!-- ARENA TOP CONTROL BAR -->
+        <div class="arena-top-bar">
+          <div class="round-status-box">
+            <span class="round-label">ESTADO DA LUTA</span>
+            <span class="round-value" id="arena-round-display">PRONTO PARA O DUELO</span>
+          </div>
+
+          <div class="arena-action-controls">
+            <button id="fight-play-btn" class="arena-btn-primary">
+              <span class="btn-icon">⚡</span> INICIAR COMBATE
+            </button>
+            <button id="fight-step-btn" class="arena-btn-secondary" title="Avançar 1 Golpe">
+              ▶ Passo
+            </button>
+            <button id="fight-skip-btn" class="arena-btn-secondary" title="Pular para o Vencedor">
+              ⏩ Instantâneo
+            </button>
+            <button id="fight-reset-btn" class="arena-btn-secondary" title="Reiniciar Luta">
+              ↺ Reiniciar
+            </button>
+          </div>
+
+          <div class="arena-speed-selector">
+            <span class="speed-label">Velocidade:</span>
+            <button class="spd-btn" data-speed="900">0.5x</button>
+            <button class="spd-btn active" data-speed="450">1x</button>
+            <button class="spd-btn" data-speed="200">2x</button>
+            <button class="spd-btn" data-speed="60">5x</button>
+          </div>
+
+          <button id="open-customizer-btn" class="arena-btn-customizer">
+            ✏️ Editar Personagens
+          </button>
+        </div>
+
+        <!-- 1V1 COMBAT STAGE (EXACT GOODGAME GANGSTER CARDS) -->
+        <div class="combat-stage-wrapper">
+          <!-- FIGHTER A CARD -->
+          <div class="gg-fighter-card card-side-a" id="gg-card-a">
+            <!-- CARD HEADER -->
+            <div class="gg-card-header">
+              <div class="gg-name-col">
+                <h2 class="gg-fighter-name" id="name-display-a">Vincenzo "O Carrasco"</h2>
+                <div class="gg-sub-info">
+                  <span class="gg-style-badge badge-carrasco" id="style-badge-a">CARRASCO</span>
+                  <span class="gg-level-badge" id="level-badge-a">NÍVEL 1</span>
+                  <span class="gg-build-badge" id="build-badge-a">Equilibrado</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- HP BAR PROMINENT -->
+            <div class="gg-hp-container">
+              <div class="gg-hp-labels">
+                <span class="hp-title">PONTOS DE VIDA</span>
+                <span class="hp-numbers" id="hp-text-a">500 / 500 (100%)</span>
+              </div>
+              <div class="gg-hp-bar-track">
+                <div class="gg-hp-bar-fill" id="hp-fill-a" style="width: 100%;"></div>
+              </div>
+            </div>
+
+            <!-- AVATAR PAPERDOLL CANVAS/SVG -->
+            <div class="gg-avatar-frame">
+              <div class="avatar-svg-container" id="avatar-container-a">
+                <!-- SVG rendered here -->
+              </div>
+              <div class="floating-damage-zone" id="float-zone-a"></div>
+            </div>
+
+            <!-- ACTIVE PASSIVES BAR -->
+            <div class="gg-active-passives" id="passives-bar-a">
+              <span class="passive-pill pill-abertura">⚡ Golpe de Abertura</span>
+              <span class="passive-pill pill-execucao">🗡️ Execução (-25% Arm.)</span>
+            </div>
+
+            <!-- 4 ATTRIBUTES FOOTER (EXACT GG GANGSTER) -->
+            <div class="gg-attributes-grid">
+              <!-- ATAQUE -->
+              <div class="gg-stat-box stat-attack">
+                <div class="stat-icon">⚔️</div>
+                <div class="stat-info">
+                  <span class="stat-name">Ataque</span>
+                  <span class="stat-number" id="stat-atk-a">220</span>
+                </div>
+              </div>
+
+              <!-- VIDA -->
+              <div class="gg-stat-box stat-life">
+                <div class="stat-icon">❤️</div>
+                <div class="stat-info">
+                  <span class="stat-name">Vida</span>
+                  <span class="stat-number" id="stat-life-a">500</span>
+                </div>
+              </div>
+
+              <!-- ASTÚCIA -->
+              <div class="gg-stat-box stat-astucia">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-info">
+                  <span class="stat-name">Astúcia</span>
+                  <span class="stat-number" id="stat-ast-a">33.3%</span>
+                </div>
+              </div>
+
+              <!-- TENACIDADE -->
+              <div class="gg-stat-box stat-tenacidade">
+                <div class="stat-icon">🛡️</div>
+                <div class="stat-info">
+                  <span class="stat-name">Tenacidade</span>
+                  <span class="stat-number" id="stat-ten-a">33.3%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECONDARY RATINGS (ARMOR & DODGE) -->
+            <div class="gg-secondary-stats">
+              <span class="sec-stat">Armadura: <strong id="stat-arm-a">15%</strong></span>
+              <span class="sec-stat">Esquiva: <strong id="stat-ddg-a">5%</strong></span>
+            </div>
+          </div>
+
+          <!-- VERSUS CLASH CENTER -->
+          <div class="gg-vs-center">
+            <div class="vs-circle" id="vs-circle-emblem">VS</div>
+            <div class="vs-swords-fx" id="clash-swords">⚔️</div>
+          </div>
+
+          <!-- FIGHTER B CARD -->
+          <div class="gg-fighter-card card-side-b" id="gg-card-b">
+            <!-- CARD HEADER -->
+            <div class="gg-card-header">
+              <div class="gg-name-col">
+                <h2 class="gg-fighter-name" id="name-display-b">Salvatore "A Muralha"</h2>
+                <div class="gg-sub-info">
+                  <span class="gg-style-badge badge-muralha" id="style-badge-b">MURALHA</span>
+                  <span class="gg-level-badge" id="level-badge-b">NÍVEL 1</span>
+                  <span class="gg-build-badge" id="build-badge-b">Equilibrado</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- HP BAR PROMINENT -->
+            <div class="gg-hp-container">
+              <div class="gg-hp-labels">
+                <span class="hp-title">PONTOS DE VIDA</span>
+                <span class="hp-numbers" id="hp-text-b">1950 / 1950 (100%)</span>
+              </div>
+              <div class="gg-hp-bar-track">
+                <div class="gg-hp-bar-fill" id="hp-fill-b" style="width: 100%;"></div>
+              </div>
+            </div>
+
+            <!-- AVATAR PAPERDOLL CANVAS/SVG -->
+            <div class="gg-avatar-frame">
+              <div class="avatar-svg-container" id="avatar-container-b">
+                <!-- SVG rendered here -->
+              </div>
+              <div class="floating-damage-zone" id="float-zone-b"></div>
+            </div>
+
+            <!-- ACTIVE PASSIVES BAR -->
+            <div class="gg-active-passives" id="passives-bar-b">
+              <span class="passive-pill pill-intim" id="pill-intim-b">🛡️ Intimidação (-25%)</span>
+              <span class="passive-pill pill-casca">🧱 Casca Grossa (x1.4)</span>
+            </div>
+
+            <!-- 4 ATTRIBUTES FOOTER (EXACT GG GANGSTER) -->
+            <div class="gg-attributes-grid">
+              <!-- ATAQUE -->
+              <div class="gg-stat-box stat-attack">
+                <div class="stat-icon">⚔️</div>
+                <div class="stat-info">
+                  <span class="stat-name">Ataque</span>
+                  <span class="stat-number" id="stat-atk-b">55</span>
+                </div>
+              </div>
+
+              <!-- VIDA -->
+              <div class="gg-stat-box stat-life">
+                <div class="stat-icon">❤️</div>
+                <div class="stat-info">
+                  <span class="stat-name">Vida</span>
+                  <span class="stat-number" id="stat-life-b">1950</span>
+                </div>
+              </div>
+
+              <!-- ASTÚCIA -->
+              <div class="gg-stat-box stat-astucia">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-info">
+                  <span class="stat-name">Astúcia</span>
+                  <span class="stat-number" id="stat-ast-b">33.3%</span>
+                </div>
+              </div>
+
+              <!-- TENACIDADE -->
+              <div class="gg-stat-box stat-tenacidade">
+                <div class="stat-icon">🛡️</div>
+                <div class="stat-info">
+                  <span class="stat-name">Tenacidade</span>
+                  <span class="stat-number" id="stat-ten-b">46.7%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECONDARY RATINGS (ARMOR & DODGE) -->
+            <div class="gg-secondary-stats">
+              <span class="sec-stat">Armadura: <strong id="stat-arm-b">25%</strong></span>
+              <span class="sec-stat">Esquiva: <strong id="stat-ddg-b">5%</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RECENT COMBAT LOG TICKER -->
+        <div class="combat-ticker-box">
+          <div class="ticker-title">ÚLTIMO GOLPE:</div>
+          <div class="ticker-content" id="latest-strike-ticker">
+            Aguardando início do combate. Clique em "INICIAR COMBATE" acima.
+          </div>
+          <button id="toggle-full-log-btn" class="ticker-expand-btn">Ver Histórico Completo ▾</button>
+        </div>
+
+        <div class="full-log-drawer" id="full-log-drawer" style="display: none;">
+          <div class="full-log-list" id="full-log-list"></div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW 2: CRIADOR DE GANGSTER (CUSTOMIZADOR PAPERDOLL) -->
+      <!-- ============================================== -->
+      <section id="customizer-view" class="view-section">
+        <div class="customizer-header">
+          <h2>👔 Criador e Personalizador de Personagem</h2>
+          <p>Personalize sexo, cabelo, tom de pele, roupas, acessórios e atributos para cada lutador.</p>
+        </div>
+
+        <div class="customizer-layout">
+          <!-- LEFT: LIVE PREVIEW CARD -->
+          <div class="customizer-preview-col">
+            <div class="side-selector-tabs">
+              <button class="target-side-btn active" data-target="A">Editar Lutador A (Esquerda)</button>
+              <button class="target-side-btn" data-target="B">Editar Lutador B (Direita)</button>
+            </div>
+
+            <div class="preview-card-wrap">
+              <div class="preview-avatar-box" id="customizer-live-avatar">
+                <!-- Live SVG rendered here -->
+              </div>
+              <div class="preview-name-tag" id="customizer-live-name">Vincenzo "O Carrasco"</div>
+            </div>
+
+            <div class="preview-actions">
+              <button id="randomize-avatar-btn" class="btn-action-outline">🎲 Gerar Aleatório</button>
+              <button id="apply-to-arena-btn" class="arena-btn-primary">⚔️ Salvar e Voltar ao Duelo</button>
+            </div>
+          </div>
+
+          <!-- RIGHT: CUSTOMIZATION CONTROLS -->
+          <div class="customizer-form-col">
+            <!-- NOME E IDENTIDADE -->
+            <div class="custom-group">
+              <h4 class="group-title">1. Identidade & Classe</h4>
+              <div class="input-grid">
+                <div class="form-field">
+                  <label>Nome do Gangster:</label>
+                  <input type="text" id="cust-name-input" value="Vincenzo 'O Carrasco'" />
+                </div>
+                <div class="form-field">
+                  <label>Estilo de Luta:</label>
+                  <select id="cust-style-select">
+                    <option value="carrasco">Carrasco (Dano Alto, Vida Baixa)</option>
+                    <option value="muralha">Muralha (Vida Colossal, Armadura)</option>
+                    <option value="malandro">Malandro (Equilibrado, Esquiva 15%)</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label>Nível (1 a 100): <strong id="cust-lvl-val">1</strong></label>
+                  <input type="range" id="cust-lvl-slider" min="1" max="100" value="1" />
+                </div>
+                <div class="form-field">
+                  <label>Perfil de Build:</label>
+                  <select id="cust-build-select">
+                    <option value="equilibrado">Equilibrado (25% cada)</option>
+                    <option value="ofensivo">Ofensivo (50% Ataque)</option>
+                    <option value="defensivo">Defensivo (50% Vida)</option>
+                    <option value="critico">Crítico (50% Astúcia)</option>
+                    <option value="antiCritico">Anti-Crítico (50% Tenacidade)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- APARÊNCIA CORPORAL -->
+            <div class="custom-group">
+              <h4 class="group-title">2. Corpo, Sexo e Rosto</h4>
+              <div class="palette-group">
+                <span class="sub-label">Sexo:</span>
+                <div class="btn-toggle-row">
+                  <button class="choice-btn active" data-prop="gender" data-val="male">Masculino</button>
+                  <button class="choice-btn" data-prop="gender" data-val="female">Feminino</button>
+                </div>
+              </div>
+
+              <div class="palette-group">
+                <span class="sub-label">Tom de Pele:</span>
+                <div class="color-swatches" id="swatches-skin">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+
+              <div class="palette-group">
+                <span class="sub-label">Cor dos Olhos:</span>
+                <div class="color-swatches" id="swatches-eyes">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- CABELO E BARBA -->
+            <div class="custom-group">
+              <h4 class="group-title">3. Cabelo & Barba</h4>
+              <div class="palette-group">
+                <span class="sub-label">Estilo de Cabelo:</span>
+                <div class="btn-toggle-row" id="hair-styles-row">
+                  <button class="choice-btn active" data-prop="hairStyle" data-val="slick">Slick Clássico</button>
+                  <button class="choice-btn" data-prop="hairStyle" data-val="pompadour">Pompadour</button>
+                  <button class="choice-btn" data-prop="hairStyle" data-val="buzz">Buzz Militar</button>
+                  <button class="choice-btn" data-prop="hairStyle" data-val="bob">Bob Retrô</button>
+                  <button class="choice-btn" data-prop="hairStyle" data-val="bald">Careca</button>
+                </div>
+              </div>
+
+              <div class="palette-group">
+                <span class="sub-label">Cor do Cabelo:</span>
+                <div class="color-swatches" id="swatches-hair">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+
+              <div class="palette-group" id="facial-hair-section">
+                <span class="sub-label">Pelos Faciais (Masculino):</span>
+                <div class="btn-toggle-row">
+                  <button class="choice-btn" data-prop="facialHair" data-val="none">Sem Barba</button>
+                  <button class="choice-btn active" data-prop="facialHair" data-val="stubble">Por Fazer</button>
+                  <button class="choice-btn" data-prop="facialHair" data-val="mustache">Bigode Fino</button>
+                  <button class="choice-btn" data-prop="facialHair" data-val="beard">Barba de Chefe</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ROUPAS E ACESSÓRIOS -->
+            <div class="custom-group">
+              <h4 class="group-title">4. Roupas, Acessórios & Cenário</h4>
+              <div class="palette-group">
+                <span class="sub-label">Traje Mafioso:</span>
+                <div class="btn-toggle-row">
+                  <button class="choice-btn active" data-prop="clothing" data-val="trenchcoat">Sobretudo Noir</button>
+                  <button class="choice-btn" data-prop="clothing" data-val="pinstripe_suit">Terno Risca de Giz</button>
+                  <button class="choice-btn" data-prop="clothing" data-val="vest_suspenders">Colete & Suspensórios</button>
+                </div>
+              </div>
+
+              <div class="palette-group">
+                <span class="sub-label">Paleta do Traje:</span>
+                <div class="color-swatches" id="swatches-clothing">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+
+              <div class="palette-group">
+                <span class="sub-label">Acessório Distintivo:</span>
+                <div class="btn-toggle-row">
+                  <button class="choice-btn active" data-prop="accessory" data-val="scar">Cicatriz</button>
+                  <button class="choice-btn" data-prop="accessory" data-val="fedora">Chapéu Fedora</button>
+                  <button class="choice-btn" data-prop="accessory" data-val="cigar">Charuto Cubano</button>
+                  <button class="choice-btn" data-prop="accessory" data-val="sunglasses">Óculos Escuros</button>
+                  <button class="choice-btn" data-prop="accessory" data-val="gold_chain">Corrente de Ouro</button>
+                  <button class="choice-btn" data-prop="accessory" data-val="none">Nenhum</button>
+                </div>
+              </div>
+
+              <div class="palette-group">
+                <span class="sub-label">Cenário de Fundo do Card:</span>
+                <div class="btn-toggle-row">
+                  <button class="choice-btn active" data-prop="cardBackground" data-val="alley">Beco Noturno</button>
+                  <button class="choice-btn" data-prop="cardBackground" data-val="bar">Speakeasy / Bar</button>
+                  <button class="choice-btn" data-prop="cardBackground" data-val="dock">Cais com Neblina</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW 3: PAINEL DE BALANCEAMENTO (SIMULADOR) -->
+      <!-- ============================================== -->
+      <section id="sim-view" class="view-section">
+        <div class="dashboard-banner">
+          <h2>📊 Matrizes de Vitória & Análise de Balanceamento</h2>
+          <p>Resultados estatísticos calculados pelo motor de combate puro com alternância de posições A/B.</p>
+        </div>
+
+        <div class="matrix-level-tabs">
+          <button class="matrix-tab-btn active" data-lvl="1">Nível 1 (Início)</button>
+          <button class="matrix-tab-btn" data-lvl="10">Nível 10</button>
+          <button class="matrix-tab-btn" data-lvl="50">Nível 50</button>
+          <button class="matrix-tab-btn" data-lvl="100">Nível 100 (Cap)</button>
+        </div>
+
+        <div class="matrix-action-bar">
+          <button id="run-browser-sim-btn" class="arena-btn-primary">
+            ⚡ Executar Simulação Rápida no Navegador (3.000 lutas)
+          </button>
+          <span id="sim-live-status" class="sim-live-status">Pronto para rodar</span>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <h3>Matriz 3×3 de Vitórias (Build Equilibrada)</h3>
+              <span class="meta-target">Meta: 45% a 55%</span>
+            </div>
+            <div class="matrix-table-wrapper" id="matrix-table-container"></div>
+          </div>
+
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <h3>Duração & Métricas por Confronto</h3>
+            </div>
+            <div class="details-table-wrapper" id="matchup-details-container"></div>
+          </div>
+        </div>
+
+        <div class="dash-card alerts-card">
+          <div class="dash-card-header">
+            <h3>⚠️ Alertas Automáticos de Balanceamento Identificados</h3>
+          </div>
+          <div class="alerts-list" id="dashboard-alerts-list"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script type="module" src="/src/web/main.ts"></script>
+</body>
+</html>
