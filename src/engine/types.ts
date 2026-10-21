@@ -53,4 +53,5 @@ export interface FightResult {
   firstAttacker: 'A' | 'B';
   finalHp: { A: number; B: number };
   events?: FightEvent[];
+  intimidationHitCap?: boolean;
 }
