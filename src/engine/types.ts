@@ -54,4 +54,7 @@ export interface FightResult {
   finalHp: { A: number; B: number };
   events?: FightEvent[];
   intimidationHitCap?: boolean;
+  totalStrikes?: number;
+  totalDodges?: number;
+  totalCrits?: number;
 }

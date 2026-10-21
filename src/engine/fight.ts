@@ -59,12 +59,19 @@ export function simulateFight(
 
   const events: FightEvent[] | undefined = opts?.withEvents ? [] : undefined;
   let intimidationHitCap = false;
+  let totalStrikes = 0;
+  let totalDodges = 0;
+  let totalCrits = 0;
+
   let round = 1;
   const safetyLimit = config.combat.safetyMaxRounds;
 
   while (round <= safetyLimit) {
     // Turn 1: P1 strikes P2
+    totalStrikes++;
     const strike1 = executeStrike(p1, p2, round, 1, config, prng);
+    if (!strike1.hit) totalDodges++;
+    if (strike1.event.isCrit) totalCrits++;
     if (events) events.push(strike1.event);
     if (strike1.intimidationHitCap) intimidationHitCap = true;
 
@@ -76,11 +83,17 @@ export function simulateFight(
         finalHp: { A: fighterA.currentHp, B: fighterB.currentHp },
         events,
         intimidationHitCap,
+        totalStrikes,
+        totalDodges,
+        totalCrits,
       };
     }
 
     // Turn 2: P2 strikes P1
+    totalStrikes++;
     const strike2 = executeStrike(p2, p1, round, 2, config, prng);
+    if (!strike2.hit) totalDodges++;
+    if (strike2.event.isCrit) totalCrits++;
     if (events) events.push(strike2.event);
     if (strike2.intimidationHitCap) intimidationHitCap = true;
 
@@ -92,6 +105,9 @@ export function simulateFight(
         finalHp: { A: fighterA.currentHp, B: fighterB.currentHp },
         events,
         intimidationHitCap,
+        totalStrikes,
+        totalDodges,
+        totalCrits,
       };
     }
 
