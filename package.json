@@ -1,0 +1,21 @@
+{
+  "name": "gangster-combat-engine",
+  "version": "1.0.0",
+  "description": "Deterministic combat engine and balancing simulator",
+  "type": "module",
+  "main": "./src/engine/index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "sim": "tsx src/sim/cli.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.5",
+    "tsx": "^4.19.2",
+    "@types/node": "^22.13.1"
+  },
+  "dependencies": {
+    "zod": "^3.24.1"
+  }
+}

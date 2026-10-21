@@ -1,0 +1,77 @@
+{
+  "levelCap": 100,
+  "points": {
+    "start": 40,
+    "perLevel": 4,
+    "startDraw": {
+      "min": 8,
+      "max": 12
+    }
+  },
+  "valuePerPoint": {
+    "attack": 10,
+    "life": 100,
+    "levelGrowth": 0.1
+  },
+  "percentCurves": {
+    "cap": 0.5,
+    "p50Base": 15,
+    "p50PerLevel": 7
+  },
+  "combat": {
+    "minDamage": 1,
+    "safetyMaxRounds": 10000
+  },
+  "styles": {
+    "carrasco": {
+      "attackScale": 2.2,
+      "lifeScale": 0.5,
+      "armorReduction": 0.15,
+      "dodge": 0.05,
+      "critBonus": [
+        0.8,
+        1.2
+      ],
+      "passives": {
+        "openingStrike": {
+          "min": 0.1,
+          "max": 1.0
+        },
+        "executionArmorIgnore": 0.25
+      }
+    },
+    "muralha": {
+      "attackScale": 0.55,
+      "lifeScale": 1.95,
+      "armorReduction": 0.25,
+      "dodge": 0.05,
+      "critBonus": [
+        0.5,
+        0.9
+      ],
+      "passives": {
+        "intimidation": {
+          "base": 0.1,
+          "cap": 0.25,
+          "rounds": 3,
+          "perTenPctExtraLife": 0.01
+        },
+        "tenacityPointMultiplier": 1.4
+      }
+    },
+    "malandro": {
+      "attackScale": 1.1,
+      "lifeScale": 0.85,
+      "armorReduction": 0.2,
+      "dodge": 0.15,
+      "critBonus": [
+        0.5,
+        0.9
+      ],
+      "passives": {
+        "adaptationPerPctLifeLost": 0.002,
+        "astuciaPointMultiplier": 1.2
+      }
+    }
+  }
+}
