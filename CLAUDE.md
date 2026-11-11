@@ -14,6 +14,8 @@ Siga a skill `socio-fundador-rigoroso` em toda sessão e em toda tarefa. O funda
 
 9. Toda regra de jogo ou decisão nova entra em `docs/REGRAS_DO_JOGO.md` (valor, quem decidiu, onde no código, teste) e em `DECISOES.md`, e é guardada na memória do projeto. Regra definida pelo fundador ganha teste automático que a fixa. Mudar o valor exige atualizar os três.
 
+10. SQL: migrações em `supabase/migrations/NNNN_descricao.sql`, numeradas em ordem. O número vai no **início** e no **fim** de cada arquivo (`-- ===== INICIO DA MIGRACAO NNNN (arquivo) =====` / `-- ===== FIM DA MIGRACAO NNNN (arquivo) =====`). Migração já rodada não se edita: cria-se a próxima. Ao entregar uma migração, dizer qual é o número e pedir ao fundador que a cole no SQL Editor.
+
 ## Projeto
 - Código: `src/engine` (motor puro e determinístico), `src/sim` (simulador), `src/web` (jogo), `config/balance.config.json`, `tests/`.
 - Comandos: `npm test`, `npm run dev`, `npm run build`, `npm run plano`, `npx tsc --noEmit`.

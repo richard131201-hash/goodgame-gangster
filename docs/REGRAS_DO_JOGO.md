@@ -36,6 +36,14 @@ Observação: com 7 minutos por ponto, uma missão de 15 energia custa 1h45 de e
 | R-LOJA-2 | Pay to win moderado | Itens pagos dão vantagem, com limite a definir pelo simulador (C6) | Fundador, 2026-11-11 | a implementar (F3) | n/a |
 | R-PAGAMENTO-1 | Quem paga | Adulto responsável, com o próprio meio de pagamento, via provedor. O jogo não cobra menor | Fundador, 2026-11-11 | a implementar (E3) | n/a |
 
+## Banco de dados (regras de processo)
+
+| ID | Regra | Valor | Origem | Onde | Teste |
+|---|---|---|---|---|---|
+| R-SQL-1 | Migrações numeradas em ordem | Arquivos `supabase/migrations/NNNN_descricao.sql` (0001, 0002, ...), sem pular número. O número aparece no **início** e no **fim** do arquivo: `-- ===== INICIO DA MIGRACAO NNNN (arquivo) =====` e `-- ===== FIM DA MIGRACAO NNNN (arquivo) =====` | Fundador, 2026-11-11 | `supabase/migrations/` | `tests/unit/migrations.test.ts` |
+| R-SQL-2 | Migração já rodada não se edita | Para mudar algo, cria-se a próxima (0002, ...). Exceção: só comentário/marcador, que não altera o banco | Claude, 2026-11-11 (a confirmar) | `supabase/migrations/` | sem teste |
+| R-SQL-3 | Quem aplica | O fundador cola cada migração no SQL Editor, na ordem, e avisa "Success" ou o erro | Claude, 2026-11-11 (a confirmar) | processo | n/a |
+
 ## Produto
 
 | ID | Regra | Valor | Origem | Onde | Teste |

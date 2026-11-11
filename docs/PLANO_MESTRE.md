@@ -6,8 +6,8 @@
 
 - Tarefas: **30** em **6** etapas
 - Feitas: **12** (com nível 2 ou mais registrado: **1**)
-- Em andamento: **1**
-- Liberadas para começar: **5**
+- Em andamento: **2**
+- Liberadas para começar: **4**
 - Bloqueadas por outra tarefa ou etapa: **12**
 
 | Etapa | Feitas / Total | Situação |
@@ -55,7 +55,7 @@
 
 | ID | Tarefa | Dono | Estado | Quando |
 |---|---|---|---|---|
-| D0a | Criar conta e projeto no Supabase (2FA), rodar a migração 0001 no SQL Editor e colocar as chaves em .env.local e na Vercel. Nunca no chat (passo a passo no chat) | FUNDADOR | ⏳ A FAZER | Agora; destrava D2a em diante |
+| D0a | Criar conta e projeto no Supabase (2FA), rodar a migração 0001 no SQL Editor e colocar as chaves em .env.local e na Vercel. Nunca no chat (passo a passo no chat) | FUNDADOR | 🔄 EM ANDAMENTO | Projeto criado e SQL 0001 rodado (informado por você). Faltam: desligar Confirm email, criar .env.local e as variáveis na Vercel |
 | D1 | Arquitetura Supabase (docs/arquitetura/BANCO_DE_DADOS.md) com cenários de custo e recomendação (nível 0) | CLAUDE + FUNDADOR | ✅ FEITO | Aprovado em 2026-11-11 com as recomendações (login e-mail e senha primeiro; Google depois; saves locais descartados; lógica nas funções da Vercel) |
 | D2a | Migração 0001 (tabela de jogadores, RLS, visão pública) em supabase/migrations. Pronto = rodou no projeto real e o teste de RLS prova que um jogador não lê nem grava dado de outro (nível 0) | CLAUDE | 🔄 EM ANDAMENTO | SQL escrito, ainda NÃO rodou em banco real; falta D0a |
 | D2b | Criar conta e entrar (e-mail e senha) dentro do jogo; sem as chaves o jogo segue em modo local | CLAUDE | ⏳ A FAZER | Depois de D0a e D2a |
