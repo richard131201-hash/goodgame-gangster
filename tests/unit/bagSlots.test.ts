@@ -151,8 +151,9 @@ describe('atributos: um único "+" simétrico (R-ATRIBUTO-1)', () => {
     expect(html).not.toContain('Treinar <span');
   });
 
-  it('as linhas são simétricas: mesma altura e três colunas fixas (nome | valor | +)', () => {
-    expect(css).toMatch(/\.attr-c-row\s*\{[^}]*grid-template-columns:\s*1fr 3rem 2rem/);
+  it('as linhas são simétricas: mesma altura e colunas fixas (nome | valor | seta | +), como uma tabela', () => {
+    expect(css).toMatch(/\.attr-c-row\s*\{[^}]*grid-template-columns:\s*1fr 3\.5rem 1rem 3\.5rem/);
     expect(css).toMatch(/\.attr-c-row\s*\{[^}]*height:\s*2\.75rem/);
+    expect((html.match(/class="attr-c-arrow"/g) ?? []).length).toBe(4);
   });
 });

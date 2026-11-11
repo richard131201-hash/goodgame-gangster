@@ -3112,44 +3112,50 @@ body.dragging-weapon .weapon-slot { box-shadow: 0 0 0.625rem rgba(212, 175, 55, 
 .profile-stats-panel.compact .panel-header-banner { padding-bottom: 0.5rem; margin-bottom: 0.625rem; }
 .profile-stats-panel.compact .panel-header-banner h3 { font-size: 0.9375rem; }
 
-.attr-compact-list { display: flex; flex-direction: column; gap: 0.375rem; }
+/* Atributos como tabela (R-ATRIBUTO-1): nome à esquerda, valor à direita, seta e um botão "+" largo em forma de pílula.
+   Todas as linhas iguais, separadas por um fio dourado, sem caixa em volta de cada uma. */
+.attr-compact-list { display: flex; flex-direction: column; border-top: 0.0625rem solid rgba(212, 175, 55, 0.25); }
 .attr-c-row {
-  /* Simétrico (R-ATRIBUTO-1): nome | valor | "+", três colunas de largura fixa e todas as linhas iguais */
   display: grid;
-  grid-template-columns: 1fr 3rem 2rem;
+  grid-template-columns: 1fr 3.5rem 1rem 3.5rem;
   align-items: center;
-  gap: 0.5rem;
+  column-gap: 0.375rem;
   height: 2.75rem;
-  padding: 0 0.625rem;
-  background: rgba(0, 0, 0, 0.35);
-  border: 0.0625rem solid rgba(255, 255, 255, 0.07);
-  border-radius: 0.5rem;
+  padding: 0 0.25rem 0 0.5rem;
+  border-bottom: 0.0625rem solid rgba(212, 175, 55, 0.25);
   cursor: help;
-  transition: border-color 0.15s, background 0.15s;
+  transition: background 0.15s;
 }
-.attr-c-row:hover { border-color: #f1c40f; background: rgba(241, 196, 15, 0.06); }
-.attr-c-name { font-size: 0.8125rem; font-weight: 700; color: #fff; }
-.attr-c-pts { text-align: center; font-size: 1rem; font-weight: 800; color: #f1c40f; }
-/* O único "+" do atributo: dourado (treino pago) ou verde (há pontos livres) */
+.attr-c-row:hover { background: rgba(241, 196, 15, 0.07); }
+.attr-c-name { font-size: 0.9375rem; font-weight: 700; color: #fff; letter-spacing: 0.02rem; }
+.attr-c-pts { text-align: right; font-size: 1.0625rem; font-weight: 800; color: #f1c40f; font-variant-numeric: tabular-nums; }
+.attr-c-arrow { text-align: center; font-size: 0.75rem; color: rgba(212, 175, 55, 0.7); }
+/* O único "+" do atributo: pílula brilhante dourada (treino pago) ou verde (há pontos livres) */
 .btn-attr-plus {
-  width: 2rem;
-  height: 2rem;
+  width: 3.5rem;
+  height: 1.875rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  border: 0.0625rem solid #f1c40f;
-  background: rgba(241, 196, 15, 0.15);
-  color: #f1c40f;
-  font-size: 1.25rem;
-  font-weight: 800;
+  border-radius: 0.625rem;
+  border: 0.0625rem solid #8a6d12;
+  background: linear-gradient(180deg, #ffe27a 0%, #f1c40f 48%, #b8920a 52%, #8a6d12 100%);
+  color: #1b1403;
+  font-size: 1.5rem;
+  font-weight: 900;
   line-height: 1;
+  text-shadow: 0 0.0625rem 0 rgba(255, 255, 255, 0.35);
+  box-shadow: inset 0 0.0625rem 0 rgba(255, 255, 255, 0.5), 0 0.125rem 0.25rem rgba(0, 0, 0, 0.5);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: filter 0.15s, transform 0.1s;
 }
-.btn-attr-plus:hover { background: #f1c40f; color: #000; transform: scale(1.08); }
-.btn-attr-plus.has-free { border-color: #2ecc71; background: #2ecc71; color: #000; box-shadow: 0 0 0.5rem rgba(46, 204, 113, 0.5); }
-.btn-attr-plus.has-free:hover { background: #27ae60; }
+.btn-attr-plus:hover { filter: brightness(1.15); }
+.btn-attr-plus:active { transform: translateY(0.0625rem); }
+.btn-attr-plus.has-free {
+  border-color: #137a3f;
+  background: linear-gradient(180deg, #7dffb0 0%, #2ecc71 48%, #1f9d52 52%, #137a3f 100%);
+  box-shadow: inset 0 0.0625rem 0 rgba(255, 255, 255, 0.5), 0 0 0.625rem rgba(46, 204, 113, 0.55);
+}
 .inv-slot.drop-target { border-color: #2ecc71; background: rgba(46, 204, 113, 0.14); }
 .attr-hint { margin: 0.5rem 0 0; font-size: 0.6875rem; line-height: 1.35; color: var(--text-muted); }
 
