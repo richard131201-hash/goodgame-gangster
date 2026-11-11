@@ -81,7 +81,7 @@ function prepareAccountPanel() {
   const sum = $('account-summary');
   if (sum) {
     sum.innerHTML = `
-      <div class="account-avatar">${renderPaperdollSVG(draft.appearance, { width: 110, height: 134 })}</div>
+      <div class="account-avatar">${renderPaperdollSVG(draft.appearance, { width: 6.875, height: 8.375 })}</div>
       <div class="account-summary-text">
         <span class="gg-style-badge badge-${draft.style}">${draft.style.toUpperCase()}</span>
         <p>${cls ? cls.name : ''} · ${wep ? wep.label : ''}</p>

@@ -129,7 +129,7 @@ function setOfflineNotice(on: boolean) {
   if (!el && on) {
     el = document.createElement('div');
     el.id = 'offline-notice';
-    el.style.cssText = 'position:fixed;bottom:8px;left:50%;transform:translateX(-50%);z-index:9999;background:#7a4a00;color:#fff;padding:6px 14px;border-radius:6px;font-size:12px;';
+    el.style.cssText = 'position:fixed;bottom:0.5rem;left:50%;transform:translateX(-50%);z-index:9999;background:#7a4a00;color:#fff;padding:0.375rem 0.875rem;border-radius:0.375rem;font-size:0.75rem;';
     el.textContent = 'Servidor indisponível: seu progresso está só neste navegador e não aparece no ranking.';
     document.body.appendChild(el);
   }
@@ -310,7 +310,7 @@ function updateHUD() {
   // Mini avatar thumb
   const thumb = document.getElementById('hud-avatar-thumb');
   if (thumb) {
-    thumb.innerHTML = renderPaperdollSVG(p.appearance, { width: 52, height: 60 });
+    thumb.innerHTML = renderPaperdollSVG(p.appearance, { width: 3.25, height: 3.75 });
   }
 }
 
@@ -430,7 +430,7 @@ function renderProfileView() {
   // 1. Paperdoll & Wielded Weapon
   const avatarSvg = document.getElementById('profile-avatar-svg');
   if (avatarSvg) {
-    avatarSvg.innerHTML = renderPaperdollSVG(p.appearance, { width: 260, height: 320 });
+    avatarSvg.innerHTML = renderPaperdollSVG(p.appearance, { width: 16.25, height: 20 });
   }
 
   const weaponHolder = document.getElementById('profile-weapon-holder');
@@ -626,7 +626,7 @@ function showInventoryItemDetails(index: number) {
   const item = p.inventory[index];
   const detailsBox = document.getElementById('inv-details-card')!;
   if (!item) {
-    detailsBox.innerHTML = '<span class="text-muted" style="font-size: 12px;">Selecione um item da mochila para ver detalhes, equipar ou vender.</span>';
+    detailsBox.innerHTML = '<span class="text-muted" style="font-size: 0.75rem;">Selecione um item da Mala para ver detalhes, equipar ou vender.</span>';
     return;
   }
 
@@ -635,24 +635,24 @@ function showInventoryItemDetails(index: number) {
   const refund = Math.round(item.priceCash * 0.5);
 
   detailsBox.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-      <strong style="color: #f1c40f; font-size: 14px;">${item.icon} ${escHtml(item.name)}</strong>
-      <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">${item.type}</span>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.375rem;">
+      <strong style="color: #f1c40f; font-size: 0.875rem;">${item.icon} ${escHtml(item.name)}</strong>
+      <span style="font-size: 0.6875rem; color: var(--text-muted); text-transform: uppercase;">${item.type}</span>
     </div>
     ${weaponDef ? `<div class="inv-detail-dmg">Dano: ${damageText(weaponDef)}</div>` : ''}
-    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">${escHtml(item.description)}</p>
+    <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.625rem;">${escHtml(item.description)}</p>
     ${weaponDef ? `<div class="inv-detail-vs">${comparisonHtml(weaponDef.id)}</div>` : ''}
-    <div style="display: flex; gap: 8px;">
+    <div style="display: flex; gap: 0.5rem;">
       ${item.type !== 'consumable' ? `
-        <button id="btn-equip-inv" class="arena-btn-primary" style="flex: 1; padding: 6px; font-size: 11px;">
+        <button id="btn-equip-inv" class="arena-btn-primary" style="flex: 1; padding: 0.375rem; font-size: 0.6875rem;">
           ${isEquipped ? '✓ Equipado' : weaponDef ? 'Equipar (troca a arma atual)' : 'Equipar'}
         </button>
       ` : `
-        <button id="btn-use-inv" class="arena-btn-primary" style="flex: 1; padding: 6px; font-size: 11px;">
+        <button id="btn-use-inv" class="arena-btn-primary" style="flex: 1; padding: 0.375rem; font-size: 0.6875rem;">
           Usar Agora
         </button>
       `}
-      <button id="btn-sell-inv" class="arena-btn-secondary" style="padding: 6px 12px; font-size: 11px; color: #e74c3c;">
+      <button id="btn-sell-inv" class="arena-btn-secondary" style="padding: 0.375rem 0.75rem; font-size: 0.6875rem; color: #e74c3c;">
         Vender (+$${refund})
       </button>
     </div>
@@ -682,7 +682,7 @@ function showInventoryItemDetails(index: number) {
   document.getElementById('btn-sell-inv')?.addEventListener('click', () => {
     gameState.sellItem(index);
     renderProfileView();
-    detailsBox.innerHTML = '<span class="text-muted" style="font-size: 12px;">Item vendido com sucesso!</span>';
+    detailsBox.innerHTML = '<span class="text-muted" style="font-size: 0.75rem;">Item vendido com sucesso!</span>';
   });
 }
 
@@ -711,14 +711,16 @@ function showWeaponTooltip(el: HTMLElement) {
 }
 
 function moveWeaponTooltip(x: number, y: number) {
-  const pad = 14;
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+  const pad = 0.875 * rem;
+  const edge = 0.5 * rem;
   const r = weaponTooltip.getBoundingClientRect();
   let left = x + pad;
   let top = y + pad;
-  if (left + r.width > window.innerWidth - 8) left = Math.max(8, x - r.width - pad);
-  if (top + r.height > window.innerHeight - 8) top = Math.max(8, y - r.height - pad);
-  weaponTooltip.style.left = `${left}px`;
-  weaponTooltip.style.top = `${top}px`;
+  if (left + r.width > window.innerWidth - edge) left = Math.max(edge, x - r.width - pad);
+  if (top + r.height > window.innerHeight - edge) top = Math.max(edge, y - r.height - pad);
+  weaponTooltip.style.left = `${left / rem}rem`;
+  weaponTooltip.style.top = `${top / rem}rem`;
 }
 
 let weaponDragActive = false;
@@ -798,7 +800,7 @@ document.addEventListener('dragend', endWeaponDrag);
 /** Guarda a arma na mochila; se estiver cheia, avisa em vez de falhar calado. */
 function tryUnequipWeapon() {
   if (gameState.getPlayer().equipped.weaponId && !gameState.bagHasRoom()) {
-    alert(`Mochila cheia (${gameState.getBagCount()}/${gameState.getBagCapacity()}). Venda ou use um item para abrir espaço antes de guardar a arma.`);
+    alert(`Mala cheia (${gameState.getBagCount()}/${gameState.getBagCapacity()}). Venda ou use um item para abrir espaço antes de guardar a arma.`);
     return;
   }
   gameState.unequipWeapon();
@@ -878,7 +880,7 @@ function renderMissionsView() {
         </div>
         <p class="mission-brief-text">${m.briefing}</p>
 
-        <div style="font-size: 11px; color: var(--text-muted); background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px;">
+        <div style="font-size: 0.6875rem; color: var(--text-muted); background: rgba(0,0,0,0.3); padding: 0.375rem 0.625rem; border-radius: 0.375rem;">
           Inimigo: <strong>${m.opponent.name}</strong> (${m.opponent.style.toUpperCase()} Nv.${m.opponent.level}) • Arma: ${oppWeapon.icon} ${oppWeapon.name}
         </div>
 
@@ -888,7 +890,7 @@ function renderMissionsView() {
           <span style="color: #3498db;">${Math.round(m.itemDropChance * 100)}% Chance de Drop</span>
         </div>
 
-        <button class="arena-btn-primary btn-start-mission" data-mis-id="${m.id}" style="width: 100%; margin-top: 6px;">
+        <button class="arena-btn-primary btn-start-mission" data-mis-id="${m.id}" style="width: 100%; margin-top: 0.375rem;">
           ⚡ Executar Missão (-${m.energyCost}⚡)
         </button>
       </div>
@@ -944,15 +946,15 @@ function startMissionCombat(mission: MissionDef) {
           if (dropItem) {
             const coube = gameState.buyItem({ ...dropItem, priceCash: 0, priceGold: 0 });
             dropMsg = coube
-              ? `<div style="margin-top: 8px; color: #f1c40f;">🎁 Drop de Item Raro: <strong>${dropItem.icon} ${dropItem.name}</strong> adicionado à mochila!</div>`
-              : `<div style="margin-top: 8px; color: #e67e22;">🎁 Caiu <strong>${dropItem.icon} ${dropItem.name}</strong>, mas a mochila está cheia (${gameState.getBagCount()}/${gameState.getBagCapacity()}) e o item foi perdido. Abra espaço antes da próxima missão.</div>`;
+              ? `<div style="margin-top: 0.5rem; color: #f1c40f;">🎁 Drop de Item Raro: <strong>${dropItem.icon} ${dropItem.name}</strong> adicionado à Mala!</div>`
+              : `<div style="margin-top: 0.5rem; color: #e67e22;">🎁 Caiu <strong>${dropItem.icon} ${dropItem.name}</strong>, mas a Mala está cheia (${gameState.getBagCount()}/${gameState.getBagCapacity()}) e o item foi perdido. Abra espaço antes da próxima missão.</div>`;
           }
         }
 
         const goldDrop = rollGoldDrop(Math.random);
         if (goldDrop > 0) {
           gameState.addGold(goldDrop);
-          dropMsg += `<div style="margin-top: 8px; color: #f1c40f;">🪙 Drop raro: <strong>+${goldDrop} de ouro</strong>!</div>`;
+          dropMsg += `<div style="margin-top: 0.5rem; color: #f1c40f;">🪙 Drop raro: <strong>+${goldDrop} de ouro</strong>!</div>`;
         }
 
         const leveledUp = gameState.addXp(mission.xpReward);
@@ -963,17 +965,17 @@ function startMissionCombat(mission: MissionDef) {
           '🏆 MISSÃO CUMPRIDA!',
           `Você neutralizou ${mission.opponent.name} e executou a missão com perfeição.`,
           `
-            <div style="font-size: 14px; font-weight: 700; color: #2ecc71;">+${mission.xpReward} XP Ganho</div>
-            <div style="font-size: 14px; font-weight: 700; color: #f1c40f;">+$${mission.cashReward} Cash Saqueado</div>
+            <div style="font-size: 0.875rem; font-weight: 700; color: #2ecc71;">+${mission.xpReward} XP Ganho</div>
+            <div style="font-size: 0.875rem; font-weight: 700; color: #f1c40f;">+$${mission.cashReward} Cash Saqueado</div>
             ${dropMsg}
-            ${leveledUp ? '<div style="margin-top: 10px; font-size: 16px; color: #d4af37; font-weight: 900;">⭐ VOCÊ SUBIU DE NÍVEL! (+4 Pontos Livres, +' + GOLD.perLevel + ' de ouro)</div>' : ''}
+            ${leveledUp ? '<div style="margin-top: 0.625rem; font-size: 1rem; color: #d4af37; font-weight: 900;">⭐ VOCÊ SUBIU DE NÍVEL! (+4 Pontos Livres, +' + GOLD.perLevel + ' de ouro)</div>' : ''}
           `
         );
       } else {
         showOutcomePopup(
           '💀 MISSÃO FALHOU!',
           `Você foi emboscado e superado por ${mission.opponent.name}. Recupere suas energias e prepare melhor seu armamento antes de tentar novamente.`,
-          `<span style="color: #e74c3c; font-size: 13px;">Nenhuma recompensa obtida. A Família espera mais de você.</span>`
+          `<span style="color: #e74c3c; font-size: 0.8125rem;">Nenhuma recompensa obtida. A Família espera mais de você.</span>`
         );
       }
     }
@@ -992,7 +994,7 @@ function renderDuelsView() {
   if (!syncEnabled()) return renderNpcDuelsView();
   const container = document.getElementById('duels-rivals-container');
   if (!container) return;
-  if (!realRivalsCache) container.innerHTML = '<p style="padding:12px;color:var(--text-muted);">Procurando rivais...</p>';
+  if (!realRivalsCache) container.innerHTML = '<p style="padding:0.75rem;color:var(--text-muted);">Procurando rivais...</p>';
   else paintRealRivals(container);
   if (!realRivalsCache || Date.now() - realRivalsCache.at > REAL_CACHE_MS) void loadRealRivals();
 }
@@ -1010,11 +1012,11 @@ function paintRealRivals(container: HTMLElement) {
   const cache = realRivalsCache;
   if (!cache) return;
   if (cache.error) {
-    container.innerHTML = `<p style="padding:12px;color:#e67e22;">Não deu para carregar os rivais agora. Se o problema continuar, o banco pode estar sem a migração 002. Detalhe: ${escHtml(cache.error)}</p>`;
+    container.innerHTML = `<p style="padding:0.75rem;color:#e67e22;">Não deu para carregar os rivais agora. Se o problema continuar, o banco pode estar sem a migração 002. Detalhe: ${escHtml(cache.error)}</p>`;
     return;
   }
   if (cache.rows.length === 0) {
-    container.innerHTML = `<p style="padding:12px;color:var(--text-muted);">Nenhum outro jogador ainda. Chame um amigo para criar uma conta!</p>`;
+    container.innerHTML = `<p style="padding:0.75rem;color:var(--text-muted);">Nenhum outro jogador ainda. Chame um amigo para criar uma conta!</p>`;
     return;
   }
   container.innerHTML = cache.rows.map(r => {
@@ -1022,7 +1024,7 @@ function paintRealRivals(container: HTMLElement) {
     return `
       <div class="rival-card-item">
         <div class="rival-thumb-wrap">
-          ${renderPaperdollSVG(r.appearance, { width: 68, height: 75 })}
+          ${renderPaperdollSVG(r.appearance, { width: 4.25, height: 4.6875 })}
         </div>
         <div class="rival-info-col">
           <div class="rival-name">${escHtml(r.name)}</div>
@@ -1030,10 +1032,10 @@ function paintRealRivals(container: HTMLElement) {
             <span class="gg-style-badge badge-${r.style}">${r.style.toUpperCase()}</span>
             <span class="gg-level-badge">NV ${r.level}</span>
           </div>
-          <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">
+          <div style="font-size: 0.6875rem; color: var(--text-muted); margin-bottom: 0.375rem;">
             Arma: ${rWep.icon ?? ''} ${rWep.name} • Respeito: ⭐${r.respect} • ${r.duels_won}V / ${r.duels_lost}D
           </div>
-          <button class="arena-btn-primary btn-challenge-real" data-riv-id="${r.id}" style="padding: 6px 14px; font-size: 12px; width: 100%;">
+          <button class="arena-btn-primary btn-challenge-real" data-riv-id="${r.id}" style="padding: 0.375rem 0.875rem; font-size: 0.75rem; width: 100%;">
             ⚔️ Desafiar Duelo • Saquear $${duelBounty(r.level)}
           </button>
         </div>
@@ -1084,11 +1086,11 @@ async function challengeRealRival(opponentId: string, btn?: HTMLButtonElement, p
           '🏆 DUELO VENCIDO!',
           `Você derrotou ${reply.defender.name} na Arena Clandestina.`,
           `
-            <div style="font-size: 14px; font-weight: 700; color: #f1c40f;">+$${rw.cash} Cash Saqueado</div>
-            <div style="font-size: 14px; font-weight: 700; color: #e67e22;">+${rw.respect} Respeito ⭐</div>
-            <div style="font-size: 13px; font-weight: 700; color: #2ecc71;">+${rw.xp} XP de Duelo</div>
-            ${reply.goldSpent ? `<div style="font-size: 13px; color: var(--text-muted);">−${reply.goldSpent} de ouro (duelo antes da espera)</div>` : ''}
-            ${rw.leveledUp ? '<div style="margin-top: 10px; font-size: 16px; color: #d4af37; font-weight: 900;">⭐ VOCÊ SUBIU DE NÍVEL!</div>' : ''}
+            <div style="font-size: 0.875rem; font-weight: 700; color: #f1c40f;">+$${rw.cash} Cash Saqueado</div>
+            <div style="font-size: 0.875rem; font-weight: 700; color: #e67e22;">+${rw.respect} Respeito ⭐</div>
+            <div style="font-size: 0.8125rem; font-weight: 700; color: #2ecc71;">+${rw.xp} XP de Duelo</div>
+            ${reply.goldSpent ? `<div style="font-size: 0.8125rem; color: var(--text-muted);">−${reply.goldSpent} de ouro (duelo antes da espera)</div>` : ''}
+            ${rw.leveledUp ? '<div style="margin-top: 0.625rem; font-size: 1rem; color: #d4af37; font-weight: 900;">⭐ VOCÊ SUBIU DE NÍVEL!</div>' : ''}
           `,
         );
       } else {
@@ -1119,7 +1121,7 @@ function renderNpcDuelsView() {
     return `
       <div class="rival-card-item">
         <div class="rival-thumb-wrap">
-          ${renderPaperdollSVG(r.appearance, { width: 68, height: 75 })}
+          ${renderPaperdollSVG(r.appearance, { width: 4.25, height: 4.6875 })}
         </div>
         <div class="rival-info-col">
           <div class="rival-name">${r.name}</div>
@@ -1127,10 +1129,10 @@ function renderNpcDuelsView() {
             <span class="gg-style-badge badge-${r.style}">${r.style.toUpperCase()}</span>
             <span class="gg-level-badge">NV ${r.level}</span>
           </div>
-          <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">
+          <div style="font-size: 0.6875rem; color: var(--text-muted); margin-bottom: 0.375rem;">
             Arma: ${rWep.icon} ${rWep.name} • Respeito: ⭐${r.respect}
           </div>
-          <button class="arena-btn-primary btn-challenge-rival" data-riv-id="${r.id}" style="padding: 6px 14px; font-size: 12px; width: 100%;">
+          <button class="arena-btn-primary btn-challenge-rival" data-riv-id="${r.id}" style="padding: 0.375rem 0.875rem; font-size: 0.75rem; width: 100%;">
             ⚔️ Desafiar Duelo • Saquear $${r.bountyCash}
           </button>
         </div>
@@ -1195,9 +1197,9 @@ function startDuelCombat(rival: DuelRival) {
           '🏆 DUELO VENCIDO!',
           `Você derrotou ${rival.name} na Arena Clandestina e humilhou a facção rival!`,
           `
-            <div style="font-size: 14px; font-weight: 700; color: #f1c40f;">+$${rival.bountyCash} Cash Roubado do Rival</div>
-            <div style="font-size: 13px; font-weight: 700; color: #2ecc71;">+60 XP de Duelo</div>
-            ${leveledUp ? '<div style="margin-top: 10px; font-size: 16px; color: #d4af37; font-weight: 900;">⭐ VOCÊ SUBIU DE NÍVEL!</div>' : ''}
+            <div style="font-size: 0.875rem; font-weight: 700; color: #f1c40f;">+$${rival.bountyCash} Cash Roubado do Rival</div>
+            <div style="font-size: 0.8125rem; font-weight: 700; color: #2ecc71;">+60 XP de Duelo</div>
+            ${leveledUp ? '<div style="margin-top: 0.625rem; font-size: 1rem; color: #d4af37; font-weight: 900;">⭐ VOCÊ SUBIU DE NÍVEL!</div>' : ''}
           `
         );
       } else {
@@ -1239,18 +1241,18 @@ function renderShopView() {
       <div class="shop-item-card" ${shopWeapon ? `data-weapon-id="${shopWeapon.id}"` : ''}>
         <div class="shop-item-header">
           <span class="shop-item-title">${item.icon} ${item.name}</span>
-          <span style="font-size: 10px; color: ${meetsLevel ? '#2ecc71' : '#e74c3c'}; font-weight: 700;">
+          <span style="font-size: 0.625rem; color: ${meetsLevel ? '#2ecc71' : '#e74c3c'}; font-weight: 700;">
             Nv. Mínimo: ${item.levelReq}
           </span>
         </div>
-        <p style="font-size: 12px; color: var(--text-muted);">${item.description}</p>
+        <p style="font-size: 0.75rem; color: var(--text-muted);">${item.description}</p>
         ${shopWeapon ? `<div class="shop-item-dmg">Dano: ${damageText(shopWeapon)}</div>` : ''}
         <div class="shop-item-price-row">
-          <span style="font-weight: 800; color: #f1c40f; font-size: 13px;">
+          <span style="font-weight: 800; color: #f1c40f; font-size: 0.8125rem;">
             ${item.priceCash > 0 ? `$${item.priceCash.toLocaleString()} ` : ''}
             ${item.priceGold > 0 ? `🪙 ${item.priceGold}` : ''}
           </span>
-          <button class="arena-btn-primary btn-buy-shop-item" data-item-id="${item.id}" ${canBuy ? '' : 'disabled'} style="padding: 4px 12px; font-size: 11px;">
+          <button class="arena-btn-primary btn-buy-shop-item" data-item-id="${item.id}" ${canBuy ? '' : 'disabled'} style="padding: 0.25rem 0.75rem; font-size: 0.6875rem;">
             Comprar
           </button>
         </div>
@@ -1274,7 +1276,7 @@ function renderShopView() {
           nivel: `Você precisa do nível ${item.levelReq} para comprar este item.`,
           ouro: 'Ouro insuficiente para esta compra.',
           cash: 'Cash insuficiente para esta compra.',
-          mochila: `Mochila cheia (${gameState.getBagCount()}/${gameState.getBagCapacity()}). Venda ou use um item para abrir espaço.`,
+          mochila: `Mala cheia (${gameState.getBagCount()}/${gameState.getBagCapacity()}). Venda ou use um item para abrir espaço.`,
         };
         alert(msg[reason ?? 'cash']);
       }
@@ -1303,7 +1305,7 @@ function renderRankingView() {
   if (!tbody) return;
   const note = document.querySelector('#view-ranking .npc-note');
   if (note) note.textContent = 'Ranking de jogadores reais, ordenado por Respeito. O Respeito só vem de duelos contra outros jogadores.';
-  if (!rankingCache) tbody.innerHTML = '<tr><td colspan="7" style="padding:14px;">Carregando o ranking...</td></tr>';
+  if (!rankingCache) tbody.innerHTML = '<tr><td colspan="7" style="padding:0.875rem;">Carregando o ranking...</td></tr>';
   else paintRealRanking(tbody);
   if (!rankingCache || Date.now() - rankingCache.at > REAL_CACHE_MS) void loadRanking();
 }
@@ -1320,15 +1322,15 @@ function paintRealRanking(tbody: HTMLElement) {
   const cache = rankingCache;
   if (!cache) return;
   if (cache.error) {
-    tbody.innerHTML = `<tr><td colspan="7" style="padding:14px;color:#e67e22;">Não deu para carregar o ranking agora. Detalhe: ${escHtml(cache.error)}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" style="padding:0.875rem;color:#e67e22;">Não deu para carregar o ranking agora. Detalhe: ${escHtml(cache.error)}</td></tr>`;
     return;
   }
   tbody.innerHTML = cache.rows.map((r, i) => {
     const me = r.id === currentUserId;
     const fam = MAFIA_FAMILIES_LIST.find(f => f.id === r.family_id);
     const action = me
-      ? '<span style="font-size: 11px; color: #2ecc71;">Seu Personagem</span>'
-      : `<button class="arena-btn-primary rank-duel-btn" data-riv-id="${r.id}" style="padding: 3px 10px; font-size: 11px;">⚔️ Duelar</button>`;
+      ? '<span style="font-size: 0.6875rem; color: #2ecc71;">Seu Personagem</span>'
+      : `<button class="arena-btn-primary rank-duel-btn" data-riv-id="${r.id}" style="padding: 0.1875rem 0.625rem; font-size: 0.6875rem;">⚔️ Duelar</button>`;
     return `
       <tr class="${me ? 'player-rank-row' : ''}">
         <td><strong${me ? ' style="color: #f1c40f;"' : ''}>#${i + 1}</strong></td>
@@ -1336,11 +1338,11 @@ function paintRealRanking(tbody: HTMLElement) {
         <td><span class="gg-style-badge badge-${r.style}">${r.style.toUpperCase()}</span></td>
         <td>Nv. ${r.level}</td>
         <td>${fam ? escHtml(fam.name) : 'Sem Família'}</td>
-        <td style="color: #f1c40f; font-weight: 700;">⭐ ${r.respect.toLocaleString()} <span style="font-size: 10px; color: var(--text-muted);">(${r.duels_won}V/${r.duels_lost}D)</span></td>
+        <td style="color: #f1c40f; font-weight: 700;">⭐ ${r.respect.toLocaleString()} <span style="font-size: 0.625rem; color: var(--text-muted);">(${r.duels_won}V/${r.duels_lost}D)</span></td>
         <td>${action}</td>
       </tr>
     `;
-  }).join('') || '<tr><td colspan="7" style="padding:14px;">Ninguém no ranking ainda.</td></tr>';
+  }).join('') || '<tr><td colspan="7" style="padding:0.875rem;">Ninguém no ranking ainda.</td></tr>';
 
   tbody.querySelectorAll<HTMLButtonElement>('.rank-duel-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1390,7 +1392,7 @@ function renderNpcRankingView() {
         <td><strong>Nv. ${r.level}</strong></td>
         <td>${r.family}</td>
         <td style="color: #f1c40f; font-weight: 800;">⭐ ${r.respect.toLocaleString()}</td>
-        <td><span style="font-size: 11px; color: #2ecc71;">Seu Personagem</span></td>
+        <td><span style="font-size: 0.6875rem; color: #2ecc71;">Seu Personagem</span></td>
       </tr>
     ` : `
       <tr>
@@ -1400,7 +1402,7 @@ function renderNpcRankingView() {
         <td>Nv. ${r.level}</td>
         <td>${r.family}</td>
         <td style="color: #f1c40f; font-weight: 700;">⭐ ${r.respect.toLocaleString()}</td>
-        <td><span style="font-size: 11px; color: var(--text-muted);">NPC</span></td>
+        <td><span style="font-size: 0.6875rem; color: var(--text-muted);">NPC</span></td>
       </tr>
     `).join('');
 
@@ -1420,23 +1422,23 @@ function renderFamilyView() {
 
   if (currentFam) {
     banner.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
         <div>
-          <span style="font-size: 11px; color: #2ecc71; font-weight: 700;">✓ VOCÊ É MEMBRO OFICIAL</span>
+          <span style="font-size: 0.6875rem; color: #2ecc71; font-weight: 700;">✓ VOCÊ É MEMBRO OFICIAL</span>
           <h2 style="color: #d4af37; font-family: var(--font-serif);">${currentFam.emblem} ${currentFam.name}</h2>
-          <p style="font-style: italic; color: var(--text-muted); font-size: 13px;">${currentFam.motto}</p>
+          <p style="font-style: italic; color: var(--text-muted); font-size: 0.8125rem;">${currentFam.motto}</p>
         </div>
-        <div style="display: flex; gap: 14px;">
-          <div style="background: rgba(0,0,0,0.4); padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
-            <div style="font-size: 10px; color: var(--text-muted);">COFRE DA FAMÍLIA</div>
+        <div style="display: flex; gap: 0.875rem;">
+          <div style="background: rgba(0,0,0,0.4); padding: 0.5rem 0.875rem; border-radius: 0.5rem; border: 0.0625rem solid rgba(255,255,255,0.08);">
+            <div style="font-size: 0.625rem; color: var(--text-muted);">COFRE DA FAMÍLIA</div>
             <div style="font-weight: 800; color: #f1c40f;">$${currentFam.treasuryCash.toLocaleString()}</div>
           </div>
-          <button id="donate-clan-cash-btn" class="arena-btn-primary" style="padding: 8px 14px;">
+          <button id="donate-clan-cash-btn" class="arena-btn-primary" style="padding: 0.5rem 0.875rem;">
             💵 Doar $500 ao Cofre
           </button>
         </div>
       </div>
-      <div style="display: flex; gap: 16px; margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 12px;">
+      <div style="display: flex; gap: 1rem; margin-top: 0.875rem; padding-top: 0.625rem; border-top: 0.0625rem solid rgba(255,255,255,0.06); font-size: 0.75rem;">
         <span style="color: #2ecc71;">Bônus Ativo: <strong>+${currentFam.buffs.xpBonusPct}% XP em Missões</strong></span>
         <span style="color: #e74c3c;">Bônus de Ataque: <strong>+${currentFam.buffs.attackBonusPct}% Dano</strong></span>
         <span style="color: #3498db;">Regeneração: <strong>+${currentFam.buffs.energyRegenBonusPct}% Energia</strong></span>
@@ -1466,12 +1468,12 @@ function renderFamilyView() {
     return `
       <div class="family-card-item">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <h4 style="font-size: 16px; color: #fff;">${fam.emblem} ${fam.name}</h4>
-          <span style="font-size: 11px; color: var(--text-muted);">Membros: ${fam.membersCount}/${fam.maxMembers}</span>
+          <h4 style="font-size: 1rem; color: #fff;">${fam.emblem} ${fam.name}</h4>
+          <span style="font-size: 0.6875rem; color: var(--text-muted);">Membros: ${fam.membersCount}/${fam.maxMembers}</span>
         </div>
-        <div style="font-size: 12px; color: #d4af37;">Líder: <strong>${fam.leaderName}</strong></div>
-        <p style="font-size: 12px; font-style: italic; color: var(--text-muted);">${fam.motto}</p>
-        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; font-size: 11px; display: flex; flex-direction: column; gap: 4px;">
+        <div style="font-size: 0.75rem; color: #d4af37;">Líder: <strong>${fam.leaderName}</strong></div>
+        <p style="font-size: 0.75rem; font-style: italic; color: var(--text-muted);">${fam.motto}</p>
+        <div style="background: rgba(0,0,0,0.3); padding: 0.5rem; border-radius: 0.375rem; font-size: 0.6875rem; display: flex; flex-direction: column; gap: 0.25rem;">
           <span style="color: #2ecc71;">+${fam.buffs.xpBonusPct}% XP de Missões</span>
           <span style="color: #e74c3c;">+${fam.buffs.attackBonusPct}% Bônus de Dano</span>
           <span style="color: #3498db;">+${fam.buffs.energyRegenBonusPct}% Regeneração de Energia</span>
@@ -1579,8 +1581,8 @@ function startRaidBossCombat(event: typeof CURRENT_RAID_EVENT) {
         '💥 ATAQUE DE RAID EXECUTADO!',
         `Você desferiu um ataque devastador causando 4.500 de dano na vida coletiva do Chefão Mundial!`,
         `
-          <div style="font-size: 14px; font-weight: 700; color: #2ecc71;">+180 XP Coletivo</div>
-          <div style="font-size: 14px; font-weight: 700; color: #f1c40f;">+$1.200 Cash de Saque</div>
+          <div style="font-size: 0.875rem; font-weight: 700; color: #2ecc71;">+180 XP Coletivo</div>
+          <div style="font-size: 0.875rem; font-weight: 700; color: #f1c40f;">+$1.200 Cash de Saque</div>
         `
       );
     }
@@ -1653,7 +1655,7 @@ function renderArenaCardVisual(side: 'a' | 'b', input: FighterInput, appearance:
 
   // Avatar SVG
   const container = document.getElementById(`avatar-container-${side}`)!;
-  container.innerHTML = renderPaperdollSVG(appearance, { width: 280, height: 340, pose: 'idle' });
+  container.innerHTML = renderPaperdollSVG(appearance, { width: 17.5, height: 21.25, pose: 'idle' });
 
   // Weapon holder
   const weaponHolder = document.getElementById(`weapon-holder-${side}`);

@@ -118,11 +118,11 @@ export const DEFAULT_MALANDRO: CharacterAppearance = {
  */
 export function renderPaperdollSVG(
   app: CharacterAppearance,
-  options?: { pose?: 'idle' | 'attack' | 'hurt' | 'dodge' | 'dead'; width?: number; height?: number }
+  options?: { pose?: 'idle' | 'attack' | 'hurt' | 'dodge' | 'dead'; /** em rem */ width?: number; /** em rem */ height?: number }
 ): string {
   const pose = options?.pose ?? 'idle';
-  const width = options?.width ?? 280;
-  const height = options?.height ?? 340;
+  const width = options?.width ?? 17.5; // em rem (tudo proporcional à tela)
+  const height = options?.height ?? 21.25;
 
   // Background gradients
   let bgGradient = `
@@ -184,7 +184,7 @@ export function renderPaperdollSVG(
 
   // Generate SVG layers
   return `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 340" width="${width}" height="${height}" class="paperdoll-svg ${pose}">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 340" style="width:${width}rem;height:${height}rem" class="paperdoll-svg ${pose}">
       <defs>
         ${bgGradient}
         <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%">

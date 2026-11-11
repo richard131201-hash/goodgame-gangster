@@ -136,7 +136,7 @@ function tabHtml(tab: TabId): string {
 // ---------- desenho ----------
 function renderPreview() {
   const box = $('creator-avatar');
-  if (box) box.innerHTML = renderPaperdollSVG(draft.appearance, { width: 260, height: 320 });
+  if (box) box.innerHTML = renderPaperdollSVG(draft.appearance, { width: 16.25, height: 20 });
   const weapon = $('creator-weapon');
   if (weapon) weapon.innerHTML = getWeaponSprite(draft.weapon, 'preview').svg;
   const badge = $('creator-class-badge');

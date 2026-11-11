@@ -19,7 +19,7 @@ export interface AttackAnimOptions {
 function createBulletHoleSVG(size: number = 24, variant: 'standard' | 'heavy' | 'incandescent' | 'pellet' = 'standard'): string {
   if (variant === 'pellet') {
     return `
-      <svg width="${size}" height="${size}" viewBox="0 0 20 20" class="bullet-hole-svg pellet">
+      <svg width="100%" height="100%" viewBox="0 0 20 20" class="bullet-hole-svg pellet">
         <circle cx="10" cy="10" r="5" fill="#08080a" />
         <circle cx="10" cy="10" r="7" fill="none" stroke="#252528" stroke-width="1.5" />
         <circle cx="10" cy="10" r="9" fill="none" stroke="rgba(255,160,50,0.4)" stroke-width="0.8" />
@@ -30,7 +30,7 @@ function createBulletHoleSVG(size: number = 24, variant: 'standard' | 'heavy' | 
 
   if (variant === 'incandescent') {
     return `
-      <svg width="${size}" height="${size}" viewBox="0 0 40 40" class="bullet-hole-svg incandescent">
+      <svg width="100%" height="100%" viewBox="0 0 40 40" class="bullet-hole-svg incandescent">
         <defs>
           <radialGradient id="hotHole-${Math.random()}" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stop-color="#050508" />
@@ -51,7 +51,7 @@ function createBulletHoleSVG(size: number = 24, variant: 'standard' | 'heavy' | 
   const rimStroke = variant === 'heavy' ? '#ff9900' : '#888899';
   const holeR = variant === 'heavy' ? 8 : 6;
   return `
-    <svg width="${size}" height="${size}" viewBox="0 0 36 36" class="bullet-hole-svg standard">
+    <svg width="100%" height="100%" viewBox="0 0 36 36" class="bullet-hole-svg standard">
       <defs>
         <radialGradient id="standardHole-${Math.random()}" cx="45%" cy="45%" r="50%">
           <stop offset="0%" stop-color="#020205" />
@@ -376,6 +376,9 @@ function spawnArenaProjectile(attackerSide: 'A' | 'B' | 'preview', weapon: Weapo
 /**
  * Spawns an individual bullet hole at (x, y) with spark and smoke
  */
+/** Posições medidas na tela (px) viram rem: o jogo todo é proporcional à tela (R-LAYOUT-6). */
+const toRem = (px: number) => `${px / (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16)}rem`;
+
 function spawnBulletHole(
   container: HTMLElement,
   x: number,
@@ -384,10 +387,10 @@ function spawnBulletHole(
 ) {
   const hole = document.createElement('div');
   hole.className = `combat-bullet-hole ${opts.variant}`;
-  hole.style.left = `${x}px`;
-  hole.style.top = `${y}px`;
-  hole.style.width = `${opts.size}px`;
-  hole.style.height = `${opts.size}px`;
+  hole.style.left = toRem(x);
+  hole.style.top = toRem(y);
+  hole.style.width = toRem(opts.size);
+  hole.style.height = toRem(opts.size);
 
   const rot = Math.floor(Math.random() * 360);
   hole.style.transform = `translate(-50%, -50%) rotate(${rot}deg)`;
@@ -412,10 +415,10 @@ function spawnBulletHole(
 function spawnFlashExplosion(container: HTMLElement, x: number, y: number, radius: number, color: string) {
   const flash = document.createElement('div');
   flash.className = 'shotgun-flash-burst';
-  flash.style.left = `${x}px`;
-  flash.style.top = `${y}px`;
-  flash.style.width = `${radius * 2}px`;
-  flash.style.height = `${radius * 2}px`;
+  flash.style.left = toRem(x);
+  flash.style.top = toRem(y);
+  flash.style.width = toRem(radius * 2);
+  flash.style.height = toRem(radius * 2);
   flash.style.background = `radial-gradient(circle, ${color} 0%, rgba(255,200,50,0.3) 40%, transparent 75%)`;
   container.appendChild(flash);
   setTimeout(() => flash.remove(), 450);
