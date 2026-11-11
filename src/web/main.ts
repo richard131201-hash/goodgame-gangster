@@ -17,6 +17,18 @@ import { initAuthUi, showAuthScreen, signOutAccount, startCharacterCreation, typ
 import { playWeaponAttackVisual, clearAllImpacts } from './animations.js';
 import { getWeaponSprite } from './weaponSprites.js';
 import {
+  equippedWeaponDef,
+  damageText,
+  damageShort,
+  damageAverage,
+  compareWeapons,
+  formatDelta,
+  bagEntries,
+  bagSlotCount,
+  isWeaponItem,
+  type WeaponComparison,
+} from './weaponSlot.js';
+import {
   gameState,
   createNewPlayer,
   getStatTrainingCost,
@@ -274,13 +286,12 @@ function renderProfileView() {
 
   const weaponHolder = document.getElementById('profile-weapon-holder');
   if (weaponHolder) {
-    const sp = getWeaponSprite(p.equipped.weaponId, 'A');
-    weaponHolder.innerHTML = sp.svg;
+    weaponHolder.innerHTML = p.equipped.weaponId ? getWeaponSprite(p.equipped.weaponId, 'A').svg : '';
   }
 
-  // 2. Equipped Gear Slots
-  const currentWeapon = getWeaponById(p.equipped.weaponId);
-  document.getElementById('equipped-wep-display')!.textContent = `${currentWeapon.icon} ${currentWeapon.name} (+${currentWeapon.min}-${currentWeapon.max})`;
+  // 2. Espaço da arma (abaixo do personagem) e outros equipamentos
+  const currentWeapon = equippedWeaponDef(p.equipped.weaponId);
+  renderWeaponSlot();
 
   const armorItem = SHOP_ITEMS.find(i => i.id === p.equipped.armorId);
   document.getElementById('equipped-armor-display')!.textContent = armorItem ? `${armorItem.icon} ${armorItem.name}` : 'Nenhum';
@@ -369,25 +380,84 @@ document.addEventListener('click', (e) => {
   }
 });
 
+// ========================================================
+// ESPAÇO DA ARMA, MOCHILA, COMPARAÇÃO E ARRASTAR E SOLTAR
+// (R-ARMA-1..5, docs/REGRAS_DO_JOGO.md)
+// ========================================================
+const escHtml = (s: string) => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string));
+
+/** Desenha o espaço da arma, abaixo do personagem: arma equipada (ou "desarmado") com dano mínimo e máximo. */
+function renderWeaponSlot() {
+  const p = gameState.getPlayer();
+  const slot = document.getElementById('slot-equipped-weapon');
+  const body = document.getElementById('equipped-wep-display');
+  const unequipBtn = document.getElementById('btn-unequip-weapon');
+  if (!slot || !body) return;
+
+  const armed = !!p.equipped.weaponId;
+  const w = equippedWeaponDef(p.equipped.weaponId);
+  slot.classList.toggle('empty', !armed);
+  body.setAttribute('draggable', armed ? 'true' : 'false');
+  if (armed) body.setAttribute('data-weapon-id', w.id);
+  else body.removeAttribute('data-weapon-id');
+  if (unequipBtn) unequipBtn.style.display = armed ? '' : 'none';
+
+  body.innerHTML = `
+    <div class="weapon-slot-art">${getWeaponSprite(w.id, 'preview').svg}</div>
+    <div class="weapon-slot-info">
+      <strong>${w.icon} ${escHtml(armed ? w.name : 'Desarmado')}</strong>
+      <span class="wdmg">Dano: ${damageText(w)}</span>
+      <span class="wmeta">${armed ? escHtml(w.categoryName) : 'Só o seu Ataque base causa dano.'}</span>
+    </div>`;
+}
+
+/** Texto e cores da comparação entre uma arma e a equipada (usado no balão e nos detalhes). */
+function comparisonHtml(weaponId: string): string {
+  const p = gameState.getPlayer();
+  const candidate = getWeaponById(weaponId);
+  const equipped = equippedWeaponDef(p.equipped.weaponId);
+  const armed = !!p.equipped.weaponId;
+  const c: WeaponComparison = compareWeapons(candidate, equipped);
+  const cls = (n: number) => (n > 0 ? 'up' : n < 0 ? 'down' : 'same');
+  const verdictText: Record<WeaponComparison['verdict'], string> = {
+    melhor: 'Causa mais dano que a equipada',
+    pior: 'Causa menos dano que a equipada',
+    igual: 'Mesmo dano da equipada',
+    misto: 'Dano mínimo e máximo se comportam diferente',
+  };
+  return `
+    <div class="wtip-vs">Comparada com ${armed ? escHtml(equipped.name) : 'estar desarmado'}:</div>
+    <table class="wtip-table">
+      <tr><td></td><td>Equipada</td><td>Esta</td><td>Diferença</td></tr>
+      <tr><td>Mínimo</td><td>${equipped.min}</td><td>${candidate.min}</td><td class="${cls(c.deltaMin)}">${formatDelta(c.deltaMin)}</td></tr>
+      <tr><td>Máximo</td><td>${equipped.max}</td><td>${candidate.max}</td><td class="${cls(c.deltaMax)}">${formatDelta(c.deltaMax)}</td></tr>
+      <tr><td>Média</td><td>${damageAverage(equipped)}</td><td>${damageAverage(candidate)}</td><td class="${cls(c.deltaAvg)}">${formatDelta(c.deltaAvg)}</td></tr>
+    </table>
+    <div class="wtip-verdict ${c.verdict}">${verdictText[c.verdict]}</div>`;
+}
+
 function renderInventoryGrid() {
+  hideWeaponTooltip();
   const p = gameState.getPlayer();
   const grid = document.getElementById('inventory-grid');
   if (!grid) return;
 
-  const totalSlots = 12;
+  const bag = bagEntries(p.inventory, p.equipped.weaponId);
+  const totalSlots = bagSlotCount(bag.length);
   let html = '';
 
   for (let i = 0; i < totalSlots; i++) {
-    const item = p.inventory[i];
-    if (item) {
-      const isEquipped =
-        item.weaponRefId === p.equipped.weaponId ||
-        item.id === p.equipped.armorId ||
-        item.id === p.equipped.accessoryId;
+    const entry = bag[i];
+    if (entry) {
+      const { item, index } = entry;
+      const weaponDef = isWeaponItem(item) ? getWeaponById(item.weaponRefId) : null;
+      const isEquipped = !weaponDef && (item.id === p.equipped.armorId || item.id === p.equipped.accessoryId);
 
       html += `
-        <div class="inv-slot ${isEquipped ? 'equipped' : ''}" data-inv-idx="${i}" title="${item.name}">
+        <div class="inv-slot ${isEquipped ? 'equipped' : ''} ${weaponDef ? 'is-weapon' : ''}" data-inv-idx="${index}"
+             ${weaponDef ? `draggable="true" data-weapon-id="${weaponDef.id}"` : `title="${escHtml(item.name)}"`}>
           <span>${item.icon}</span>
+          ${weaponDef ? `<span class="inv-dmg">${damageShort(weaponDef)}</span>` : ''}
           ${isEquipped ? '<span class="inv-slot-badge">USO</span>' : ''}
         </div>
       `;
@@ -397,9 +467,8 @@ function renderInventoryGrid() {
   }
 
   grid.innerHTML = html;
-  document.getElementById('inv-capacity-count')!.textContent = `${p.inventory.length} / ${totalSlots} slots`;
+  document.getElementById('inv-capacity-count')!.textContent = `${bag.length} / ${totalSlots} slots`;
 
-  // Bind inventory item selection
   grid.querySelectorAll('.inv-slot[data-inv-idx]').forEach(slot => {
     slot.addEventListener('click', () => {
       const idx = parseInt(slot.getAttribute('data-inv-idx') || '0', 10);
@@ -411,26 +480,28 @@ function renderInventoryGrid() {
 function showInventoryItemDetails(index: number) {
   const p = gameState.getPlayer();
   const item = p.inventory[index];
-  if (!item) return;
-
   const detailsBox = document.getElementById('inv-details-card')!;
-  const isEquipped =
-    item.weaponRefId === p.equipped.weaponId ||
-    item.id === p.equipped.armorId ||
-    item.id === p.equipped.accessoryId;
+  if (!item) {
+    detailsBox.innerHTML = '<span class="text-muted" style="font-size: 12px;">Selecione um item da mochila para ver detalhes, equipar ou vender.</span>';
+    return;
+  }
 
+  const weaponDef = isWeaponItem(item) ? getWeaponById(item.weaponRefId) : null;
+  const isEquipped = !weaponDef && (item.id === p.equipped.armorId || item.id === p.equipped.accessoryId);
   const refund = Math.round(item.priceCash * 0.5);
 
   detailsBox.innerHTML = `
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-      <strong style="color: #f1c40f; font-size: 14px;">${item.icon} ${item.name}</strong>
+      <strong style="color: #f1c40f; font-size: 14px;">${item.icon} ${escHtml(item.name)}</strong>
       <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">${item.type}</span>
     </div>
-    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">${item.description}</p>
+    ${weaponDef ? `<div class="inv-detail-dmg">Dano: ${damageText(weaponDef)}</div>` : ''}
+    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">${escHtml(item.description)}</p>
+    ${weaponDef ? `<div class="inv-detail-vs">${comparisonHtml(weaponDef.id)}</div>` : ''}
     <div style="display: flex; gap: 8px;">
       ${item.type !== 'consumable' ? `
         <button id="btn-equip-inv" class="arena-btn-primary" style="flex: 1; padding: 6px; font-size: 11px;">
-          ${isEquipped ? '✓ Equipado' : 'Equipar'}
+          ${isEquipped ? '✓ Equipado' : weaponDef ? 'Equipar (troca a arma atual)' : 'Equipar'}
         </button>
       ` : `
         <button id="btn-use-inv" class="arena-btn-primary" style="flex: 1; padding: 6px; font-size: 11px;">
@@ -444,8 +515,11 @@ function showInventoryItemDetails(index: number) {
   `;
 
   document.getElementById('btn-equip-inv')?.addEventListener('click', () => {
-    if (item.type === 'weapon' && item.weaponRefId) {
-      gameState.equipWeapon(item.weaponRefId);
+    if (isWeaponItem(item)) {
+      gameState.equipWeaponFromBag(index);
+      renderProfileView();
+      showInventoryItemDetails(-1); // a arma saiu da mochila: limpa o cartão de detalhes
+      return;
     } else if (item.type === 'armor') {
       gameState.equipArmor(item.id);
     } else if (item.type === 'accessory') {
@@ -467,6 +541,145 @@ function showInventoryItemDetails(index: number) {
     detailsBox.innerHTML = '<span class="text-muted" style="font-size: 12px;">Item vendido com sucesso!</span>';
   });
 }
+
+// ---------- balão ao passar o mouse (qualquer arma: mochila, loja ou espaço da arma) ----------
+const weaponTooltip = document.createElement('div');
+weaponTooltip.id = 'weapon-tooltip';
+weaponTooltip.className = 'wtip';
+weaponTooltip.style.display = 'none';
+document.body.appendChild(weaponTooltip);
+
+function hideWeaponTooltip() {
+  weaponTooltip.style.display = 'none';
+}
+
+function showWeaponTooltip(el: HTMLElement) {
+  const id = el.getAttribute('data-weapon-id');
+  if (!id) return;
+  const w = getWeaponById(id);
+  const isEquippedSlot = el.id === 'equipped-wep-display';
+  weaponTooltip.innerHTML = `
+    <div class="wtip-title">${w.icon} ${escHtml(w.name)}</div>
+    <div class="wtip-cat">${escHtml(w.categoryName)}${isEquippedSlot ? ' · equipada' : ''}</div>
+    <div class="wtip-dmg">Dano: <b>${w.min}</b> mín – <b>${w.max}</b> máx</div>
+    ${isEquippedSlot ? '' : comparisonHtml(id)}`;
+  weaponTooltip.style.display = 'block';
+}
+
+function moveWeaponTooltip(x: number, y: number) {
+  const pad = 14;
+  const r = weaponTooltip.getBoundingClientRect();
+  let left = x + pad;
+  let top = y + pad;
+  if (left + r.width > window.innerWidth - 8) left = Math.max(8, x - r.width - pad);
+  if (top + r.height > window.innerHeight - 8) top = Math.max(8, y - r.height - pad);
+  weaponTooltip.style.left = `${left}px`;
+  weaponTooltip.style.top = `${top}px`;
+}
+
+let weaponDragActive = false;
+
+document.addEventListener('mouseover', e => {
+  if (weaponDragActive) return;
+  const el = (e.target as HTMLElement).closest?.('[data-weapon-id]') as HTMLElement | null;
+  if (!el) return;
+  showWeaponTooltip(el);
+  moveWeaponTooltip((e as MouseEvent).clientX, (e as MouseEvent).clientY);
+});
+document.addEventListener('mousemove', e => {
+  if (weaponTooltip.style.display === 'none') return;
+  moveWeaponTooltip((e as MouseEvent).clientX, (e as MouseEvent).clientY);
+});
+document.addEventListener('mouseout', e => {
+  const el = (e.target as HTMLElement).closest?.('[data-weapon-id]') as HTMLElement | null;
+  if (!el) return;
+  const to = (e as MouseEvent).relatedTarget as Node | null;
+  if (to && el.contains(to)) return;
+  hideWeaponTooltip();
+});
+window.addEventListener('blur', hideWeaponTooltip);
+
+// ---------- arrastar e soltar ----------
+type WeaponDrag = { kind: 'inv'; index: number } | { kind: 'slot' };
+let weaponDrag: WeaponDrag | null = null;
+
+document.addEventListener('dragstart', e => {
+  const el = (e.target as HTMLElement).closest?.('[draggable="true"]') as HTMLElement | null;
+  if (!el) return;
+  if (el.id === 'equipped-wep-display') weaponDrag = { kind: 'slot' };
+  else if (el.classList.contains('is-weapon') && el.dataset.invIdx !== undefined) weaponDrag = { kind: 'inv', index: parseInt(el.dataset.invIdx, 10) };
+  else return;
+  weaponDragActive = true;
+  hideWeaponTooltip();
+  e.dataTransfer?.setData('text/plain', JSON.stringify(weaponDrag));
+  if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
+  el.classList.add('dragging');
+  document.body.classList.add('dragging-weapon');
+});
+
+document.addEventListener('dragend', () => {
+  weaponDrag = null;
+  weaponDragActive = false;
+  document.body.classList.remove('dragging-weapon');
+  document.querySelectorAll('.dragging, .drop-ok, .drop-bad').forEach(n => n.classList.remove('dragging', 'drop-ok', 'drop-bad'));
+});
+
+function bindWeaponDropZones() {
+  const slot = document.getElementById('slot-equipped-weapon');
+  const bagPanel = document.querySelector('.profile-inventory-panel') as HTMLElement | null;
+  if (!slot || !bagPanel) return;
+
+  // Espaço da arma: aceita arma vinda da mochila (troca)
+  slot.addEventListener('dragover', e => {
+    if (!weaponDrag) return;
+    const ok = weaponDrag.kind === 'inv' && isWeaponItem(gameState.getPlayer().inventory[weaponDrag.index]);
+    slot.classList.toggle('drop-ok', ok);
+    slot.classList.toggle('drop-bad', !ok);
+    if (ok) {
+      e.preventDefault();
+      if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+    }
+  });
+  slot.addEventListener('dragleave', e => {
+    if (!slot.contains(e.relatedTarget as Node | null)) slot.classList.remove('drop-ok', 'drop-bad');
+  });
+  slot.addEventListener('drop', e => {
+    e.preventDefault();
+    slot.classList.remove('drop-ok', 'drop-bad');
+    if (weaponDrag && weaponDrag.kind === 'inv') {
+      const index = weaponDrag.index;
+      weaponDrag = null;
+      gameState.equipWeaponFromBag(index);
+      renderProfileView();
+    }
+  });
+
+  // Mochila: aceita a arma equipada (guardar)
+  bagPanel.addEventListener('dragover', e => {
+    if (!weaponDrag || weaponDrag.kind !== 'slot') return;
+    e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+    bagPanel.classList.add('drop-ok');
+  });
+  bagPanel.addEventListener('dragleave', e => {
+    if (!bagPanel.contains(e.relatedTarget as Node | null)) bagPanel.classList.remove('drop-ok');
+  });
+  bagPanel.addEventListener('drop', e => {
+    e.preventDefault();
+    bagPanel.classList.remove('drop-ok');
+    if (weaponDrag && weaponDrag.kind === 'slot') {
+      weaponDrag = null;
+      gameState.unequipWeapon();
+      renderProfileView();
+    }
+  });
+
+  document.getElementById('btn-unequip-weapon')?.addEventListener('click', () => {
+    gameState.unequipWeapon();
+    renderProfileView();
+  });
+}
+bindWeaponDropZones();
 
 // ========================================================
 // VIEW 2: MISSÕES DO DON (GODFATHER QUESTS)
@@ -524,7 +737,7 @@ function renderMissionsView() {
 function startMissionCombat(mission: MissionDef) {
   const p = gameState.getPlayer();
   const playerCombatPoints = gameState.getCombatPoints();
-  const playerWeapon = getWeaponById(p.equipped.weaponId);
+  const playerWeapon = equippedWeaponDef(p.equipped.weaponId);
 
   const inputA: FighterInput = {
     style: p.style,
@@ -647,7 +860,7 @@ document.getElementById('refresh-rivals-btn')?.addEventListener('click', () => {
 function startDuelCombat(rival: DuelRival) {
   const p = gameState.getPlayer();
   const playerCombatPoints = gameState.getCombatPoints();
-  const playerWeapon = getWeaponById(p.equipped.weaponId);
+  const playerWeapon = equippedWeaponDef(p.equipped.weaponId);
 
   const inputA: FighterInput = {
     style: p.style,
@@ -706,6 +919,7 @@ let activeShopFilter = 'all';
 function renderShopView() {
   const container = document.getElementById('shop-items-container');
   if (!container) return;
+  hideWeaponTooltip();
 
   const player = gameState.getPlayer();
 
@@ -718,9 +932,10 @@ function renderShopView() {
     const canAffordCash = player.cash >= item.priceCash;
     const canAffordGold = player.gold >= item.priceGold;
     const canBuy = meetsLevel && canAffordCash && canAffordGold;
+    const shopWeapon = item.weaponRefId ? getWeaponById(item.weaponRefId) : null;
 
     return `
-      <div class="shop-item-card">
+      <div class="shop-item-card" ${shopWeapon ? `data-weapon-id="${shopWeapon.id}"` : ''}>
         <div class="shop-item-header">
           <span class="shop-item-title">${item.icon} ${item.name}</span>
           <span style="font-size: 10px; color: ${meetsLevel ? '#2ecc71' : '#e74c3c'}; font-weight: 700;">
@@ -728,6 +943,7 @@ function renderShopView() {
           </span>
         </div>
         <p style="font-size: 12px; color: var(--text-muted);">${item.description}</p>
+        ${shopWeapon ? `<div class="shop-item-dmg">Dano: ${damageText(shopWeapon)}</div>` : ''}
         <div class="shop-item-price-row">
           <span style="font-weight: 800; color: #f1c40f; font-size: 13px;">
             ${item.priceCash > 0 ? `$${item.priceCash.toLocaleString()} ` : ''}
@@ -952,7 +1168,7 @@ function renderEventsView() {
 function startRaidBossCombat(event: typeof CURRENT_RAID_EVENT) {
   const p = gameState.getPlayer();
   const playerCombatPoints = gameState.getCombatPoints();
-  const playerWeapon = getWeaponById(p.equipped.weaponId);
+  const playerWeapon = equippedWeaponDef(p.equipped.weaponId);
 
   const inputA: FighterInput = {
     style: p.style,

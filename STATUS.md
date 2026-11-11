@@ -60,6 +60,11 @@ Provado no localhost contra o Supabase real (nível 1 no site até a conferênci
 - **Site no ar (Vercel), verificado em 2026-11-11 (nível 2):** repeti o fluxo inteiro em https://mobster-rise.vercel.app/ (Novo por aqui → personagem com cacheado, van dyke, jaqueta de couro, chapéu coco, monóculo, fundo Porto, Muralha → conta → jogo; depois sair e entrar). Save da conta bateu com as escolhas, margem do jogo 6%, nenhum erro de console. Conta de teste apagada (0 contas).
 - **Não verificado:** celular real, Safari/Firefox, leitor de tela.
 
+## Armas (2026-11-11)
+- Provado no localhost (conta real, depois apagada): o espaço da arma fica **abaixo do personagem** com "Dano: 12 mín – 22 máx"; a mochila mostra o dano de cada arma (8–16, 18–32, 22–42); a loja também. O balão compara com a equipada (Tommy Gun contra a Colt: mín +6, máx +10, média +8). **Arrastar de verdade** funcionou nos dois sentidos: da mochila para o espaço (troca, e a antiga volta à mochila) e do espaço para a mochila (fica desarmado). Luta desarmado funciona (missão cumprida, sem erro). Os botões "Equipar" e "Guardar na mochila" funcionam como alternativa. O estado fica salvo.
+- 25 testes novos (`weaponSlot.test.ts`), total 130.
+- **Pendências:** armadura e acessório ainda não têm arrastar; no celular só funciona pelos botões (arrastar com o dedo não existe); a arma só aparece na mão do personagem quando está equipada.
+
 ## Layout (2026-11-11)
 - **Atualização final (R-LAYOUT-5):** palco do tamanho da imagem do login (1672 x 941). Medido no navegador: em 1366 px tudo ocupa a tela toda; em 1920 e 2560 px o palco fica centralizado (preto de 124 px e 444 px de cada lado, e 70 px e 250 px em cima e embaixo no login), sem borda, arredondamento nem sombra. 2 testes novos conferem isso, inclusive o tamanho da imagem.
 - **Histórico:** a margem preta descrita abaixo foi **removida a pedido do fundador** (R-LAYOUT-5). O jogo e o login voltaram à tela cheia, sem moldura; o jogo mantém a largura máxima original de 1440 px, centralizada. As medições de 6% abaixo valiam só enquanto a margem existiu.

@@ -500,6 +500,20 @@ export function getWeaponSprite(weaponId: string, side: 'A' | 'B' | 'preview'): 
         `,
       };
 
+    case 'fists':
+      return {
+        barrelTip: { x: 118, y: 52 },
+        chamber: { x: 80, y: 58 },
+        svg: `
+          <svg viewBox="0 0 150 100" class="weapon-sprite-svg" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 46 62 C 44 42 66 34 90 38 C 112 36 128 48 124 66 C 120 84 96 90 72 86 C 54 84 48 74 46 62 Z" fill="#e2b38f" stroke="#111" stroke-width="2.5" />
+            <path d="M 84 40 L 84 62 M 98 40 L 98 62 M 112 44 L 112 64" stroke="#8a5a3a" stroke-width="2" fill="none" stroke-linecap="round" />
+            <path d="M 70 40 C 76 34 92 32 104 36" stroke="rgba(255,255,255,0.35)" stroke-width="2.4" fill="none" stroke-linecap="round" />
+            <path d="M 46 66 C 38 70 36 86 42 92 L 70 92 L 72 86" fill="#c9966d" stroke="#111" stroke-width="2.2" />
+          </svg>
+        `,
+      };
+
     default:
       return getWeaponSprite('colt_1911', side);
   }

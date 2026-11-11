@@ -326,7 +326,32 @@ export const WEAPONS_CATALOG: WeaponDef[] = [
   },
 ];
 
+/**
+ * Desarmado (R-ARMA-4): quando o jogador guarda a arma na mochila, luta com os punhos.
+ * Dano 0 a 0, igual a não ter arma (só o Ataque base causa dano). Fica FORA do catálogo
+ * (não é vendida na loja nem é item).
+ */
+export const FISTS: WeaponDef = {
+  id: 'fists',
+  name: 'Punhos',
+  category: 'special',
+  categoryName: 'Desarmado',
+  icon: '👊',
+  min: 0,
+  max: 0,
+  description: 'Sem arma equipada: só o seu Ataque base causa dano.',
+  shotEffect: {
+    type: 'slash',
+    bulletCount: 1,
+    spreadRadius: 6,
+    smokeIntensity: 'light',
+    sound: 'slash',
+    screenShake: 'light',
+  },
+};
+
 export function getWeaponById(id: string): WeaponDef {
+  if (id === FISTS.id) return FISTS;
   const found = WEAPONS_CATALOG.find(w => w.id === id);
   if (found) return found;
   return WEAPONS_CATALOG[0]; // fallback to Revolver .38

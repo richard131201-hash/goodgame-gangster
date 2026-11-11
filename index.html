@@ -134,12 +134,18 @@
               </div>
             </div>
 
-            <!-- EQUIPPED SLOTS -->
-            <div class="equipped-slots-grid">
-              <div class="gear-slot slot-weapon" id="slot-equipped-weapon" title="Arma Primária Equipada">
-                <span class="slot-badge">ARMA</span>
-                <div class="slot-content" id="equipped-wep-display">🔫 Colt M1911</div>
+            <!-- ESPAÇO DA ARMA (abaixo do personagem): receber arma da mochila troca; arrastar para a mochila guarda -->
+            <div class="weapon-slot" id="slot-equipped-weapon">
+              <div class="weapon-slot-head">
+                <span class="slot-badge">ARMA EQUIPADA</span>
+                <button type="button" class="weapon-slot-unequip" id="btn-unequip-weapon">Guardar na mochila</button>
               </div>
+              <div class="weapon-slot-body" id="equipped-wep-display"></div>
+              <p class="weapon-slot-hint">Arraste uma arma da mochila até aqui para trocar. Arraste esta arma para a mochila para guardá-la.</p>
+            </div>
+
+            <!-- OUTROS EQUIPAMENTOS -->
+            <div class="equipped-slots-grid">
               <div class="gear-slot slot-armor" id="slot-equipped-armor" title="Blindagem/Colete Equipado">
                 <span class="slot-badge">BLINDAGEM</span>
                 <div class="slot-content" id="equipped-armor-display">Nenhum</div>
@@ -281,6 +287,8 @@
             <div class="inventory-slots-grid" id="inventory-grid">
               <!-- 12 slots dynamically rendered -->
             </div>
+
+            <p class="inv-hint">Passe o mouse sobre uma arma para comparar com a equipada. Arraste uma arma até o espaço da arma, abaixo do personagem, para equipá-la.</p>
 
             <div class="inv-item-details-box" id="inv-details-card">
               <span class="text-muted" style="font-size: 12px;">Selecione um item da mochila para ver detalhes, equipar ou vender.</span>

@@ -66,6 +66,17 @@ Observação: com 7 minutos por ponto, uma missão de 15 energia custa 1h45 de e
 | R-PERSONAGEM-3 | A classe não muda o visual | Escolher Carrasco, Muralha ou Malandro não altera a aparência montada (antes trocava o visual inteiro) | Claude, 2026-11-11 | `onboarding.ts` | provado no localhost |
 | R-PERSONAGEM-4 | Chapéu e acessório são escolhas separadas | O campo `hat` é novo; saves antigos com `accessory: fedora` continuam mostrando o chapéu | Claude, 2026-11-11 | `paperdoll.ts` | `characterOptions.test.ts` |
 
+## Armas e espaço da arma
+
+| ID | Regra | Valor | Origem | Onde no código | Teste |
+|---|---|---|---|---|---|
+| R-ARMA-1 | **Dano mínimo e máximo sempre à vista** | Em todo lugar onde aparece uma arma (espaço da arma, mochila, cartão de detalhes, loja, balão) mostra o dano, por exemplo `12 mín – 22 máx` (na mochila, curto: `12–22`) | Fundador, 2026-11-11 | `src/web/weaponSlot.ts`, `src/web/main.ts` | `tests/unit/weaponSlot.test.ts` (toda arma do catálogo tem mín e máx válidos) |
+| R-ARMA-2 | **Comparação ao passar o mouse** | Balão com mínimo, máximo e média: equipada × esta × diferença (+/−) e um veredito (mais dano, menos dano, igual, misto). Vale na mochila, na loja e no cartão de detalhes. Sem arma equipada, compara com estar desarmado | Fundador (pediu comparar); formato do Claude | `src/web/weaponSlot.ts` (`compareWeapons`), `src/web/main.ts` | `weaponSlot.test.ts` |
+| R-ARMA-3 | **Espaço da arma abaixo do personagem, com arrastar e soltar** | Arrastar uma arma da mochila até o espaço da arma **troca** (a antiga volta para a mochila). Arrastar a arma equipada para a mochila a **guarda**. A arma equipada não aparece na mochila. Os botões "Guardar na mochila" e "Equipar" fazem o mesmo (celular não tem arrastar com o dedo) | Fundador, 2026-11-11 | `index.html`, `src/web/main.ts`, `src/web/state.ts` (`equipWeaponFromBag`, `unequipWeapon`) | `weaponSlot.test.ts` + provado no navegador com arrastar de verdade |
+| R-ARMA-4 | **Sem arma = punhos** | Guardar a arma deixa o personagem desarmado: luta com os **Punhos** (dano 0 a 0, só o Ataque base causa dano). Os Punhos não são vendidos nem são item | Claude (consequência de "ela sai"), 2026-11-11 (a confirmar) | `src/engine/weapons.ts` (`FISTS`), `src/web/weaponSprites.ts` | `weaponSlot.test.ts` (inclui luta de mãos vazias) |
+| R-ARMA-5 | **Arma nova só se equipa sozinha com o espaço vazio** | Comprar ou ganhar arma (drop) manda para a mochila; o jogador arrasta para equipar. Antes, toda arma nova trocava a equipada sozinha | Claude, 2026-11-11 (a confirmar) | `src/web/state.ts` (`buyItem`) | `weaponSlot.test.ts` |
+| R-ARMA-6 | **A mochila cresce além de 12 espaços** | De 4 em 4 (antes, itens depois do 12º ficavam invisíveis) | Claude, 2026-11-11 | `src/web/weaponSlot.ts` (`bagSlotCount`) | `weaponSlot.test.ts` |
+
 ## Layout
 
 | ID | Regra | Valor | Origem | Onde no código | Teste |

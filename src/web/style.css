@@ -3047,3 +3047,101 @@ body.auth-open #app { display: none; }
   .creator-actions, .account-actions { flex-direction: column-reverse; align-items: stretch; }
   .creator-actions .arena-btn-primary, .account-actions .auth-submit { width: 100%; }
 }
+
+/* ===================================================== */
+/* ESPAÇO DA ARMA, DANO À VISTA, BALÃO DE COMPARAÇÃO     */
+/* (R-ARMA-1..5)                                          */
+/* ===================================================== */
+.weapon-slot {
+  width: 100%;
+  margin-top: 14px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(212, 175, 55, 0.45);
+  border-radius: 10px;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.weapon-slot.empty { border-style: dashed; border-color: rgba(255, 255, 255, 0.2); }
+.weapon-slot.drop-ok { border-style: solid; border-color: #2ecc71; background: rgba(46, 204, 113, 0.12); box-shadow: 0 0 14px rgba(46, 204, 113, 0.4); }
+.weapon-slot.drop-bad { border-color: #e74c3c; background: rgba(231, 76, 60, 0.1); }
+body.dragging-weapon .weapon-slot { box-shadow: 0 0 10px rgba(212, 175, 55, 0.35); }
+
+.weapon-slot-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.weapon-slot-unequip {
+  padding: 3px 8px;
+  font: 600 11px var(--font-sans);
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.weapon-slot-unequip:hover { color: #fff; border-color: #f1c40f; }
+
+.weapon-slot-body { display: flex; align-items: center; gap: 10px; user-select: none; }
+.weapon-slot-body[draggable="true"] { cursor: grab; }
+.weapon-slot-body.dragging { opacity: 0.45; }
+.weapon-slot-art { flex: 0 0 96px; width: 96px; height: 64px; display: flex; align-items: center; justify-content: center; }
+.weapon-slot-art svg { width: 100%; height: 100%; }
+.weapon-slot-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; text-align: left; }
+.weapon-slot-info strong { color: #f1c40f; font-size: 13px; }
+.weapon-slot-info .wdmg { color: #2ecc71; font-size: 13px; font-weight: 800; }
+.weapon-slot-info .wmeta { color: var(--text-muted); font-size: 11px; }
+.weapon-slot-hint { margin: 8px 0 0; font-size: 11px; line-height: 1.35; color: var(--text-muted); }
+
+.inv-slot.is-weapon { cursor: grab; }
+.inv-slot.dragging { opacity: 0.4; }
+.inv-dmg {
+  position: absolute;
+  bottom: 3px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  color: #2ecc71;
+  pointer-events: none;
+}
+.profile-inventory-panel.drop-ok { outline: 2px dashed #2ecc71; outline-offset: -6px; background: rgba(46, 204, 113, 0.07); }
+.inv-hint { margin: 0 0 10px; font-size: 11px; line-height: 1.35; color: var(--text-muted); }
+.inv-detail-dmg { margin-bottom: 6px; font-size: 13px; font-weight: 800; color: #2ecc71; }
+.inv-detail-vs { margin-bottom: 10px; }
+.shop-item-dmg { margin: 4px 0 2px; font-size: 12px; font-weight: 800; color: #2ecc71; }
+
+.wtip {
+  position: fixed;
+  z-index: 20000;
+  max-width: 290px;
+  padding: 10px 12px;
+  background: #12141b;
+  border: 1px solid #d4af37;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-main);
+  pointer-events: none;
+}
+.wtip-title { font-size: 14px; font-weight: 800; color: #f1c40f; }
+.wtip-cat { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.wtip-dmg { font-size: 13px; color: #fff; }
+.wtip-dmg b { color: #2ecc71; }
+.wtip-vs { margin-top: 8px; font-size: 11px; color: var(--text-muted); }
+.wtip-table { width: 100%; margin-top: 4px; border-collapse: collapse; font-size: 12px; }
+.wtip-table td { padding: 2px 6px; text-align: right; }
+.wtip-table td:first-child { text-align: left; color: var(--text-muted); padding-left: 0; }
+.wtip-table tr:first-child td { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
+.wtip .up, .inv-detail-vs .up { color: #2ecc71; font-weight: 800; }
+.wtip .down, .inv-detail-vs .down { color: #e74c3c; font-weight: 800; }
+.wtip .same, .inv-detail-vs .same { color: var(--text-muted); }
+.wtip-verdict { margin-top: 6px; font-size: 11px; font-weight: 700; }
+.wtip-verdict.melhor { color: #2ecc71; }
+.wtip-verdict.pior { color: #e74c3c; }
+.wtip-verdict.igual { color: var(--text-muted); }
+.wtip-verdict.misto { color: #f39c12; }
+.inv-detail-vs .wtip-vs { margin-top: 0; }
+.inv-detail-vs .wtip-table { max-width: 280px; }
+.inv-detail-vs .wtip-verdict.melhor { color: #2ecc71; }
+.inv-detail-vs .wtip-verdict.pior { color: #e74c3c; }
+.inv-detail-vs .wtip-verdict.misto { color: #f39c12; }

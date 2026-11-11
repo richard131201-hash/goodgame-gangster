@@ -4,6 +4,7 @@ import { DEFAULT_CARRASCO, DEFAULT_MURALHA, DEFAULT_MALANDRO } from './paperdoll
 import { SHOP_ITEMS, MAFIA_FAMILIES_LIST, type GameItem } from './gameData.js';
 import { regenEnergy } from './energy.js';
 import { saveKeyFor } from './saveKey.js';
+import { isWeaponItem, equippedInventoryIndex } from './weaponSlot.js';
 
 export interface PlayerStatsRecord {
   duelsWon: number;
@@ -33,7 +34,8 @@ export interface PlayerState {
   freePoints: number; // Available to distribute on level up
 
   equipped: {
-    weaponId: string;
+    /** Arma no espaço da arma. null = desarmado (luta com os punhos). */
+    weaponId: string | null;
     armorId: string | null;
     accessoryId: string | null;
     consumables: (string | null)[];
@@ -334,9 +336,10 @@ export class GameStateManager {
 
     this.player.inventory.push({ ...item });
 
-    // Auto-equip if weapon and no weapon equipped
+    // Arma nova só é equipada sozinha se o espaço da arma estiver vazio (R-ARMA-5);
+    // senão vai para a mochila e o jogador decide arrastando.
     if (item.type === 'weapon' && item.weaponRefId) {
-      this.player.equipped.weaponId = item.weaponRefId;
+      if (!this.player.equipped.weaponId) this.player.equipped.weaponId = item.weaponRefId;
     } else if (item.type === 'armor' && !this.player.equipped.armorId) {
       this.player.equipped.armorId = item.id;
     } else if (item.type === 'accessory' && !this.player.equipped.accessoryId) {
@@ -351,9 +354,9 @@ export class GameStateManager {
     if (index < 0 || index >= this.player.inventory.length) return false;
     const item = this.player.inventory[index];
 
-    // Un-equip if equipped
-    if (item.type === 'weapon' && item.weaponRefId === this.player.equipped.weaponId) {
-      this.player.equipped.weaponId = 'revolver_38'; // fallback to basic revolver
+    // Vendeu a cópia que estava no espaço da arma: fica desarmado (R-ARMA-4)
+    if (index === equippedInventoryIndex(this.player.inventory, this.player.equipped.weaponId)) {
+      this.player.equipped.weaponId = null;
     }
     if (item.id === this.player.equipped.armorId) this.player.equipped.armorId = null;
     if (item.id === this.player.equipped.accessoryId) this.player.equipped.accessoryId = null;
@@ -366,9 +369,41 @@ export class GameStateManager {
     return true;
   }
 
-  equipWeapon(weaponId: string) {
+  equipWeapon(weaponId: string | null) {
     this.player.equipped.weaponId = weaponId;
     this.notify();
+  }
+
+  /** Garante que a arma (que vai sair do espaço da arma) esteja na mochila, para nunca se perder. */
+  private ensureWeaponInBag(weaponId: string | null) {
+    if (!weaponId) return;
+    if (equippedInventoryIndex(this.player.inventory, weaponId) !== -1) return;
+    const shopCopy = SHOP_ITEMS.find(i => isWeaponItem(i) && i.weaponRefId === weaponId);
+    if (shopCopy) this.player.inventory.push({ ...shopCopy });
+  }
+
+  /**
+   * Arrastar uma arma da mochila para o espaço da arma (R-ARMA-3): ela vira a equipada e a
+   * que estava lá volta para a mochila. Retorna false se o item não for uma arma.
+   */
+  equipWeaponFromBag(invIndex: number): boolean {
+    const item = this.player.inventory[invIndex];
+    if (!isWeaponItem(item)) return false;
+    if (item.weaponRefId === this.player.equipped.weaponId) return true; // já é a equipada
+    this.ensureWeaponInBag(this.player.equipped.weaponId);
+    this.player.equipped.weaponId = item.weaponRefId;
+    this.notify();
+    return true;
+  }
+
+  /** Arrastar a arma equipada para a mochila (R-ARMA-3): ela sai do espaço e o jogador fica desarmado. */
+  unequipWeapon(): boolean {
+    const current = this.player.equipped.weaponId;
+    if (!current) return false;
+    this.ensureWeaponInBag(current);
+    this.player.equipped.weaponId = null;
+    this.notify();
+    return true;
   }
 
   equipArmor(armorId: string | null) {
