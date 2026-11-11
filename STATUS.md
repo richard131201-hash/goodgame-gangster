@@ -24,6 +24,12 @@ Jogo de navegador de gângsteres, nostálgico (era Goodgame Gangster), meta de r
 | Tipos | **Corrigido (C3):** `npm run typecheck` passa sem erros | `tsc --noEmit` |
 | Nome | **Corrigido (C4):** título da aba e tela de criação dizem "Mobster Rise". Comentários internos e a chave do save ainda têm o nome antigo (jogador não vê) | `index.html` |
 
+## Banco de dados (2026-11-11)
+- Nenhum projeto Supabase existe ainda. Falta D0a (você).
+- `supabase/migrations/0001_players.sql` escrito (tabela `players`, RLS, visão `public_players`). **Nunca rodou em banco real.** Não há Supabase CLI, Docker nem Postgres neste computador, então só dá para provar no projeto real.
+- `.gitignore` não ignorava `.env`; corrigido e provado com `git check-ignore`.
+- O Supabase mostrará um alerta de "Security Definer View" para `public_players`. É intencional: a visão expõe só colunas públicas.
+
 ## Jogado no localhost (2026-11-11)
 - Criação de personagem funciona.
 - As 8 abas abrem sem erro de console.

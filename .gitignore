@@ -5,6 +5,12 @@ output/
 sim-output/
 *.log
 *.csv
+# Segredos: nunca no repositório
+.env
+.env.*
+!.env.example
+*.local
+supabase/.temp
 .vercel
 
 .vercel

@@ -9,7 +9,7 @@ export const etapas = [
   { id: 'A', nome: 'Fundação do processo', dependeDe: [] },
   { id: 'B', nome: 'Verificação do que existe', dependeDe: ['A'] },
   { id: 'C', nome: 'MVP jogável (local)', dependeDe: ['B'] },
-  { id: 'D', nome: 'Servidor e banco (Supabase)', dependeDe: ['C'] },
+  { id: 'D', nome: 'Servidor e banco (Supabase)', dependeDe: [] },
   { id: 'E', nome: 'Estrutura e mercado (paralela)', dependeDe: [] },
   { id: 'F', nome: 'Lançamento e receita', dependeDe: ['C'] },
 ];
@@ -37,10 +37,14 @@ export const tarefas = [
   { id: 'C9', etapa: 'C', titulo: 'Dependências com alerta no npm audit (zod alto; tinypool crítico): atualizar em cópia isolada com testes', dono: 'CLAUDE', estado: 'A_FAZER', quando: 'Adiado para o início de D2 (zod passa a validar dado de fora); risco atual baixo, ver DECISOES.md', depende: ['C1'] },
 
   // ---- D ----
-  { id: 'D0a', etapa: 'D', titulo: 'Criar conta e projeto no Supabase (com 2FA) e colocar as chaves em .env.local e na Vercel. Nunca no chat', dono: 'FUNDADOR', estado: 'A_FAZER', quando: 'Depois de aprovar D1; antes de D2a', depende: ['D1'] },
-  { id: 'D1', etapa: 'D', titulo: 'Arquitetura Supabase (docs/arquitetura/BANCO_DE_DADOS.md) com cenários de custo e recomendação', dono: 'CLAUDE + FUNDADOR', estado: 'EM_ANDAMENTO', quando: 'Documento pronto; falta a sua aprovação', depende: [] },
-  { id: 'D2', etapa: 'D', titulo: 'Contas e save no banco; ouro, itens, drops e resultado de lutas decididos no servidor (começa por prova de conceito D2a)', dono: 'CLAUDE', estado: 'A_FAZER', quando: 'Depois de D0a; antes de qualquer pagamento', depende: ['D1', 'D0a'] },
-  { id: 'D3', etapa: 'D', titulo: 'Ranking e Família reais (jogadores de verdade)', dono: 'CLAUDE', estado: 'A_FAZER', quando: 'Depois de D2', depende: ['D2'] },
+  { id: 'D0a', etapa: 'D', titulo: 'Criar conta e projeto no Supabase (2FA), rodar a migração 0001 no SQL Editor e colocar as chaves em .env.local e na Vercel. Nunca no chat (passo a passo no chat)', dono: 'FUNDADOR', estado: 'A_FAZER', quando: 'Agora; destrava D2a em diante', depende: [] },
+  { id: 'D1', etapa: 'D', titulo: 'Arquitetura Supabase (docs/arquitetura/BANCO_DE_DADOS.md) com cenários de custo e recomendação', dono: 'CLAUDE + FUNDADOR', estado: 'FEITO', nivel: 0, quando: 'Aprovado em 2026-11-11 com as recomendações (login e-mail e senha primeiro; Google depois; saves locais descartados; lógica nas funções da Vercel)', depende: [] },
+  { id: 'D2a', etapa: 'D', titulo: 'Migração 0001 (tabela de jogadores, RLS, visão pública) em supabase/migrations. Pronto = rodou no projeto real e o teste de RLS prova que um jogador não lê nem grava dado de outro', dono: 'CLAUDE', estado: 'EM_ANDAMENTO', nivel: 0, quando: 'SQL escrito, ainda NÃO rodou em banco real; falta D0a', depende: [] },
+  { id: 'D2b', etapa: 'D', titulo: 'Criar conta e entrar (e-mail e senha) dentro do jogo; sem as chaves o jogo segue em modo local', dono: 'CLAUDE', estado: 'A_FAZER', quando: 'Depois de D0a e D2a', depende: ['D0a', 'D2a'] },
+  { id: 'D2c', etapa: 'D', titulo: 'Personagem e progresso salvos no banco por função do servidor (Vercel), nunca direto do navegador', dono: 'CLAUDE', estado: 'A_FAZER', quando: 'Depois de D2b', depende: ['D2b'] },
+  { id: 'D2d', etapa: 'D', titulo: 'Ver outros jogadores reais (ranking real) na aba Ranking', dono: 'CLAUDE', estado: 'A_FAZER', quando: 'Depois de D2c', depende: ['D2c'] },
+  { id: 'D2', etapa: 'D', titulo: 'Ações do jogo (missões, duelos, loja, drops, energia) decididas no servidor, à prova de trapaça', dono: 'CLAUDE', estado: 'A_FAZER', quando: 'Depois de D2c; antes de qualquer pagamento', depende: ['D2c'] },
+  { id: 'D3', etapa: 'D', titulo: 'Famílias reais (jogadores de verdade)', dono: 'CLAUDE', estado: 'A_FAZER', quando: 'Depois de D2d', depende: ['D2d'] },
   { id: 'D4', etapa: 'D', titulo: 'Antifraude do produto: limites, rate limit, auditoria de transações, contas duplicadas', dono: 'CLAUDE', estado: 'A_FAZER', quando: 'Depois de D2, antes de abrir ao público', depende: ['D2'] },
 
   // ---- E (paralela) ----
@@ -56,6 +60,11 @@ export const tarefas = [
 
 // Ordem do que fazer agora, com o porquê da posição.
 export const fila = [
+  ['D0a', 'Sua parte, a mais urgente: sem o projeto no Supabase o banco não sai do papel (passo a passo no chat).'],
+  ['D2a', 'SQL já escrito; falta rodar no banco real e provar a segurança.'],
+  ['D2b', 'Conta de verdade dentro do jogo.'],
+  ['D2c', 'Progresso salvo no banco.'],
+  ['D2d', 'Ver outros jogadores no Ranking, para testar.'],
   ['C2', 'Sem regeneração de energia o jogador trava em poucas missões: bloqueia qualquer teste longo.'],
   ['C3', 'Barato e evita erro de tipo escondido, pois o build não checa tipos.'],
   ['C4', 'Nome e marca: o jogo no ar ainda se chama SUBMUNDO e cita Goodgame Gangster.'],
@@ -66,6 +75,4 @@ export const fila = [
   ['C8', 'Documentação, depois que o MVP estiver estável.'],
   ['E1', 'Em paralelo: sua parte (marca e domínio).'],
   ['E2', 'Em paralelo: sua parte (termos, privacidade, classificação).'],
-  ['D1', 'Documento pronto: precisa só da sua aprovação para liberar o resto do servidor.'],
-  ['D0a', 'Sua parte: criar conta e projeto no Supabase. Sem isso o servidor não começa.'],
 ];

@@ -4,18 +4,18 @@
 
 ## Onde estamos
 
-- Tarefas: **26** em **6** etapas
-- Feitas: **11** (com nível 2 ou mais registrado: **1**)
+- Tarefas: **30** em **6** etapas
+- Feitas: **12** (com nível 2 ou mais registrado: **1**)
 - Em andamento: **1**
-- Liberadas para começar: **4**
-- Bloqueadas por outra tarefa ou etapa: **10**
+- Liberadas para começar: **5**
+- Bloqueadas por outra tarefa ou etapa: **12**
 
 | Etapa | Feitas / Total | Situação |
 |---|---|---|
 | A. Fundação do processo | 3 / 3 | Concluída |
 | B. Verificação do que existe | 3 / 3 | Concluída |
 | C. MVP jogável (local) | 5 / 9 | Liberada |
-| D. Servidor e banco (Supabase) | 0 / 5 | Aguarda C |
+| D. Servidor e banco (Supabase) | 1 / 9 | Liberada |
 | E. Estrutura e mercado (paralela) | 0 / 3 | Liberada |
 | F. Lançamento e receita | 0 / 3 | Aguarda C |
 
@@ -55,10 +55,14 @@
 
 | ID | Tarefa | Dono | Estado | Quando |
 |---|---|---|---|---|
-| D0a | Criar conta e projeto no Supabase (com 2FA) e colocar as chaves em .env.local e na Vercel. Nunca no chat | FUNDADOR | ⏳ A FAZER | Depois de aprovar D1; antes de D2a |
-| D1 | Arquitetura Supabase (docs/arquitetura/BANCO_DE_DADOS.md) com cenários de custo e recomendação | CLAUDE + FUNDADOR | 🔄 EM ANDAMENTO | Documento pronto; falta a sua aprovação |
-| D2 | Contas e save no banco; ouro, itens, drops e resultado de lutas decididos no servidor (começa por prova de conceito D2a) | CLAUDE | ⏳ A FAZER | Depois de D0a; antes de qualquer pagamento |
-| D3 | Ranking e Família reais (jogadores de verdade) | CLAUDE | ⏳ A FAZER | Depois de D2 |
+| D0a | Criar conta e projeto no Supabase (2FA), rodar a migração 0001 no SQL Editor e colocar as chaves em .env.local e na Vercel. Nunca no chat (passo a passo no chat) | FUNDADOR | ⏳ A FAZER | Agora; destrava D2a em diante |
+| D1 | Arquitetura Supabase (docs/arquitetura/BANCO_DE_DADOS.md) com cenários de custo e recomendação (nível 0) | CLAUDE + FUNDADOR | ✅ FEITO | Aprovado em 2026-11-11 com as recomendações (login e-mail e senha primeiro; Google depois; saves locais descartados; lógica nas funções da Vercel) |
+| D2a | Migração 0001 (tabela de jogadores, RLS, visão pública) em supabase/migrations. Pronto = rodou no projeto real e o teste de RLS prova que um jogador não lê nem grava dado de outro (nível 0) | CLAUDE | 🔄 EM ANDAMENTO | SQL escrito, ainda NÃO rodou em banco real; falta D0a |
+| D2b | Criar conta e entrar (e-mail e senha) dentro do jogo; sem as chaves o jogo segue em modo local | CLAUDE | ⏳ A FAZER | Depois de D0a e D2a |
+| D2c | Personagem e progresso salvos no banco por função do servidor (Vercel), nunca direto do navegador | CLAUDE | ⏳ A FAZER | Depois de D2b |
+| D2d | Ver outros jogadores reais (ranking real) na aba Ranking | CLAUDE | ⏳ A FAZER | Depois de D2c |
+| D2 | Ações do jogo (missões, duelos, loja, drops, energia) decididas no servidor, à prova de trapaça | CLAUDE | ⏳ A FAZER | Depois de D2c; antes de qualquer pagamento |
+| D3 | Famílias reais (jogadores de verdade) | CLAUDE | ⏳ A FAZER | Depois de D2d |
 | D4 | Antifraude do produto: limites, rate limit, auditoria de transações, contas duplicadas | CLAUDE | ⏳ A FAZER | Depois de D2, antes de abrir ao público |
 
 ### Etapa E: Estrutura e mercado (paralela)
