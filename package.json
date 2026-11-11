@@ -12,7 +12,8 @@
     "dev": "vite",
     "build": "vite build",
     "plano": "node docs/plano/gerar.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:rls": "node --env-file=.env.local supabase/tests/rls-check.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.13.1",

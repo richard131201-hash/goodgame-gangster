@@ -25,7 +25,10 @@ Jogo de navegador de gângsteres, nostálgico (era Goodgame Gangster), meta de r
 | Nome | **Corrigido (C4):** título da aba e tela de criação dizem "Mobster Rise". Comentários internos e a chave do save ainda têm o nome antigo (jogador não vê) | `index.html` |
 
 ## Banco de dados (2026-11-11)
-- Nenhum projeto Supabase existe ainda. Falta D0a (você).
+- **Verificado no banco real em 2026-11-11 (nível 2):** projeto Supabase existe; tabela `players` e visão `public_players` existem; `npm run test:rls` passou **15 de 15** com dois usuários de teste (apagados no fim): visitante sem login não lê nada; jogador lê só a própria linha completa; vê os outros só pela visão pública, sem o campo `save`; não consegue alterar, criar nem apagar jogador direto (erro 403); dados intactos; limpeza completa.
+- Chave pública no formato novo (`sb_publishable_`), aceita pelo Supabase. Chave secreta no formato novo (`sb_secret_`), sem prefixo `VITE_`. Valores nunca foram exibidos.
+- Login por e-mail está ligado e a confirmação de e-mail está desligada (só para testes).
+- **Não verificado:** as variáveis da Vercel (sem acesso ao painel); o login pelo jogo (a tela ainda não existe); backups do plano.
 - `supabase/migrations/001_players.sql` escrito (tabela `players`, RLS, visão `public_players`). O fundador disse ter rodado no Supabase (salvo lá como "001"); **eu ainda não verifiquei no banco**. Não há Supabase CLI, Docker nem Postgres neste computador, então só dá para provar no projeto real.
 - `.gitignore` não ignorava `.env`; corrigido e provado com `git check-ignore`.
 - O Supabase mostrará um alerta de "Security Definer View" para `public_players`. É intencional: a visão expõe só colunas públicas.
