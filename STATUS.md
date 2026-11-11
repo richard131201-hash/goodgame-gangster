@@ -26,7 +26,7 @@ Jogo de navegador de gângsteres, nostálgico (era Goodgame Gangster), meta de r
 
 ## Banco de dados (2026-11-11)
 - Nenhum projeto Supabase existe ainda. Falta D0a (você).
-- `supabase/migrations/0001_players.sql` escrito (tabela `players`, RLS, visão `public_players`). **Nunca rodou em banco real.** Não há Supabase CLI, Docker nem Postgres neste computador, então só dá para provar no projeto real.
+- `supabase/migrations/001_players.sql` escrito (tabela `players`, RLS, visão `public_players`). O fundador disse ter rodado no Supabase (salvo lá como "001"); **eu ainda não verifiquei no banco**. Não há Supabase CLI, Docker nem Postgres neste computador, então só dá para provar no projeto real.
 - `.gitignore` não ignorava `.env`; corrigido e provado com `git check-ignore`.
 - O Supabase mostrará um alerta de "Security Definer View" para `public_players`. É intencional: a visão expõe só colunas públicas.
 

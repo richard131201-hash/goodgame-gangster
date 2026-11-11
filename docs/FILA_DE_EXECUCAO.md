@@ -4,8 +4,8 @@
 
 | # | ID | Tarefa | Dono | Situação | Por que nesta posição |
 |---|---|---|---|---|---|
-| 1 | D0a | Criar conta e projeto no Supabase (2FA), rodar a migração 0001 no SQL Editor e colocar as chaves em .env.local e na Vercel. Nunca no chat (passo a passo no chat) | FUNDADOR | 🟢 liberada | Sua parte, a mais urgente: sem o projeto no Supabase o banco não sai do papel (passo a passo no chat). |
-| 2 | D2a | Migração 0001 (tabela de jogadores, RLS, visão pública) em supabase/migrations. Pronto = rodou no projeto real e o teste de RLS prova que um jogador não lê nem grava dado de outro | CLAUDE | 🟢 liberada | SQL já escrito; falta rodar no banco real e provar a segurança. |
+| 1 | D0a | Criar conta e projeto no Supabase (2FA), rodar a migração 001 no SQL Editor e colocar as chaves em .env.local e na Vercel. Nunca no chat (passo a passo no chat) | FUNDADOR | 🟢 liberada | Sua parte, a mais urgente: sem o projeto no Supabase o banco não sai do papel (passo a passo no chat). |
+| 2 | D2a | Migração 001 (tabela de jogadores, RLS, visão pública) em supabase/migrations. Pronto = rodou no projeto real e o teste de RLS prova que um jogador não lê nem grava dado de outro | CLAUDE | 🟢 liberada | SQL já escrito; falta rodar no banco real e provar a segurança. |
 | 3 | D2b | Criar conta e entrar (e-mail e senha) dentro do jogo; sem as chaves o jogo segue em modo local | CLAUDE | 🔒 bloqueada | Conta de verdade dentro do jogo. |
 | 4 | D2c | Personagem e progresso salvos no banco por função do servidor (Vercel), nunca direto do navegador | CLAUDE | 🔒 bloqueada | Progresso salvo no banco. |
 | 5 | D2d | Ver outros jogadores reais (ranking real) na aba Ranking | CLAUDE | 🔒 bloqueada | Ver outros jogadores no Ranking, para testar. |

@@ -1,4 +1,4 @@
--- ===== INICIO DA MIGRACAO 0001 (0001_players.sql) =====
+-- ===== INICIO DA MIGRACAO 001 (001_players.sql) =====
 -- Jogadores reais do Mobster Rise. FONTE DE VERDADE do esquema: este arquivo (git).
 -- Aplicar uma vez no Supabase (SQL Editor: colar tudo e rodar). Nunca editar o banco pelo painel.
 --
@@ -55,4 +55,4 @@ create or replace view public.public_players as
 revoke all on public.public_players from anon, authenticated;
 grant select on public.public_players to authenticated;
 
--- ===== FIM DA MIGRACAO 0001 (0001_players.sql) =====
+-- ===== FIM DA MIGRACAO 001 (001_players.sql) =====

@@ -40,8 +40,8 @@ Observação: com 7 minutos por ponto, uma missão de 15 energia custa 1h45 de e
 
 | ID | Regra | Valor | Origem | Onde | Teste |
 |---|---|---|---|---|---|
-| R-SQL-1 | Migrações numeradas em ordem | Arquivos `supabase/migrations/NNNN_descricao.sql` (0001, 0002, ...), sem pular número. O número aparece no **início** e no **fim** do arquivo: `-- ===== INICIO DA MIGRACAO NNNN (arquivo) =====` e `-- ===== FIM DA MIGRACAO NNNN (arquivo) =====` | Fundador, 2026-11-11 | `supabase/migrations/` | `tests/unit/migrations.test.ts` |
-| R-SQL-2 | Migração já rodada não se edita | Para mudar algo, cria-se a próxima (0002, ...). Exceção: só comentário/marcador, que não altera o banco | Claude, 2026-11-11 (a confirmar) | `supabase/migrations/` | sem teste |
+| R-SQL-1 | Migrações numeradas em ordem | Arquivos `supabase/migrations/NNN_descricao.sql` (001, 002, ...), sem pular número. O número aparece no **início** e no **fim** do arquivo: `-- ===== INICIO DA MIGRACAO NNN (arquivo) =====` e `-- ===== FIM DA MIGRACAO NNN (arquivo) =====` | Fundador, 2026-11-11 | `supabase/migrations/` | `tests/unit/migrations.test.ts` |
+| R-SQL-2 | Migração já rodada não se edita | Para mudar algo, cria-se a próxima (002, ...). Exceção: só comentário/marcador, que não altera o banco | Claude, 2026-11-11 (a confirmar) | `supabase/migrations/` | sem teste |
 | R-SQL-3 | Quem aplica | O fundador cola cada migração no SQL Editor, na ordem, e avisa "Success" ou o erro | Claude, 2026-11-11 (a confirmar) | processo | n/a |
 
 ## Produto
