@@ -4,8 +4,8 @@
 
 | # | ID | Tarefa | Dono | Situação | Por que nesta posição |
 |---|---|---|---|---|---|
-| 1 | D2b | Criar conta e entrar (e-mail e senha) dentro do jogo; sem as chaves o jogo segue em modo local | CLAUDE | 🟢 liberada | Conta de verdade dentro do jogo. |
-| 2 | D2c | Personagem e progresso salvos no banco por função do servidor (Vercel), nunca direto do navegador | CLAUDE | 🔒 bloqueada | Progresso salvo no banco. |
+| 1 | C10 | Layout do jogo no celular: a página transborda na horizontal (413 px numa tela de 390). Pronto = sem rolagem lateral em 360 a 430 px | CLAUDE | 🟢 liberada | O jogo transborda no celular; quem vem de celular vê a página cortada. |
+| 2 | D2c | Personagem e progresso salvos no banco por função do servidor (Vercel), nunca direto do navegador | CLAUDE | 🟢 liberada | Progresso salvo no banco. |
 | 3 | D2d | Ver outros jogadores reais (ranking real) na aba Ranking | CLAUDE | 🔒 bloqueada | Ver outros jogadores no Ranking, para testar. |
 | 4 | C6 | Balanceamento do início (duelo de nível 1 perdido; inimigo de missão com 935 de vida) usando o simulador | CLAUDE | 🟢 liberada | Primeira impressão: o início precisa ser justo e divertido. |
 | 5 | C7 | Tutorial mínimo e teste de 30 a 60 minutos seguidos sem erro nem beco sem saída | CLAUDE | 🔒 bloqueada | Fecha o MVP: prova de 30 a 60 minutos de jogo seguido. |

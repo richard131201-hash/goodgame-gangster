@@ -33,6 +33,19 @@ Jogo de navegador de gângsteres, nostálgico (era Goodgame Gangster), meta de r
 - `.gitignore` não ignorava `.env`; corrigido e provado com `git check-ignore`.
 - O Supabase mostrará um alerta de "Security Definer View" para `public_players`. É intencional: a visão expõe só colunas públicas.
 
+## Contas (D2b, 2026-11-11)
+Provado no localhost contra o Supabase real (nível 1 no site; as contas de teste foram apagadas, 0 contas e 0 linhas em `players` no fim):
+- Criar conta pela tela (digitando) cria o usuário de verdade no banco (confirmado pela API de administração).
+- Sair, entrar com senha errada ("E-mail ou senha incorretos."), entrar certo e voltar ao mesmo personagem.
+- E-mail repetido é recusado ("Já existe uma conta com esse e-mail").
+- Segunda conta no mesmo navegador não herda o personagem da primeira (save por conta).
+- Sessão persiste ao recarregar a página (não pede login de novo).
+- Validações em português (e-mail vazio, inválido, senha curta). 10 testes automáticos novos (`auth.test.ts`).
+- A chave secreta **não** está no pacote do navegador (busca pelo valor real: não encontrado). O texto `sb_secret_` aparece só como código da biblioteca.
+- Os 2 erros de console (400 e 422) eram dos testes negativos de propósito.
+- **Achado:** o jogo transborda na horizontal no celular (413 px numa tela de 390). Já existia antes; tarefa C10.
+- **Ainda não verificado:** o login no site da Vercel (depende das variáveis de lá); celular real; confirmação por e-mail; recuperação de senha (não existe).
+
 ## Jogado no localhost (2026-11-11)
 - Criação de personagem funciona.
 - As 8 abas abrem sem erro de console.

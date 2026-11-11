@@ -44,6 +44,16 @@ Observação: com 7 minutos por ponto, uma missão de 15 energia custa 1h45 de e
 | R-SQL-2 | Migração já rodada não se edita | Para mudar algo, cria-se a próxima (002, ...). Exceção: só comentário/marcador, que não altera o banco | Claude, 2026-11-11 (a confirmar) | `supabase/migrations/` | sem teste |
 | R-SQL-3 | Quem aplica | O fundador cola cada migração no SQL Editor, na ordem, e avisa "Success" ou o erro | Claude, 2026-11-11 (a confirmar) | processo | n/a |
 
+## Contas
+
+| ID | Regra | Valor | Origem | Onde no código | Teste |
+|---|---|---|---|---|---|
+| R-CONTA-1 | Senha | Mínimo de 8 caracteres ao criar conta | Claude, 2026-11-11 (a confirmar) | `src/web/authRules.ts` | `tests/unit/auth.test.ts` |
+| R-CONTA-2 | Save por conta | Cada conta tem o próprio save no navegador (chave `gangster_rpg_save_v1_<id da conta>`); contas no mesmo computador não se misturam | Claude, 2026-11-11 (a confirmar) | `src/web/saveKey.ts`, `state.ts` (`setAccount`) | `auth.test.ts` + provado no localhost |
+| R-CONTA-3 | Conta obrigatória quando há Supabase | Com as chaves configuradas, o jogo exige entrar. Sem as chaves, abre em modo local como antes. Não existe botão para "pular" o login | Claude, 2026-11-11 (a confirmar) | `src/web/main.ts` (`boot`), `supabaseClient.ts` | provado no localhost |
+| R-CONTA-4 | Confirmação de e-mail | Desligada só durante os testes. Tem de ser ligada antes de abrir ao público (E4) | Fundador (desligar nos testes), 2026-11-11 | painel do Supabase | sem teste |
+| R-CONTA-5 | Saves locais antigos | Não são migrados para a conta (decisão D1: descartar) | Fundador, 2026-11-11 | n/a | n/a |
+
 ## Produto
 
 | ID | Regra | Valor | Origem | Onde | Teste |

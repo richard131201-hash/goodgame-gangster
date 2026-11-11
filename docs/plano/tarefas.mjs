@@ -40,7 +40,7 @@ export const tarefas = [
   { id: 'D0a', etapa: 'D', titulo: 'Criar conta e projeto no Supabase (2FA), rodar a migração 001 no SQL Editor e colocar as chaves em .env.local e na Vercel. Nunca no chat (passo a passo no chat)', dono: 'FUNDADOR', estado: 'FEITO', nivel: 2, quando: 'Feito em 2026-11-11: projeto, SQL 001 e .env.local verificados no banco real. As variáveis da Vercel NÃO foram verificadas (confirmar quando o jogo no ar usar o banco)', depende: [] },
   { id: 'D1', etapa: 'D', titulo: 'Arquitetura Supabase (docs/arquitetura/BANCO_DE_DADOS.md) com cenários de custo e recomendação', dono: 'CLAUDE + FUNDADOR', estado: 'FEITO', nivel: 0, quando: 'Aprovado em 2026-11-11 com as recomendações (login e-mail e senha primeiro; Google depois; saves locais descartados; lógica nas funções da Vercel)', depende: [] },
   { id: 'D2a', etapa: 'D', titulo: 'Migração 001 (tabela de jogadores, RLS, visão pública) em supabase/migrations. Pronto = rodou no projeto real e o teste de RLS prova que um jogador não lê nem grava dado de outro', dono: 'CLAUDE', estado: 'FEITO', nivel: 2, quando: 'Feito em 2026-11-11: 15 de 15 verificações de segurança passaram no banco real (npm run test:rls)', depende: [] },
-  { id: 'D2b', etapa: 'D', titulo: 'Criar conta e entrar (e-mail e senha) dentro do jogo; sem as chaves o jogo segue em modo local', dono: 'CLAUDE', estado: 'A_FAZER', quando: 'Depois de D0a e D2a', depende: ['D0a', 'D2a'] },
+  { id: 'D2b', etapa: 'D', titulo: 'Criar conta e entrar (e-mail e senha) dentro do jogo; sem as chaves o jogo segue em modo local', dono: 'CLAUDE', estado: 'FEITO', nivel: 1, quando: 'Feito em 2026-11-11: provado no localhost com o Supabase real (conta criada, sair, entrar, senha errada, e-mail repetido, segunda conta isolada, sessão persiste). Falta provar no site da Vercel', depende: ['D0a', 'D2a'] },
   { id: 'D2c', etapa: 'D', titulo: 'Personagem e progresso salvos no banco por função do servidor (Vercel), nunca direto do navegador', dono: 'CLAUDE', estado: 'A_FAZER', quando: 'Depois de D2b', depende: ['D2b'] },
   { id: 'D2d', etapa: 'D', titulo: 'Ver outros jogadores reais (ranking real) na aba Ranking', dono: 'CLAUDE', estado: 'A_FAZER', quando: 'Depois de D2c', depende: ['D2c'] },
   { id: 'D2', etapa: 'D', titulo: 'Ações do jogo (missões, duelos, loja, drops, energia) decididas no servidor, à prova de trapaça', dono: 'CLAUDE', estado: 'A_FAZER', quando: 'Depois de D2c; antes de qualquer pagamento', depende: ['D2c'] },
@@ -53,6 +53,8 @@ export const tarefas = [
   { id: 'E3', etapa: 'E', titulo: 'Escolher meio de pagamento (adulto responsável paga) e política de estorno', dono: 'FUNDADOR + CLAUDE', estado: 'A_FAZER', quando: 'Depois de D2', depende: ['D2'] },
 
   // ---- F ----
+  { id: 'C10', etapa: 'C', titulo: 'Layout do jogo no celular: a página transborda na horizontal (413 px numa tela de 390). Pronto = sem rolagem lateral em 360 a 430 px', dono: 'CLAUDE', estado: 'A_FAZER', quando: 'Antes de divulgar; achado em 2026-11-11 (já existia antes do login)', depende: ['C1'] },
+  { id: 'E4', etapa: 'E', titulo: 'Antes de abrir ao público: ligar a confirmação de e-mail no Supabase, configurar o e-mail de envio e a URL do site (Authentication)', dono: 'FUNDADOR + CLAUDE', estado: 'A_FAZER', quando: 'Antes de divulgar; hoje a confirmação está desligada só para testes', depende: [] },
   { id: 'F1', etapa: 'F', titulo: 'Teste fechado com poucos jogadores e coleta de feedback', dono: 'FUNDADOR + CLAUDE', estado: 'A_FAZER', quando: 'Depois de C7', depende: ['C7'] },
   { id: 'F2', etapa: 'F', titulo: 'Divulgação nostálgica (lista de espera, comunidades) só com demonstração real', dono: 'FUNDADOR', estado: 'A_FAZER', quando: 'Depois de F1', depende: ['F1'] },
   { id: 'F3', etapa: 'F', titulo: 'Loja paga ativa (pay to win com limite definido pelo simulador)', dono: 'CLAUDE', estado: 'A_FAZER', quando: 'Depois de D2, D4 e E3', depende: ['D2', 'D4', 'E3'] },
@@ -63,6 +65,7 @@ export const fila = [
   ['D0a', 'Sua parte, a mais urgente: sem o projeto no Supabase o banco não sai do papel (passo a passo no chat).'],
   ['D2a', 'SQL já escrito; falta rodar no banco real e provar a segurança.'],
   ['D2b', 'Conta de verdade dentro do jogo.'],
+  ['C10', 'O jogo transborda no celular; quem vem de celular vê a página cortada.'],
   ['D2c', 'Progresso salvo no banco.'],
   ['D2d', 'Ver outros jogadores no Ranking, para testar.'],
   ['C2', 'Sem regeneração de energia o jogador trava em poucas missões: bloqueia qualquer teste longo.'],

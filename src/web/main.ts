@@ -15,6 +15,8 @@ import {
 } from './paperdoll.js';
 import { sound } from './sound.js';
 import { msToNextEnergy } from './energy.js';
+import { cloudEnabled, supabase } from './supabaseClient.js';
+import { initAuthUi, showAuthScreen, signOutAccount } from './authUi.js';
 import { playWeaponAttackVisual, clearAllImpacts } from './animations.js';
 import { getWeaponSprite } from './weaponSprites.js';
 import {
@@ -56,8 +58,14 @@ let activeMatrixLevel = 1;
 // ========================================================
 // INITIALIZATION
 // ========================================================
-function initGame() {
+let gameInitialized = false;
+let bootStarted = false;
+
+/** Mostra o jogo para o save atual: criação de personagem se for novo, senão o perfil. */
+function enterGame() {
   const player = gameState.getPlayer();
+  const creation = document.getElementById('creation-modal');
+  if (creation) creation.style.display = 'none'; // não herdar modal aberto de outra conta
 
   if (!player.hasCreatedCharacter) {
     openCharacterCreationModal();
@@ -65,6 +73,13 @@ function initGame() {
     updateHUD();
     renderActiveTab('perfil');
   }
+}
+
+function initGame() {
+  if (gameInitialized) return;
+  gameInitialized = true;
+
+  enterGame();
 
   gameState.subscribe(() => {
     updateHUD();
@@ -72,6 +87,47 @@ function initGame() {
     const tabName = activeNav?.getAttribute('data-tab') || 'perfil';
     renderActiveTab(tabName);
   });
+}
+
+/** Login concluído (ou sessão já existente): carrega o save DESTA conta e abre o jogo. */
+function onLoggedIn(session: { user: { id: string; email?: string } }) {
+  gameState.setAccount(session.user.id);
+  document.body.classList.remove('auth-open');
+  const logout = document.getElementById('logout-btn');
+  if (logout) logout.title = session.user.email ? `Sair da conta (${session.user.email})` : 'Sair da conta';
+  if (gameInitialized) enterGame();
+  else initGame();
+}
+
+/**
+ * Ponto de entrada. Com Supabase configurado, exige conta. Sem as chaves (modo local),
+ * o jogo abre direto, como antes.
+ */
+async function boot() {
+  if (bootStarted) return;
+  bootStarted = true;
+
+  if (!cloudEnabled || !supabase) {
+    initGame();
+    return;
+  }
+
+  document.body.classList.add('auth-open'); // esconde o jogo até saber se há sessão
+  const logout = document.getElementById('logout-btn');
+  if (logout) {
+    logout.style.display = '';
+    logout.addEventListener('click', () => {
+      if (confirm('Sair da conta?')) void signOutAccount();
+    });
+  }
+  initAuthUi(onLoggedIn);
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === 'SIGNED_OUT') showAuthScreen();
+  });
+
+  const { data } = await supabase.auth.getSession();
+  if (data.session) onLoggedIn(data.session);
+  else showAuthScreen();
 }
 
 // ========================================================
@@ -1382,10 +1438,10 @@ document.getElementById('run-browser-sim-btn')?.addEventListener('click', () => 
 // START GAME RUNTIME
 // ========================================================
 window.addEventListener('DOMContentLoaded', () => {
-  initGame();
+  void boot();
 });
 
 // Run immediate in case DOM already loaded
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
-  initGame();
+  void boot();
 }

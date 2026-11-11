@@ -80,6 +80,7 @@
       <div class="hud-system-actions">
         <button id="audio-toggle-btn" class="hud-btn-icon" title="Ativar/Desativar Som">🔊</button>
         <button id="new-character-btn" class="hud-btn-outline" title="Criar Novo Personagem / Reiniciar">↺ Novo Gangster</button>
+        <button id="logout-btn" class="hud-btn-outline" style="display: none;" title="Sair da conta">⎋ Sair</button>
       </div>
     </header>
 
@@ -750,6 +751,42 @@
       </div>
     </div>
 
+  </div>
+
+  <!-- ============================================== -->
+  <!-- TELA DE ENTRAR / CRIAR CONTA (só com Supabase) -->
+  <!-- ============================================== -->
+  <div class="auth-screen" id="auth-screen" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <div class="auth-card">
+      <div class="auth-emblem" aria-hidden="true">♠</div>
+      <h1 class="auth-title" id="auth-title">Mobster Rise</h1>
+      <p class="auth-sub">Entre no submundo</p>
+
+      <div class="auth-tabs" role="tablist">
+        <button type="button" class="auth-tab active" id="auth-tab-login" role="tab" aria-selected="true">Entrar</button>
+        <button type="button" class="auth-tab" id="auth-tab-signup" role="tab" aria-selected="false">Criar conta</button>
+      </div>
+
+      <form id="auth-form" novalidate>
+        <label class="auth-label" for="auth-email">E-mail</label>
+        <input class="auth-input" id="auth-email" type="email" inputmode="email" autocomplete="email" maxlength="120" placeholder="voce@exemplo.com" />
+
+        <label class="auth-label" for="auth-password">Senha</label>
+        <input class="auth-input" id="auth-password" type="password" autocomplete="current-password" maxlength="72" placeholder="Sua senha" />
+        <p class="auth-hint" id="auth-hint"></p>
+
+        <label class="auth-check">
+          <input type="checkbox" id="auth-show-password" aria-label="Mostrar senha" /> Mostrar senha
+        </label>
+
+        <p class="auth-error" id="auth-error" role="alert" aria-live="assertive"></p>
+        <p class="auth-info" id="auth-info" role="status" aria-live="polite"></p>
+
+        <button type="submit" class="arena-btn-primary auth-submit" id="auth-submit">Entrar</button>
+      </form>
+
+      <p class="auth-fine">Jogo recomendado para maiores de 14 anos.</p>
+    </div>
   </div>
 
   <script type="module" src="/src/web/main.ts"></script>

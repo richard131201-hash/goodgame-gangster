@@ -3,6 +3,7 @@ import type { CharacterAppearance } from './paperdoll.js';
 import { DEFAULT_CARRASCO, DEFAULT_MURALHA, DEFAULT_MALANDRO } from './paperdoll.js';
 import { SHOP_ITEMS, MAFIA_FAMILIES_LIST, type GameItem } from './gameData.js';
 import { regenEnergy } from './energy.js';
+import { saveKeyFor } from './saveKey.js';
 
 export interface PlayerStatsRecord {
   duelsWon: number;
@@ -44,7 +45,7 @@ export interface PlayerState {
   statsRecord: PlayerStatsRecord;
 }
 
-const STORAGE_KEY = 'gangster_rpg_save_v1';
+// A chave do save vem de saveKey.ts (uma por conta).
 
 export function calculateXpForLevel(lvl: number): number {
   return Math.round(100 * Math.pow(1.24, lvl - 1));
@@ -122,6 +123,18 @@ export function createNewPlayer(
 export class GameStateManager {
   private player: PlayerState;
   private listeners: (() => void)[] = [];
+  private storageKey: string = saveKeyFor(null);
+
+  /**
+   * Troca a conta ativa e carrega o save DESSA conta (R-CONTA-2).
+   * Não grava nada na chave da conta anterior nem na nova antes de carregar.
+   */
+  setAccount(userId: string | null) {
+    this.storageKey = saveKeyFor(userId);
+    this.player = this.loadFromStorage();
+    this.tickEnergy();
+    this.listeners.forEach(fn => fn());
+  }
 
   constructor() {
     this.player = this.loadFromStorage();
@@ -164,7 +177,7 @@ export class GameStateManager {
 
   private loadFromStorage(): PlayerState {
     try {
-      const data = localStorage.getItem(STORAGE_KEY);
+      const data = localStorage.getItem(this.storageKey);
       if (data) {
         const parsed = JSON.parse(data);
         if (parsed && parsed.hasCreatedCharacter) {
@@ -212,14 +225,14 @@ export class GameStateManager {
 
   saveToStorage() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.player));
+      localStorage.setItem(this.storageKey, JSON.stringify(this.player));
     } catch (e) {
       console.error('Falha ao persistir save local:', e);
     }
   }
 
   resetAllProgress() {
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(this.storageKey);
     this.player = this.loadFromStorage();
     this.notify();
   }
