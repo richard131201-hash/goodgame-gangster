@@ -10,7 +10,9 @@
     "sim": "tsx src/sim/cli.ts",
     "duel": "tsx src/sim/duel.ts",
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "plano": "node docs/plano/gerar.mjs",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/node": "^22.13.1",

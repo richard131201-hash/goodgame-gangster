@@ -50,7 +50,8 @@ export function executeStrike(
     const astTarget = defender.stats.effectiveAstuciaPoints;
     const ratio = (astSelf + astTarget > 0) ? (astSelf / (astSelf + astTarget)) : 0.5;
 
-    const openingCfg = attackerStyleConfig.passives.openingStrike;
+    // Só o Carrasco tem Golpe de Abertura (o `if` acima garante o estilo).
+    const openingCfg = config.styles.carrasco.passives.openingStrike;
     openingStrikeBonus = openingCfg.min + (openingCfg.max - openingCfg.min) * ratio;
   }
 

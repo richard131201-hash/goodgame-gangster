@@ -1,0 +1,21 @@
+# Registro de decisões e mudanças
+
+Mais recente no topo. Cada decisão: data, o que, quem decidiu.
+
+## 2026-11-11
+- **Produto:** nome **Mobster Rise**. Jogo nostálgico (era Goodgame Gangster), meta de ganhar dinheiro e atrair muitos jogadores. Pay to win moderado. *(fundador)*
+- **MVP primeiro:** a meta atual é um MVP jogável. Nível 1 (local) basta para o MVP; para cobrar, o mínimo é nível 2. *(fundador)*
+- **Quem faz:** o Claude faz tudo (código, telas, plano). Não há Antigravity. *(fundador)*
+- **Banco e servidor:** Supabase. Dados dos jogadores guardados no banco, do jeito mais seguro que o Claude recomendar. O servidor é a fonte da verdade para ouro, itens, drops e lutas. *(fundador)*
+- **Público:** 14+. *(fundador)*
+- **Pagamento:** o jogo não cobra menor de idade. Quem paga é o adulto responsável, com o próprio meio de pagamento, via provedor. *(fundador)*
+- **Sem lootbox:** só loja e drops em missões, lutas com chefões e wanted. *(fundador)*
+- **LGPD e termos:** o fundador entende que LGPD não se aplica a jogo. O Claude registra a divergência: ao criar contas haverá dados pessoais (e-mail, apelido, histórico de compras), então termos e privacidade entram em E2 como "a confirmar com profissional". O Claude seguirá o princípio de coletar o mínimo de dados. *(divergência registrada, decisão final do fundador)*
+- **Processo:** plano mestre gerado por `docs/plano/tarefas.mjs` (`npm run plano`). Commit e push só por pedido e por caminho de arquivo. *(fundador)*
+
+- **Push:** o fundador pediu "faça o push após finalizar". Entendido como: concluir C2, C3 e C4, testar, commitar por caminho de arquivo e dar push na `master`. `.gitignore` e `vercel.json` (alterações do fundador) ficaram de fora do commit. *(fundador)*
+- **Energia:** 1 ponto a cada 120 s é hipótese inicial, revisada em C6. *(Claude, a confirmar)*
+
+## Mudanças de arquivos
+- 2026-11-11 (C2, C3, C4): novo `src/web/energy.ts` e `tests/unit/energy.test.ts`; alterados `src/web/state.ts`, `src/web/main.ts`, `src/engine/strike.ts`, `index.html`, `package.json` (script `typecheck`).
+- 2026-11-11: criados `docs/plano/tarefas.mjs`, `docs/plano/gerar.mjs`, `docs/PLANO_MESTRE.md`, `docs/FILA_DE_EXECUCAO.md`, `STATUS.md`, `DECISOES.md`, `CLAUDE.md`, `.claude/launch.json`. Script `plano` no `package.json`. Nada commitado.

@@ -1,7 +1,8 @@
 import type { StyleId, Points } from '../engine/types.js';
 import type { CharacterAppearance } from './paperdoll.js';
 import { DEFAULT_CARRASCO, DEFAULT_MURALHA, DEFAULT_MALANDRO } from './paperdoll.js';
-import { SHOP_ITEMS, type GameItem } from './gameData.js';
+import { SHOP_ITEMS, MAFIA_FAMILIES_LIST, type GameItem } from './gameData.js';
+import { regenEnergy } from './energy.js';
 
 export interface PlayerStatsRecord {
   duelsWon: number;
@@ -22,6 +23,8 @@ export interface PlayerState {
   gold: number;
   energy: number;
   maxEnergy: number;
+  /** Marca de tempo (ms) da última regeneração de energia. Ausente em saves antigos. */
+  lastEnergyAt?: number;
   respect: number;
 
   points: Points; // Total base + level points
@@ -122,6 +125,25 @@ export class GameStateManager {
 
   constructor() {
     this.player = this.loadFromStorage();
+    this.tickEnergy(); // aplica a energia regenerada enquanto o jogador esteve fora
+  }
+
+  /**
+   * Regenera energia conforme o tempo real. Salva, mas não notifica ouvintes
+   * (quem chama atualiza só o HUD, para não redesenhar a aba aberta).
+   * Retorna true se a energia mudou.
+   */
+  tickEnergy(now: number = Date.now()): boolean {
+    const p = this.player;
+    if (!p.hasCreatedCharacter) return false;
+    const family = p.familyId ? MAFIA_FAMILIES_LIST.find(f => f.id === p.familyId) : undefined;
+    const bonus = family ? family.buffs.energyRegenBonusPct : 0;
+    const r = regenEnergy(p.energy, p.maxEnergy, p.lastEnergyAt, now, bonus);
+    const changed = r.energy !== p.energy || r.lastAt !== p.lastEnergyAt;
+    p.energy = r.energy;
+    p.lastEnergyAt = r.lastAt;
+    if (changed) this.saveToStorage();
+    return changed;
   }
 
   getPlayer(): PlayerState {
@@ -253,7 +275,10 @@ export class GameStateManager {
   }
 
   consumeEnergy(amount: number): boolean {
+    this.tickEnergy(); // credita o que já regenerou antes de cobrar
     if (this.player.energy < amount) return false;
+    // Saindo de energia cheia, o contador de regeneração começa agora.
+    if (this.player.energy >= this.player.maxEnergy) this.player.lastEnergyAt = Date.now();
     this.player.energy -= amount;
     this.notify();
     return true;

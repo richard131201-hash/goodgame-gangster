@@ -14,6 +14,7 @@ import {
   type CharacterAppearance,
 } from './paperdoll.js';
 import { sound } from './sound.js';
+import { msToNextEnergy } from './energy.js';
 import { playWeaponAttackVisual, clearAllImpacts } from './animations.js';
 import { getWeaponSprite } from './weaponSprites.js';
 import {
@@ -90,7 +91,7 @@ function updateHUD() {
   document.getElementById('hud-xp-fill')!.style.width = `${xpPct}%`;
   document.getElementById('hud-xp-text')!.textContent = `${p.xp} / ${p.xpToNextLevel} XP`;
 
-  document.getElementById('hud-energy')!.textContent = `${p.energy} / ${p.maxEnergy}`;
+  updateEnergyHUD();
   document.getElementById('hud-cash')!.textContent = `$${p.cash.toLocaleString()}`;
   document.getElementById('hud-gold')!.textContent = p.gold.toString();
   document.getElementById('hud-respect')!.textContent = p.respect.toLocaleString();
@@ -101,6 +102,25 @@ function updateHUD() {
     thumb.innerHTML = renderPaperdollSVG(p.appearance, { width: 52, height: 60 });
   }
 }
+
+// ENERGY: texto do HUD (com contagem até o próximo ponto) e regeneração por tempo
+function updateEnergyHUD() {
+  const p = gameState.getPlayer();
+  const el = document.getElementById('hud-energy');
+  if (!el || !p.hasCreatedCharacter) return;
+  const family = p.familyId ? MAFIA_FAMILIES_LIST.find(f => f.id === p.familyId) : undefined;
+  const bonus = family ? family.buffs.energyRegenBonusPct : 0;
+  const ms = msToNextEnergy(p.energy, p.maxEnergy, p.lastEnergyAt, Date.now(), bonus);
+  const secs = Math.ceil(ms / 1000);
+  const clock = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
+  el.textContent = `${p.energy} / ${p.maxEnergy}`;
+  el.title = ms > 0 ? `Próxima energia em ${clock}` : 'Energia cheia';
+}
+
+setInterval(() => {
+  gameState.tickEnergy();
+  updateEnergyHUD();
+}, 1000);
 
 // ENERGY REFILL BUTTON
 document.getElementById('quick-refill-energy-btn')?.addEventListener('click', () => {
