@@ -4,8 +4,8 @@
 
 ## Onde estamos
 
-- Tarefas: **32** em **6** etapas
-- Feitas: **15** (com nível 2 ou mais registrado: **4**)
+- Tarefas: **33** em **6** etapas
+- Feitas: **16** (com nível 2 ou mais registrado: **4**)
 - Em andamento: **0**
 - Liberadas para começar: **7**
 - Bloqueadas por outra tarefa ou etapa: **10**
@@ -14,7 +14,7 @@
 |---|---|---|
 | A. Fundação do processo | 3 / 3 | Concluída |
 | B. Verificação do que existe | 3 / 3 | Concluída |
-| C. MVP jogável (local) | 5 / 10 | Liberada |
+| C. MVP jogável (local) | 6 / 11 | Liberada |
 | D. Servidor e banco (Supabase) | 4 / 9 | Liberada |
 | E. Estrutura e mercado (paralela) | 0 / 4 | Liberada |
 | F. Lançamento e receita | 0 / 3 | Aguarda C |
@@ -50,6 +50,7 @@
 | C7 | Tutorial mínimo e teste de 30 a 60 minutos seguidos sem erro nem beco sem saída | CLAUDE | ⏳ A FAZER | Depois de C2, C4, C5 e C6 |
 | C8 | Atualizar o README (descreve só a Fase 1) | CLAUDE | ⏳ A FAZER | Depois de C7 |
 | C9 | Dependências com alerta no npm audit (zod alto; tinypool crítico): atualizar em cópia isolada com testes | CLAUDE | ⏳ A FAZER | Adiado para o início de D2 (zod passa a validar dado de fora); risco atual baixo, ver DECISOES.md |
+| C11 | Margem preta em % no desktop (R-LAYOUT-1), abas em 2 linhas e perfil em 1 coluna nos desktops menores (nível 1) | CLAUDE | ✅ FEITO | Feito em 2026-11-11: medido de 1024 a 2560 px (6% de cada lado) |
 | C10 | Layout do jogo no celular: a página transborda na horizontal (413 px numa tela de 390). Pronto = sem rolagem lateral em 360 a 430 px | CLAUDE | ⏳ A FAZER | Antes de divulgar; achado em 2026-11-11 (já existia antes do login) |
 
 ### Etapa D: Servidor e banco (Supabase)

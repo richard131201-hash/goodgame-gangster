@@ -54,6 +54,15 @@ Observação: com 7 minutos por ponto, uma missão de 15 energia custa 1h45 de e
 | R-CONTA-4 | Confirmação de e-mail | Desligada só durante os testes. Tem de ser ligada antes de abrir ao público (E4) | Fundador (desligar nos testes), 2026-11-11 | painel do Supabase | sem teste |
 | R-CONTA-5 | Saves locais antigos | Não são migrados para a conta (decisão D1: descartar) | Fundador, 2026-11-11 | n/a | n/a |
 
+## Layout
+
+| ID | Regra | Valor | Origem | Onde no código | Teste |
+|---|---|---|---|---|---|
+| R-LAYOUT-1 | Margem preta do jogo no desktop | O jogo não ocupa a tela toda: margem preta padrão em %, **igual em todo desktop** (a partir de 1024 px). Valor: **6% de cada lado** e 2% em cima e embaixo. Para mudar, só as variáveis `--game-margin` e `--game-margin-v` | Fundador (a regra); 6% e 2% escolhidos pelo Claude (a confirmar) | `src/web/style.css` (fim do arquivo) | `tests/unit/layout.test.ts` + medido no navegador de 1024 a 2560 px |
+| R-LAYOUT-2 | Sem limite fixo de largura no desktop | A margem é sempre em %; em telas muito largas o jogo se estica junto | Claude, 2026-11-11 (a confirmar) | `style.css` | `layout.test.ts` |
+| R-LAYOUT-3 | Abas em 2 linhas quando faltar espaço | Em desktops menores as 8 abas quebram em 2 linhas, nunca somem atrás de rolagem. Perfil vira 1 coluna até 1240 px | Claude, 2026-11-11 (a confirmar) | `style.css` | medido no navegador |
+| R-LAYOUT-4 | Abaixo de 1024 px (tablet e celular) | Sem margem preta; o layout continua como antes | Claude, 2026-11-11 | `style.css` | medido em 768 px |
+
 ## Produto
 
 | ID | Regra | Valor | Origem | Onde | Teste |

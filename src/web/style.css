@@ -2899,3 +2899,54 @@ body.auth-open #app { display: none; }
   .auth-card { padding: 22px 18px 18px; }
   .auth-title { font-size: 26px; }
 }
+
+/* ===================================================== */
+/* MARGEM PRETA DO JOGO (desktop)  — R-LAYOUT-1          */
+/* Regra do fundador: o jogo não ocupa a tela toda; há   */
+/* uma margem preta padrão, em %, igual em todo desktop. */
+/* Para ajustar, mude SÓ as duas variáveis abaixo.       */
+/* ===================================================== */
+:root {
+  --game-margin: 6%;   /* margem preta de cada lado, em % da largura da tela */
+  --game-margin-v: 2%; /* margem preta em cima e embaixo (% da largura, como o CSS manda) */
+}
+
+@media (min-width: 1024px) {
+  body {
+    background-color: #000;
+    background-image: none;
+  }
+
+  #app {
+    width: calc(100% - 2 * var(--game-margin));
+    max-width: none;
+    margin: var(--game-margin-v) auto;
+    background-color: var(--bg-primary);
+    background-image:
+      radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.08) 0%, transparent 60%),
+      radial-gradient(circle at 10% 90%, rgba(231, 76, 60, 0.06) 0%, transparent 40%),
+      radial-gradient(circle at 90% 90%, rgba(52, 152, 219, 0.06) 0%, transparent 40%);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
+  }
+
+  /* Com a margem, a área do jogo ficou mais estreita: as 8 abas quebram em 2 linhas em vez de sumirem atrás de uma rolagem */
+  .game-main-nav {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+
+  .game-nav-tab {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: 10px 12px;
+  }
+}
+
+/* Perfil em 1 coluna nos desktops menores, onde o miolo de 3 colunas ficaria apertado com a margem */
+@media (min-width: 1024px) and (max-width: 1240px) {
+  .profile-layout-grid {
+    grid-template-columns: 1fr;
+  }
+}
