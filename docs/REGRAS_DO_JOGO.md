@@ -70,11 +70,12 @@ Observação: com 7 minutos por ponto, uma missão de 15 energia custa 1h45 de e
 
 | ID | Regra | Valor | Origem | Onde no código | Teste |
 |---|---|---|---|---|---|
-| R-LAYOUT-1 | Margem preta do jogo no desktop | O jogo não ocupa a tela toda: margem preta padrão em %, **igual em todo desktop** (a partir de 1024 px). Valor: **6% de cada lado** e 2% em cima e embaixo. Para mudar, só as variáveis `--game-margin` e `--game-margin-v` | Fundador (a regra); 6% e 2% escolhidos pelo Claude (a confirmar) | `src/web/style.css` (fim do arquivo) | `tests/unit/layout.test.ts` + medido no navegador de 1024 a 2560 px |
-| R-LAYOUT-1b | A margem vale também na tela de login | A imagem do login fica numa moldura com a mesma margem (6% e 2%), com preto ao redor. Em celular (menos de 1024 px) a imagem continua de ponta a ponta | Fundador, 2026-11-11 (escolheu "A": mesma margem no login) | `index.html` (`.auth-frame`), `style.css` | `layout.test.ts` + medido de 1024 a 2560 px |
-| R-LAYOUT-2 | Sem limite fixo de largura no desktop | A margem é sempre em %; em telas muito largas o jogo se estica junto | Claude, 2026-11-11 (a confirmar) | `style.css` | `layout.test.ts` |
-| R-LAYOUT-3 | Abas em 2 linhas quando faltar espaço | Em desktops menores as 8 abas quebram em 2 linhas, nunca somem atrás de rolagem. Perfil vira 1 coluna até 1240 px | Claude, 2026-11-11 (a confirmar) | `style.css` | medido no navegador |
+| R-LAYOUT-1 | ~~Margem preta do jogo no desktop (6% de cada lado)~~ **REVOGADA** | O fundador viu e disse que a tela inteira "estava melhor". Substituída pela R-LAYOUT-5 | Fundador, 2026-11-11 | (removida do `style.css`) | `layout.test.ts` garante que não volta |
+| R-LAYOUT-1b | ~~Margem também na tela de login~~ **REVOGADA** | O login voltou a ocupar a tela de ponta a ponta, sem moldura | Fundador, 2026-11-11 | `style.css` | `layout.test.ts` |
+| R-LAYOUT-2 | ~~Sem limite fixo de largura no desktop~~ **REVOGADA** | O #app voltou ao original: centralizado, com largura máxima de 1440 px | Fundador, 2026-11-11 | `style.css` (#app) | `layout.test.ts` |
+| R-LAYOUT-3 | Abas em 2 linhas quando faltar espaço | No desktop as 8 abas quebram em 2 linhas, nunca somem atrás de rolagem (mantida; o Perfil em 1 coluna foi removido junto com a margem) | Claude, 2026-11-11 (a confirmar) | `style.css` | `layout.test.ts` |
 | R-LAYOUT-4 | Abaixo de 1024 px (tablet e celular) | Sem margem preta; o layout continua como antes | Claude, 2026-11-11 | `style.css` | medido em 768 px |
+| R-LAYOUT-5 | **Tela cheia, sem margem preta nem moldura** | O jogo e o login ocupam a tela inteira, como antes da margem. O jogo mantém a largura máxima original de 1440 px, centralizada. Para ele ocupar monitores muito largos também, é só pedir | Fundador, 2026-11-11 | `src/web/style.css` | `tests/unit/layout.test.ts` |
 
 ## Produto
 
