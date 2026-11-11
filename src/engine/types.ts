@@ -1,5 +1,7 @@
 export type StyleId = 'carrasco' | 'muralha' | 'malandro';
 
+export type WeaponCategory = 'pistol' | 'shotgun' | 'smg' | 'rifle' | 'special';
+
 export interface Points {
   attack: number;
   life: number;
@@ -10,6 +12,11 @@ export interface Points {
 export interface Weapon {
   min: number;
   max: number;
+  id?: string;
+  name?: string;
+  category?: WeaponCategory;
+  icon?: string;
+  description?: string;
 }
 
 export interface FighterInput {
@@ -45,6 +52,9 @@ export interface FightEvent {
   rawDamage?: number;
   finalDamage: number;
   defenderHpRemaining: number;
+  weaponId?: string;
+  weaponCategory?: WeaponCategory;
+  weaponName?: string;
 }
 
 export interface FightResult {

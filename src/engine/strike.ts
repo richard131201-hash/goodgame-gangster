@@ -65,6 +65,9 @@ export function executeStrike(
       openingStrikeBonus,
       finalDamage: 0,
       defenderHpRemaining: defender.currentHp,
+      weaponId: attacker.input.weapon?.id,
+      weaponCategory: attacker.input.weapon?.category,
+      weaponName: attacker.input.weapon?.name,
     };
     return { event, damage: 0, hit: false };
   }
@@ -154,6 +157,9 @@ export function executeStrike(
     rawDamage,
     finalDamage,
     defenderHpRemaining: defender.currentHp,
+    weaponId: attacker.input.weapon?.id,
+    weaponCategory: attacker.input.weapon?.category,
+    weaponName: attacker.input.weapon?.name,
   };
 
   return { event, damage: finalDamage, hit: true, intimidationHitCap };

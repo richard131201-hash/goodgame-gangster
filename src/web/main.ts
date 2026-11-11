@@ -2,242 +2,1017 @@ import balanceJson from '../../config/balance.config.json' with { type: 'json' }
 import { validateConfig, type BalanceConfig } from '../engine/schema.js';
 import { derivedStats } from '../engine/stats.js';
 import { simulateFight } from '../engine/fight.js';
-import { getBuildPoints, type BuildType } from '../sim/builds.js';
+import { getBuildPoints } from '../sim/builds.js';
 import { runFullSimulation, type SimulationReport } from '../sim/analyzer.js';
 import type { StyleId, FighterInput, FightEvent } from '../engine/types.js';
+import { WEAPONS_CATALOG, getWeaponById, type WeaponDef } from '../engine/weapons.js';
 import {
   renderPaperdollSVG,
   DEFAULT_CARRASCO,
   DEFAULT_MURALHA,
   DEFAULT_MALANDRO,
-  generateRandomAppearance,
-  SKIN_TONES,
-  HAIR_COLORS,
-  EYE_COLORS,
-  CLOTHING_COLORS,
   type CharacterAppearance,
 } from './paperdoll.js';
 import { sound } from './sound.js';
+import { playWeaponAttackVisual, clearAllImpacts } from './animations.js';
+import { getWeaponSprite } from './weaponSprites.js';
+import {
+  gameState,
+  createNewPlayer,
+  getStatTrainingCost,
+  type PlayerState,
+} from './state.js';
+import {
+  SHOP_ITEMS,
+  MISSIONS_LIST,
+  generateRivalPool,
+  MAFIA_FAMILIES_LIST,
+  CURRENT_RAID_EVENT,
+  type GameItem,
+  type MissionDef,
+  type DuelRival,
+} from './gameData.js';
 
 const config: BalanceConfig = validateConfig(balanceJson);
 
-// FIGHTER CONFIGS & APPEARANCE
-interface FighterState {
-  style: StyleId;
-  level: number;
-  build: BuildType;
-  appearance: CharacterAppearance;
-}
-
-const fighterA: FighterState = {
-  style: 'carrasco',
-  level: 1,
-  build: 'equilibrado',
-  appearance: { ...DEFAULT_CARRASCO },
-};
-
-const fighterB: FighterState = {
-  style: 'muralha',
-  level: 1,
-  build: 'equilibrado',
-  appearance: { ...DEFAULT_MURALHA },
-};
-
-// ARENA RUNTIME STATE
+// ========================================================
+// COMBAT RUNTIME STATE (ARENA MODAL)
+// ========================================================
 let currentEvents: FightEvent[] = [];
 let eventIdx = 0;
 let fightTimer: number | null = null;
 let speedMs = 450;
-let customizerTargetSide: 'A' | 'B' = 'A';
+let activeCombatCallback: ((won: boolean) => void) | null = null;
+let currentCombatFighterA: FighterInput | null = null;
+let currentCombatFighterB: FighterInput | null = null;
+let combatSideAName = '';
+let combatSideBName = '';
+
+// SIMULATOR RUNTIME
 let cachedReport: SimulationReport | null = null;
 let activeMatrixLevel = 1;
 
-// SOUND TOGGLE
-const audioBtn = document.getElementById('audio-toggle-btn')!;
-audioBtn.addEventListener('click', () => {
-  const on = sound.toggle();
-  audioBtn.textContent = on ? '🔊' : '🔇';
-});
+// ========================================================
+// INITIALIZATION
+// ========================================================
+function initGame() {
+  const player = gameState.getPlayer();
 
-// NAVIGATION
-const navArenaBtn = document.getElementById('nav-arena-btn')!;
-const navCustomizerBtn = document.getElementById('nav-customizer-btn')!;
-const navSimBtn = document.getElementById('nav-sim-btn')!;
-const arenaView = document.getElementById('arena-view')!;
-const customizerView = document.getElementById('customizer-view')!;
-const simView = document.getElementById('sim-view')!;
+  if (!player.hasCreatedCharacter) {
+    openCharacterCreationModal();
+  } else {
+    updateHUD();
+    renderActiveTab('perfil');
+  }
 
-function switchView(view: 'arena' | 'customizer' | 'sim') {
-  navArenaBtn.classList.toggle('active', view === 'arena');
-  navCustomizerBtn.classList.toggle('active', view === 'customizer');
-  navSimBtn.classList.toggle('active', view === 'sim');
+  gameState.subscribe(() => {
+    updateHUD();
+    const activeNav = document.querySelector('.game-nav-tab.active') as HTMLElement | null;
+    const tabName = activeNav?.getAttribute('data-tab') || 'perfil';
+    renderActiveTab(tabName);
+  });
+}
 
-  arenaView.classList.toggle('active', view === 'arena');
-  customizerView.classList.toggle('active', view === 'customizer');
-  simView.classList.toggle('active', view === 'sim');
+// ========================================================
+// TOP HUD UPDATES
+// ========================================================
+function updateHUD() {
+  const p = gameState.getPlayer();
+  if (!p.hasCreatedCharacter) return;
 
-  if (view === 'customizer') {
-    renderCustomizerForm();
-  } else if (view === 'sim') {
-    renderDashboard(activeMatrixLevel);
+  document.getElementById('hud-name')!.textContent = p.name;
+  const badge = document.getElementById('hud-style-badge')!;
+  badge.textContent = p.style.toUpperCase();
+  badge.className = `gg-style-badge badge-${p.style}`;
+
+  document.getElementById('hud-lvl')!.textContent = p.level.toString();
+  const xpPct = Math.min(100, (p.xp / p.xpToNextLevel) * 100);
+  document.getElementById('hud-xp-fill')!.style.width = `${xpPct}%`;
+  document.getElementById('hud-xp-text')!.textContent = `${p.xp} / ${p.xpToNextLevel} XP`;
+
+  document.getElementById('hud-energy')!.textContent = `${p.energy} / ${p.maxEnergy}`;
+  document.getElementById('hud-cash')!.textContent = `$${p.cash.toLocaleString()}`;
+  document.getElementById('hud-gold')!.textContent = p.gold.toString();
+  document.getElementById('hud-respect')!.textContent = p.respect.toLocaleString();
+
+  // Mini avatar thumb
+  const thumb = document.getElementById('hud-avatar-thumb');
+  if (thumb) {
+    thumb.innerHTML = renderPaperdollSVG(p.appearance, { width: 52, height: 60 });
   }
 }
 
-navArenaBtn.addEventListener('click', () => switchView('arena'));
-navCustomizerBtn.addEventListener('click', () => switchView('customizer'));
-navSimBtn.addEventListener('click', () => switchView('sim'));
-
-document.getElementById('open-customizer-btn')!.addEventListener('click', () => switchView('customizer'));
-document.getElementById('apply-to-arena-btn')!.addEventListener('click', () => {
-  updateArenaCard('A');
-  updateArenaCard('B');
-  switchView('arena');
+// ENERGY REFILL BUTTON
+document.getElementById('quick-refill-energy-btn')?.addEventListener('click', () => {
+  const p = gameState.getPlayer();
+  if (p.energy >= p.maxEnergy) {
+    alert('Sua energia já está no máximo!');
+    return;
+  }
+  if (p.gold >= 5) {
+    if (confirm('Recarregar energia completamente por 5 Ouros?')) {
+      gameState.spendGold(5);
+      gameState.addEnergy(100);
+      alert('Energia restaurada para 100!');
+    }
+  } else {
+    alert('Você precisa de 5 Ouros para recarga instantânea de energia!');
+  }
 });
 
-// SPEED BUTTONS
-document.querySelectorAll('.spd-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.spd-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    speedMs = parseInt(btn.getAttribute('data-speed') ?? '450', 10);
+// SOUND TOGGLE
+document.getElementById('audio-toggle-btn')?.addEventListener('click', () => {
+  const on = sound.toggle();
+  document.getElementById('audio-toggle-btn')!.textContent = on ? '🔊' : '🔇';
+});
+
+// NEW CHARACTER BUTTON
+document.getElementById('new-character-btn')?.addEventListener('click', () => {
+  if (confirm('Deseja criar um novo gangster? Seu progresso atual será reiniciado.')) {
+    gameState.resetAllProgress();
+    openCharacterCreationModal();
+  }
+});
+
+// ========================================================
+// NAVIGATION TABS CONTROLLER
+// ========================================================
+document.querySelectorAll('.game-nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.game-nav-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const tabName = tab.getAttribute('data-tab') || 'perfil';
+    renderActiveTab(tabName);
   });
 });
 
-// RENDER ARENA CARDS
-function updateArenaCard(side: 'A' | 'B') {
-  const st = side === 'A' ? fighterA : fighterB;
-  const pts = getBuildPoints(st.build, st.level, config);
-  const input: FighterInput = { style: st.style, level: st.level, points: pts };
+function renderActiveTab(tabName: string) {
+  // Hide all sections
+  document.querySelectorAll('.game-view-section, .view-section').forEach(sec => {
+    sec.classList.remove('active');
+  });
+
+  const targetSec = document.getElementById(`view-${tabName}`);
+  if (targetSec) {
+    targetSec.classList.add('active');
+  }
+
+  switch (tabName) {
+    case 'perfil':
+      renderProfileView();
+      break;
+    case 'missoes':
+      renderMissionsView();
+      break;
+    case 'duelos':
+      renderDuelsView();
+      break;
+    case 'loja':
+      renderShopView();
+      break;
+    case 'ranking':
+      renderRankingView();
+      break;
+    case 'familia':
+      renderFamilyView();
+      break;
+    case 'eventos':
+      renderEventsView();
+      break;
+    case 'simulador':
+      renderDashboard(activeMatrixLevel);
+      break;
+  }
+}
+
+// ========================================================
+// VIEW 1: PERFIL & ATRIBUTOS
+// ========================================================
+function renderProfileView() {
+  const p = gameState.getPlayer();
+  if (!p.hasCreatedCharacter) return;
+
+  // 1. Paperdoll & Wielded Weapon
+  const avatarSvg = document.getElementById('profile-avatar-svg');
+  if (avatarSvg) {
+    avatarSvg.innerHTML = renderPaperdollSVG(p.appearance, { width: 260, height: 320 });
+  }
+
+  const weaponHolder = document.getElementById('profile-weapon-holder');
+  if (weaponHolder) {
+    const sp = getWeaponSprite(p.equipped.weaponId, 'A');
+    weaponHolder.innerHTML = sp.svg;
+  }
+
+  // 2. Equipped Gear Slots
+  const currentWeapon = getWeaponById(p.equipped.weaponId);
+  document.getElementById('equipped-wep-display')!.textContent = `${currentWeapon.icon} ${currentWeapon.name} (+${currentWeapon.min}-${currentWeapon.max})`;
+
+  const armorItem = SHOP_ITEMS.find(i => i.id === p.equipped.armorId);
+  document.getElementById('equipped-armor-display')!.textContent = armorItem ? `${armorItem.icon} ${armorItem.name}` : 'Nenhum';
+
+  const accItem = SHOP_ITEMS.find(i => i.id === p.equipped.accessoryId);
+  document.getElementById('equipped-acc-display')!.textContent = accItem ? `${accItem.icon} ${accItem.name}` : 'Nenhum';
+
+  // 3. Stats & Evolution
+  const combatPoints = gameState.getCombatPoints();
+  const input: FighterInput = {
+    style: p.style,
+    level: p.level,
+    points: combatPoints,
+    weapon: currentWeapon,
+  };
   const stats = derivedStats(input, config);
 
-  const sideLower = side.toLowerCase();
+  document.getElementById('free-points-val')!.textContent = p.freePoints.toString();
+  const freeBadge = document.getElementById('free-points-indicator')!;
+  freeBadge.style.display = p.freePoints > 0 ? 'inline-block' : 'none';
 
-  // Header & Info
-  document.getElementById(`name-display-${sideLower}`)!.textContent = st.appearance.name;
-  const styleBadge = document.getElementById(`style-badge-${sideLower}`)!;
-  styleBadge.textContent = st.style.toUpperCase();
-  styleBadge.className = `gg-style-badge badge-${st.style}`;
+  // Points values
+  document.getElementById('prof-atk-pts')!.textContent = p.points.attack.toString();
+  document.getElementById('prof-atk-effective')!.textContent = `${Math.round(stats.attackPower)} Dano Base`;
 
-  document.getElementById(`level-badge-${sideLower}`)!.textContent = `NÍVEL ${st.level}`;
-  document.getElementById(`build-badge-${sideLower}`)!.textContent = st.build.charAt(0).toUpperCase() + st.build.slice(1);
+  document.getElementById('prof-life-pts')!.textContent = p.points.life.toString();
+  document.getElementById('prof-life-effective')!.textContent = `${stats.maxHp} HP Máximo`;
 
-  // HP
-  document.getElementById(`hp-text-${sideLower}`)!.textContent = `${stats.maxHp} / ${stats.maxHp} (100%)`;
-  const hpFill = document.getElementById(`hp-fill-${sideLower}`)!;
-  hpFill.style.width = '100%';
-  hpFill.className = 'gg-hp-bar-fill';
+  document.getElementById('prof-ast-pts')!.textContent = p.points.astucia.toString();
+  document.getElementById('prof-ast-effective')!.textContent = `${(stats.critChance * 100).toFixed(1)}% Crítico`;
 
-  // 4 Attributes Footer
-  document.getElementById(`stat-atk-${sideLower}`)!.textContent = Math.round(stats.attackPower).toLocaleString();
-  document.getElementById(`stat-life-${sideLower}`)!.textContent = stats.maxHp.toLocaleString();
-  document.getElementById(`stat-ast-${sideLower}`)!.textContent = `${(stats.critChance * 100).toFixed(1)}%`;
-  document.getElementById(`stat-ten-${sideLower}`)!.textContent = `${(stats.critReduction * 100).toFixed(1)}%`;
+  document.getElementById('prof-ten-pts')!.textContent = p.points.tenacidade.toString();
+  document.getElementById('prof-ten-effective')!.textContent = `${(stats.critReduction * 100).toFixed(1)}% Redução`;
 
-  // Secondary
-  document.getElementById(`stat-arm-${sideLower}`)!.textContent = `${(stats.armorReduction * 100).toFixed(0)}%`;
-  document.getElementById(`stat-ddg-${sideLower}`)!.textContent = `${(stats.dodgeChance * 100).toFixed(0)}%`;
+  // Training costs
+  (['attack', 'life', 'astucia', 'tenacidade'] as const).forEach(stat => {
+    const cost = getStatTrainingCost(stat, p.trainedPoints[stat], p.level);
+    const costEl = document.getElementById(`train-cost-${stat}`);
+    if (costEl) costEl.textContent = `$${cost.toLocaleString()}`;
+  });
 
-  // Avatar SVG
-  const container = document.getElementById(`avatar-container-${sideLower}`)!;
-  container.innerHTML = renderPaperdollSVG(st.appearance, { width: 280, height: 340, pose: 'idle' });
+  // Derived stats summary
+  document.getElementById('prof-armor-val')!.textContent = `${(stats.armorReduction * 100).toFixed(0)}%`;
+  document.getElementById('prof-dodge-val')!.textContent = `${(stats.dodgeChance * 100).toFixed(0)}%`;
 
-  // Passives
-  renderPassivesBar(side, stats);
+  const [cMin, cMax] = config.styles[p.style].critBonus;
+  document.getElementById('prof-critbonus-val')!.textContent = `+${Math.round(cMin * 100)}% a +${Math.round(cMax * 100)}%`;
+
+  let passivesStr = '';
+  if (p.style === 'carrasco') passivesStr = '⚡ Golpe de Abertura (+10-100%), 🗡️ Execução (-25% Arm.)';
+  else if (p.style === 'muralha') passivesStr = '🛡️ Intimidação (-25%), 🧱 Casca Grossa (x1.4 Ten.)';
+  else passivesStr = '🔄 Adaptação (+0.2%/1% HP), ⚡ Instinto (x1.2 Ast.)';
+  document.getElementById('prof-passives-summary')!.textContent = passivesStr;
+
+  // 4. Inventory Slots (12 slots)
+  renderInventoryGrid();
 }
 
-function renderPassivesBar(side: 'A' | 'B', stats: any) {
-  const st = side === 'A' ? fighterA : fighterB;
-  const bar = document.getElementById(`passives-bar-${side.toLowerCase()}`)!;
+// STAT BUTTONS (FREE POINTS & CASH TRAINING)
+document.addEventListener('click', (e) => {
+  const target = e.target as HTMLElement;
 
-  const pills: string[] = [];
-  if (st.style === 'carrasco') {
-    pills.push('<span class="passive-pill pill-abertura">⚡ Golpe de Abertura</span>');
-    pills.push('<span class="passive-pill pill-execucao">🗡️ Execução (-25% Arm.)</span>');
-  } else if (st.style === 'muralha') {
-    pills.push('<span class="passive-pill pill-intim">🛡️ Intimidação (-25%)</span>');
-    pills.push('<span class="passive-pill pill-casca">🧱 Casca Grossa (x1.4)</span>');
-  } else if (st.style === 'malandro') {
-    pills.push('<span class="passive-pill pill-adapt">🔄 Adaptação (+0.2%/1% HP)</span>');
-    pills.push('<span class="passive-pill pill-casca">⚡ Instinto (x1.2)</span>');
+  // Free Point Distribute
+  const addStat = target.getAttribute('data-stat') as 'attack' | 'life' | 'astucia' | 'tenacidade' | null;
+  if (addStat) {
+    if (gameState.distributeFreePoint(addStat)) {
+      renderProfileView();
+    } else {
+      alert('Você não possui pontos livres. Suba de nível para obter mais pontos!');
+    }
+    return;
   }
-  bar.innerHTML = pills.join('');
-}
 
-updateArenaCard('A');
-updateArenaCard('B');
-
-// ARENA COMBAT CONTROLS
-const playBtn = document.getElementById('fight-play-btn')!;
-const stepBtn = document.getElementById('fight-step-btn')!;
-const skipBtn = document.getElementById('fight-skip-btn')!;
-const resetBtn = document.getElementById('fight-reset-btn')!;
-const roundDisplay = document.getElementById('arena-round-display')!;
-const tickerContent = document.getElementById('latest-strike-ticker')!;
-const fullLogList = document.getElementById('full-log-list')!;
-const fullLogDrawer = document.getElementById('full-log-drawer')!;
-const toggleLogBtn = document.getElementById('toggle-full-log-btn')!;
-
-toggleLogBtn.addEventListener('click', () => {
-  const isHidden = fullLogDrawer.style.display === 'none';
-  fullLogDrawer.style.display = isHidden ? 'block' : 'none';
-  toggleLogBtn.textContent = isHidden ? 'Ocultar Histórico ▴' : 'Ver Histórico Completo ▾';
+  // Train with Cash
+  const trainStat = target.getAttribute('data-train') as 'attack' | 'life' | 'astucia' | 'tenacidade' | null;
+  if (trainStat) {
+    const p = gameState.getPlayer();
+    const cost = getStatTrainingCost(trainStat, p.trainedPoints[trainStat], p.level);
+    if (gameState.trainStatWithCash(trainStat)) {
+      sound.playHit();
+      renderProfileView();
+    } else {
+      alert(`Cash insuficiente! Você precisa de $${cost.toLocaleString()} para este treino.`);
+    }
+    return;
+  }
 });
 
-function resetCombat() {
-  if (fightTimer) {
-    clearTimeout(fightTimer);
-    fightTimer = null;
-  }
-  currentEvents = [];
-  eventIdx = 0;
-  roundDisplay.textContent = 'PRONTO PARA O DUELO';
-  tickerContent.textContent = 'Aguardando início do combate. Clique em "INICIAR COMBATE" acima.';
-  fullLogList.innerHTML = '';
+function renderInventoryGrid() {
+  const p = gameState.getPlayer();
+  const grid = document.getElementById('inventory-grid');
+  if (!grid) return;
 
-  updateArenaCard('A');
-  updateArenaCard('B');
+  const totalSlots = 12;
+  let html = '';
+
+  for (let i = 0; i < totalSlots; i++) {
+    const item = p.inventory[i];
+    if (item) {
+      const isEquipped =
+        item.weaponRefId === p.equipped.weaponId ||
+        item.id === p.equipped.armorId ||
+        item.id === p.equipped.accessoryId;
+
+      html += `
+        <div class="inv-slot ${isEquipped ? 'equipped' : ''}" data-inv-idx="${i}" title="${item.name}">
+          <span>${item.icon}</span>
+          ${isEquipped ? '<span class="inv-slot-badge">USO</span>' : ''}
+        </div>
+      `;
+    } else {
+      html += `<div class="inv-slot empty" title="Slot vazio"></div>`;
+    }
+  }
+
+  grid.innerHTML = html;
+  document.getElementById('inv-capacity-count')!.textContent = `${p.inventory.length} / ${totalSlots} slots`;
+
+  // Bind inventory item selection
+  grid.querySelectorAll('.inv-slot[data-inv-idx]').forEach(slot => {
+    slot.addEventListener('click', () => {
+      const idx = parseInt(slot.getAttribute('data-inv-idx') || '0', 10);
+      showInventoryItemDetails(idx);
+    });
+  });
 }
 
-resetBtn.addEventListener('click', resetCombat);
+function showInventoryItemDetails(index: number) {
+  const p = gameState.getPlayer();
+  const item = p.inventory[index];
+  if (!item) return;
 
-function startCombat() {
-  resetCombat();
+  const detailsBox = document.getElementById('inv-details-card')!;
+  const isEquipped =
+    item.weaponRefId === p.equipped.weaponId ||
+    item.id === p.equipped.armorId ||
+    item.id === p.equipped.accessoryId;
 
+  const refund = Math.round(item.priceCash * 0.5);
+
+  detailsBox.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+      <strong style="color: #f1c40f; font-size: 14px;">${item.icon} ${item.name}</strong>
+      <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">${item.type}</span>
+    </div>
+    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">${item.description}</p>
+    <div style="display: flex; gap: 8px;">
+      ${item.type !== 'consumable' ? `
+        <button id="btn-equip-inv" class="arena-btn-primary" style="flex: 1; padding: 6px; font-size: 11px;">
+          ${isEquipped ? '✓ Equipado' : 'Equipar'}
+        </button>
+      ` : `
+        <button id="btn-use-inv" class="arena-btn-primary" style="flex: 1; padding: 6px; font-size: 11px;">
+          Usar Agora
+        </button>
+      `}
+      <button id="btn-sell-inv" class="arena-btn-secondary" style="padding: 6px 12px; font-size: 11px; color: #e74c3c;">
+        Vender (+$${refund})
+      </button>
+    </div>
+  `;
+
+  document.getElementById('btn-equip-inv')?.addEventListener('click', () => {
+    if (item.type === 'weapon' && item.weaponRefId) {
+      gameState.equipWeapon(item.weaponRefId);
+    } else if (item.type === 'armor') {
+      gameState.equipArmor(item.id);
+    } else if (item.type === 'accessory') {
+      gameState.equipAccessory(item.id);
+    }
+    renderProfileView();
+  });
+
+  document.getElementById('btn-use-inv')?.addEventListener('click', () => {
+    if (gameState.useConsumable(item, index)) {
+      renderProfileView();
+      showInventoryItemDetails(-1);
+    }
+  });
+
+  document.getElementById('btn-sell-inv')?.addEventListener('click', () => {
+    gameState.sellItem(index);
+    renderProfileView();
+    detailsBox.innerHTML = '<span class="text-muted" style="font-size: 12px;">Item vendido com sucesso!</span>';
+  });
+}
+
+// ========================================================
+// VIEW 2: MISSÕES DO DON (GODFATHER QUESTS)
+// ========================================================
+function renderMissionsView() {
+  const container = document.getElementById('missions-list-container');
+  if (!container) return;
+
+  const player = gameState.getPlayer();
+
+  container.innerHTML = MISSIONS_LIST.map(m => {
+    const oppWeapon = getWeaponById(m.opponent.weaponId);
+    return `
+      <div class="mission-card-item">
+        <span class="mission-chapter-tag">${m.chapter} • ${m.location}</span>
+        <div class="mission-title-row">
+          <h4>${m.icon} ${m.title}</h4>
+          <span class="mission-energy-badge">-${m.energyCost} Energia</span>
+        </div>
+        <p class="mission-brief-text">${m.briefing}</p>
+
+        <div style="font-size: 11px; color: var(--text-muted); background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px;">
+          Inimigo: <strong>${m.opponent.name}</strong> (${m.opponent.style.toUpperCase()} Nv.${m.opponent.level}) • Arma: ${oppWeapon.icon} ${oppWeapon.name}
+        </div>
+
+        <div class="mission-rewards-row">
+          <span style="color: #2ecc71;">+${m.xpReward} XP</span>
+          <span style="color: #f1c40f;">+$${m.cashReward} Cash</span>
+          <span style="color: #3498db;">${Math.round(m.itemDropChance * 100)}% Chance de Drop</span>
+        </div>
+
+        <button class="arena-btn-primary btn-start-mission" data-mis-id="${m.id}" style="width: 100%; margin-top: 6px;">
+          ⚡ Executar Missão (-${m.energyCost}⚡)
+        </button>
+      </div>
+    `;
+  }).join('');
+
+  container.querySelectorAll('.btn-start-mission').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-mis-id');
+      const mission = MISSIONS_LIST.find(m => m.id === id);
+      if (!mission) return;
+
+      if (!gameState.consumeEnergy(mission.energyCost)) {
+        alert('Energia insuficiente! Aguarde a recarga ou recarregue com Ouro na barra superior.');
+        return;
+      }
+
+      startMissionCombat(mission);
+    });
+  });
+}
+
+function startMissionCombat(mission: MissionDef) {
+  const p = gameState.getPlayer();
+  const playerCombatPoints = gameState.getCombatPoints();
+  const playerWeapon = getWeaponById(p.equipped.weaponId);
+
+  const inputA: FighterInput = {
+    style: p.style,
+    level: p.level,
+    points: playerCombatPoints,
+    weapon: playerWeapon,
+  };
+
+  const oppWeapon = getWeaponById(mission.opponent.weaponId);
+  const inputB: FighterInput = {
+    style: mission.opponent.style,
+    level: mission.opponent.level,
+    points: mission.opponent.points,
+    weapon: oppWeapon,
+  };
+
+  launchArenaCombatModal(
+    inputA,
+    inputB,
+    p.appearance,
+    mission.opponent.appearance,
+    (won) => {
+      if (won) {
+        let dropMsg = '';
+        if (Math.random() < mission.itemDropChance && mission.possibleDropId) {
+          const dropItem = SHOP_ITEMS.find(i => i.id === mission.possibleDropId);
+          if (dropItem) {
+            gameState.buyItem({ ...dropItem, priceCash: 0, priceGold: 0 });
+            dropMsg = `<div style="margin-top: 8px; color: #f1c40f;">🎁 Drop de Item Raro: <strong>${dropItem.icon} ${dropItem.name}</strong> adicionado à mochila!</div>`;
+          }
+        }
+
+        const leveledUp = gameState.addXp(mission.xpReward);
+        gameState.addCash(mission.cashReward);
+        gameState.addRespect(15);
+        gameState.recordMissionCompleted();
+
+        showOutcomePopup(
+          '🏆 MISSÃO CUMPRIDA!',
+          `Você neutralizou ${mission.opponent.name} e executou a missão com perfeição.`,
+          `
+            <div style="font-size: 14px; font-weight: 700; color: #2ecc71;">+${mission.xpReward} XP Ganho</div>
+            <div style="font-size: 14px; font-weight: 700; color: #f1c40f;">+$${mission.cashReward} Cash Saqueado</div>
+            <div style="font-size: 13px; font-weight: 700; color: #e67e22;">+15 Respeito para a Família</div>
+            ${dropMsg}
+            ${leveledUp ? '<div style="margin-top: 10px; font-size: 16px; color: #d4af37; font-weight: 900;">⭐ VOCÊ SUBIU DE NÍVEL! (+4 Pontos Livres)</div>' : ''}
+          `
+        );
+      } else {
+        showOutcomePopup(
+          '💀 MISSÃO FALHOU!',
+          `Você foi emboscado e superado por ${mission.opponent.name}. Recupere suas energias e prepare melhor seu armamento antes de tentar novamente.`,
+          `<span style="color: #e74c3c; font-size: 13px;">Nenhuma recompensa obtida. A Família espera mais de você.</span>`
+        );
+      }
+    }
+  );
+}
+
+// ========================================================
+// VIEW 3: DUELOS (ARENA PvP MATCHMAKING)
+// ========================================================
+let cachedRivals: DuelRival[] = [];
+
+function renderDuelsView() {
+  const container = document.getElementById('duels-rivals-container');
+  if (!container) return;
+
+  const player = gameState.getPlayer();
+  if (cachedRivals.length === 0) {
+    cachedRivals = generateRivalPool(player.level);
+  }
+
+  container.innerHTML = cachedRivals.map(r => {
+    const rWep = getWeaponById(r.weaponId);
+    return `
+      <div class="rival-card-item">
+        <div class="rival-thumb-wrap">
+          ${renderPaperdollSVG(r.appearance, { width: 68, height: 75 })}
+        </div>
+        <div class="rival-info-col">
+          <div class="rival-name">${r.name}</div>
+          <div class="rival-meta-badges">
+            <span class="gg-style-badge badge-${r.style}">${r.style.toUpperCase()}</span>
+            <span class="gg-level-badge">NV ${r.level}</span>
+          </div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">
+            Arma: ${rWep.icon} ${rWep.name} • Respeito: ⭐${r.respect}
+          </div>
+          <button class="arena-btn-primary btn-challenge-rival" data-riv-id="${r.id}" style="padding: 6px 14px; font-size: 12px; width: 100%;">
+            ⚔️ Desafiar Duelo (-10⚡) • Saquear $${r.bountyCash}
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.querySelectorAll('.btn-challenge-rival').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const rivId = btn.getAttribute('data-riv-id');
+      const rival = cachedRivals.find(r => r.id === rivId);
+      if (!rival) return;
+
+      if (!gameState.consumeEnergy(10)) {
+        alert('Energia insuficiente para desafiar em duelo! Aguarde ou recarregue.');
+        return;
+      }
+
+      startDuelCombat(rival);
+    });
+  });
+}
+
+document.getElementById('refresh-rivals-btn')?.addEventListener('click', () => {
+  const player = gameState.getPlayer();
+  cachedRivals = generateRivalPool(player.level);
+  renderDuelsView();
+});
+
+function startDuelCombat(rival: DuelRival) {
+  const p = gameState.getPlayer();
+  const playerCombatPoints = gameState.getCombatPoints();
+  const playerWeapon = getWeaponById(p.equipped.weaponId);
+
+  const inputA: FighterInput = {
+    style: p.style,
+    level: p.level,
+    points: playerCombatPoints,
+    weapon: playerWeapon,
+  };
+
+  const rivalWeapon = getWeaponById(rival.weaponId);
+  const inputB: FighterInput = {
+    style: rival.style,
+    level: rival.level,
+    points: rival.points,
+    weapon: rivalWeapon,
+  };
+
+  launchArenaCombatModal(
+    inputA,
+    inputB,
+    p.appearance,
+    rival.appearance,
+    (won) => {
+      if (won) {
+        gameState.addCash(rival.bountyCash);
+        gameState.addRespect(25);
+        const leveledUp = gameState.addXp(60);
+        gameState.recordDuelResult(true, 500);
+
+        showOutcomePopup(
+          '🏆 DUELO VENCIDO!',
+          `Você derrotou ${rival.name} na Arena Clandestina e humilhou a facção rival!`,
+          `
+            <div style="font-size: 14px; font-weight: 700; color: #f1c40f;">+$${rival.bountyCash} Cash Roubado do Rival</div>
+            <div style="font-size: 14px; font-weight: 700; color: #e67e22;">+25 Respeito Conquistado ⭐</div>
+            <div style="font-size: 13px; font-weight: 700; color: #2ecc71;">+60 XP de Duelo</div>
+            ${leveledUp ? '<div style="margin-top: 10px; font-size: 16px; color: #d4af37; font-weight: 900;">⭐ VOCÊ SUBIU DE NÍVEL!</div>' : ''}
+          `
+        );
+      } else {
+        gameState.recordDuelResult(false, 200);
+        showOutcomePopup(
+          '💀 DERROTA NO DUELO',
+          `${rival.name} superou seus reflexos nesta luta. Você perdeu 10 pontos de Respeito no submundo.`,
+          `<span style="color: #e74c3c;">-10 Respeito. Treine seus atributos e melhore sua arma!</span>`
+        );
+      }
+    }
+  );
+}
+
+// ========================================================
+// VIEW 4: MERCADO CLANDESTINO (LOJA DE ARMAS & ITENS)
+// ========================================================
+let activeShopFilter = 'all';
+
+function renderShopView() {
+  const container = document.getElementById('shop-items-container');
+  if (!container) return;
+
+  const player = gameState.getPlayer();
+
+  const filtered = activeShopFilter === 'all'
+    ? SHOP_ITEMS
+    : SHOP_ITEMS.filter(i => i.type === activeShopFilter);
+
+  container.innerHTML = filtered.map(item => {
+    const meetsLevel = player.level >= item.levelReq;
+    const canAffordCash = player.cash >= item.priceCash;
+    const canAffordGold = player.gold >= item.priceGold;
+    const canBuy = meetsLevel && canAffordCash && canAffordGold;
+
+    return `
+      <div class="shop-item-card">
+        <div class="shop-item-header">
+          <span class="shop-item-title">${item.icon} ${item.name}</span>
+          <span style="font-size: 10px; color: ${meetsLevel ? '#2ecc71' : '#e74c3c'}; font-weight: 700;">
+            Nv. Mínimo: ${item.levelReq}
+          </span>
+        </div>
+        <p style="font-size: 12px; color: var(--text-muted);">${item.description}</p>
+        <div class="shop-item-price-row">
+          <span style="font-weight: 800; color: #f1c40f; font-size: 13px;">
+            ${item.priceCash > 0 ? `$${item.priceCash.toLocaleString()} ` : ''}
+            ${item.priceGold > 0 ? `🪙 ${item.priceGold}` : ''}
+          </span>
+          <button class="arena-btn-primary btn-buy-shop-item" data-item-id="${item.id}" ${canBuy ? '' : 'disabled'} style="padding: 4px 12px; font-size: 11px;">
+            Comprar
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.querySelectorAll('.btn-buy-shop-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-item-id');
+      const item = SHOP_ITEMS.find(i => i.id === id);
+      if (!item) return;
+
+      if (gameState.buyItem(item)) {
+        sound.playCrit();
+        alert(`Você adquiriu ${item.name} com sucesso!`);
+        renderShopView();
+      } else {
+        alert('Você não atende aos requisitos de nível ou fundos para esta compra!');
+      }
+    });
+  });
+}
+
+// SHOP CATEGORY TABS
+document.querySelectorAll('#shop-category-filters .choice-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#shop-category-filters .choice-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeShopFilter = btn.getAttribute('data-scat') || 'all';
+    renderShopView();
+  });
+});
+
+// ========================================================
+// VIEW 5: RANKING DA CIDADE
+// ========================================================
+function renderRankingView() {
+  const tbody = document.getElementById('ranking-table-body');
+  if (!tbody) return;
+
+  const player = gameState.getPlayer();
+
+  const mockRankings = [
+    { rank: 1, name: 'Don Carmine Falcone', style: 'carrasco', level: 32, family: 'Família Falcone', respect: 4200 },
+    { rank: 2, name: 'Salvatore "A Muralha"', style: 'muralha', level: 28, family: 'Família Corleone', respect: 3500 },
+    { rank: 3, name: 'Lucky Luciano', style: 'malandro', level: 25, family: 'Sindicato Luciano', respect: 2950 },
+    { rank: 4, name: 'Vito "Carcereiro"', style: 'muralha', level: 22, family: 'Família Gambino', respect: 2400 },
+    { rank: 5, name: 'Tony "Garganta de Aço"', style: 'carrasco', level: 19, family: 'Família Corleone', respect: 1980 },
+    { rank: 6, name: 'Gina "Dama de Espadas"', style: 'malandro', level: 16, family: 'Sindicato Luciano', respect: 1600 },
+  ];
+
+  // Insert player ranking
+  let playerRank = 7;
+  if (player.respect > 4200) playerRank = 1;
+  else if (player.respect > 3500) playerRank = 2;
+  else if (player.respect > 2950) playerRank = 3;
+
+  let html = '';
+  mockRankings.forEach(r => {
+    html += `
+      <tr>
+        <td><strong>#${r.rank}</strong></td>
+        <td>${r.name}</td>
+        <td><span class="gg-style-badge badge-${r.style}">${r.style.toUpperCase()}</span></td>
+        <td>Nv. ${r.level}</td>
+        <td>${r.family}</td>
+        <td style="color: #f1c40f; font-weight: 700;">⭐ ${r.respect.toLocaleString()}</td>
+        <td><button class="arena-btn-secondary" style="padding: 2px 8px; font-size: 11px;">Desafiar</button></td>
+      </tr>
+    `;
+  });
+
+  html += `
+    <tr class="player-rank-row">
+      <td><strong style="color: #f1c40f;">#${playerRank}</strong></td>
+      <td><strong>${player.name} (Você)</strong></td>
+      <td><span class="gg-style-badge badge-${player.style}">${player.style.toUpperCase()}</span></td>
+      <td><strong>Nv. ${player.level}</strong></td>
+      <td>${player.familyId ? 'Família Ativa' : 'Sem Família'}</td>
+      <td style="color: #f1c40f; font-weight: 800;">⭐ ${player.respect.toLocaleString()}</td>
+      <td><span style="font-size: 11px; color: #2ecc71;">Seu Personagem</span></td>
+    </tr>
+  `;
+
+  tbody.innerHTML = html;
+}
+
+// ========================================================
+// VIEW 6: FAMÍLIA MAFIOSA (CLÃS)
+// ========================================================
+function renderFamilyView() {
+  const banner = document.getElementById('family-header-banner');
+  const grid = document.getElementById('family-content-grid');
+  if (!banner || !grid) return;
+
+  const player = gameState.getPlayer();
+  const currentFam = MAFIA_FAMILIES_LIST.find(f => f.id === player.familyId);
+
+  if (currentFam) {
+    banner.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <span style="font-size: 11px; color: #2ecc71; font-weight: 700;">✓ VOCÊ É MEMBRO OFICIAL</span>
+          <h2 style="color: #d4af37; font-family: var(--font-serif);">${currentFam.emblem} ${currentFam.name}</h2>
+          <p style="font-style: italic; color: var(--text-muted); font-size: 13px;">${currentFam.motto}</p>
+        </div>
+        <div style="display: flex; gap: 14px;">
+          <div style="background: rgba(0,0,0,0.4); padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+            <div style="font-size: 10px; color: var(--text-muted);">COFRE DA FAMÍLIA</div>
+            <div style="font-weight: 800; color: #f1c40f;">$${currentFam.treasuryCash.toLocaleString()}</div>
+          </div>
+          <button id="donate-clan-cash-btn" class="arena-btn-primary" style="padding: 8px 14px;">
+            💵 Doar $500 ao Cofre
+          </button>
+        </div>
+      </div>
+      <div style="display: flex; gap: 16px; margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 12px;">
+        <span style="color: #2ecc71;">Bônus Ativo: <strong>+${currentFam.buffs.xpBonusPct}% XP em Missões</strong></span>
+        <span style="color: #e74c3c;">Bônus de Ataque: <strong>+${currentFam.buffs.attackBonusPct}% Dano</strong></span>
+        <span style="color: #3498db;">Regeneração: <strong>+${currentFam.buffs.energyRegenBonusPct}% Energia</strong></span>
+      </div>
+    `;
+
+    document.getElementById('donate-clan-cash-btn')?.addEventListener('click', () => {
+      if (gameState.spendCash(500)) {
+        currentFam.treasuryCash += 500;
+        gameState.addRespect(20);
+        alert('Você doou $500 para o cofre da Família e ganhou +20 de Respeito!');
+        renderFamilyView();
+      } else {
+        alert('Cash insuficiente para doar!');
+      }
+    });
+  } else {
+    banner.innerHTML = `
+      <h3>Junte-se a uma Família Mafiosa</h3>
+      <p>Filie-se a um sindicato criminoso para obter bônus permanentes de dano, ganho de XP e regeneração de energia.</p>
+    `;
+  }
+
+  grid.innerHTML = MAFIA_FAMILIES_LIST.map(fam => {
+    const isMember = player.familyId === fam.id;
+    return `
+      <div class="family-card-item">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h4 style="font-size: 16px; color: #fff;">${fam.emblem} ${fam.name}</h4>
+          <span style="font-size: 11px; color: var(--text-muted);">Membros: ${fam.membersCount}/${fam.maxMembers}</span>
+        </div>
+        <div style="font-size: 12px; color: #d4af37;">Líder: <strong>${fam.leaderName}</strong></div>
+        <p style="font-size: 12px; font-style: italic; color: var(--text-muted);">${fam.motto}</p>
+        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; font-size: 11px; display: flex; flex-direction: column; gap: 4px;">
+          <span style="color: #2ecc71;">+${fam.buffs.xpBonusPct}% XP de Missões</span>
+          <span style="color: #e74c3c;">+${fam.buffs.attackBonusPct}% Bônus de Dano</span>
+          <span style="color: #3498db;">+${fam.buffs.energyRegenBonusPct}% Regeneração de Energia</span>
+        </div>
+        ${isMember ? `
+          <button class="arena-btn-secondary" disabled style="width: 100%; border-color: #2ecc71; color: #2ecc71;">
+            ✓ Família Atual
+          </button>
+        ` : `
+          <button class="arena-btn-primary btn-join-family" data-fam-id="${fam.id}" style="width: 100%;">
+            Jurar Lealdade à Família
+          </button>
+        `}
+      </div>
+    `;
+  }).join('');
+
+  grid.querySelectorAll('.btn-join-family').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-fam-id');
+      if (!id) return;
+      gameState.joinFamily(id);
+      sound.playCrit();
+      alert('Parabéns! Você agora é um membro oficial da Família Mafiosa!');
+      renderFamilyView();
+    });
+  });
+}
+
+// ========================================================
+// VIEW 7: EVENTOS & CHEFÃO MUNDIAL
+// ========================================================
+function renderEventsView() {
+  const event = CURRENT_RAID_EVENT;
+  document.getElementById('raid-title')!.textContent = event.name;
+  document.getElementById('raid-desc')!.textContent = event.description;
+  document.getElementById('raid-boss-name')!.textContent = event.bossName;
+
+  const hpPct = Math.max(0, (event.bossCurrentHp / event.bossMaxHp) * 100);
+  document.getElementById('raid-boss-hp-fill')!.style.width = `${hpPct}%`;
+  document.getElementById('raid-boss-hp-text')!.textContent = `${event.bossCurrentHp.toLocaleString()} / ${event.bossMaxHp.toLocaleString()} HP`;
+
+  const attackBtn = document.getElementById('attack-raid-boss-btn');
+  if (attackBtn) {
+    attackBtn.onclick = () => {
+      if (!gameState.consumeEnergy(25)) {
+        alert('Você precisa de 25 Energia para desferir um ataque contra o Chefão!');
+        return;
+      }
+
+      startRaidBossCombat(event);
+    };
+  }
+}
+
+function startRaidBossCombat(event: typeof CURRENT_RAID_EVENT) {
+  const p = gameState.getPlayer();
+  const playerCombatPoints = gameState.getCombatPoints();
+  const playerWeapon = getWeaponById(p.equipped.weaponId);
+
+  const inputA: FighterInput = {
+    style: p.style,
+    level: p.level,
+    points: playerCombatPoints,
+    weapon: playerWeapon,
+  };
+
+  const bossWeapon = getWeaponById(event.bossWeaponId);
+  const inputB: FighterInput = {
+    style: event.bossStyle,
+    level: 25,
+    points: { attack: 80, life: 350, astucia: 40, tenacidade: 60 },
+    weapon: bossWeapon,
+  };
+
+  const bossAppearance: CharacterAppearance = {
+    name: event.bossName,
+    gender: 'male',
+    skinTone: '#e2b38f',
+    hairStyle: 'buzz',
+    hairColor: '#eceff1',
+    eyeColor: '#546e7a',
+    facialHair: 'beard',
+    facialHairColor: '#eceff1',
+    clothing: 'classic_suit',
+    clothingColor: '#102a43',
+    clothingSecondaryColor: '#d4af37',
+    accessory: 'sunglasses',
+    cardBackground: 'bar',
+  };
+
+  launchArenaCombatModal(
+    inputA,
+    inputB,
+    p.appearance,
+    bossAppearance,
+    (won) => {
+      // Inflict 4,500 damage to collective raid boss HP
+      event.bossCurrentHp = Math.max(0, event.bossCurrentHp - 4500);
+
+      gameState.addXp(180);
+      gameState.addCash(1200);
+      gameState.addRespect(50);
+
+      showOutcomePopup(
+        '💥 ATAQUE DE RAID EXECUTADO!',
+        `Você desferiu um ataque devastador causando 4.500 de dano na vida coletiva do Chefão Mundial!`,
+        `
+          <div style="font-size: 14px; font-weight: 700; color: #2ecc71;">+180 XP Coletivo</div>
+          <div style="font-size: 14px; font-weight: 700; color: #f1c40f;">+$1.200 Cash de Saque</div>
+          <div style="font-size: 14px; font-weight: 700; color: #e67e22;">+50 Respeito Mundial ⭐</div>
+        `
+      );
+    }
+  );
+}
+
+// ========================================================
+// ARENA COMBAT MODAL ENGINE (REUSABLE FOR MISSIONS, DUELS & EVENTS)
+// ========================================================
+function launchArenaCombatModal(
+  fighterAInput: FighterInput,
+  fighterBInput: FighterInput,
+  appearanceA: CharacterAppearance,
+  appearanceB: CharacterAppearance,
+  onFinish: (playerWon: boolean) => void
+) {
+  currentCombatFighterA = fighterAInput;
+  currentCombatFighterB = fighterBInput;
+  combatSideAName = appearanceA.name;
+  combatSideBName = appearanceB.name;
+  activeCombatCallback = onFinish;
+
+  const modal = document.getElementById('combat-overlay-modal')!;
+  modal.style.display = 'flex';
+  document.getElementById('fight-close-btn')!.style.display = 'none';
+  document.getElementById('combat-outcome-popup')!.style.display = 'none';
+
+  // Render Card A
+  renderArenaCardVisual('a', fighterAInput, appearanceA);
+  // Render Card B
+  renderArenaCardVisual('b', fighterBInput, appearanceB);
+
+  // Clear impacts
+  clearAllImpacts(modal);
+
+  // Simulate fight with engine
   const seed = Math.floor(Math.random() * 1000000);
-  const ptsA = getBuildPoints(fighterA.build, fighterA.level, config);
-  const ptsB = getBuildPoints(fighterB.build, fighterB.level, config);
-
-  const inputA: FighterInput = { style: fighterA.style, level: fighterA.level, points: ptsA };
-  const inputB: FighterInput = { style: fighterB.style, level: fighterB.level, points: ptsB };
-
-  const result = simulateFight(inputA, inputB, config, seed, { withEvents: true });
+  const result = simulateFight(fighterAInput, fighterBInput, config, seed, { withEvents: true });
   currentEvents = result.events ?? [];
   eventIdx = 0;
 
-  const firstFighter = result.firstAttacker === 'A' ? fighterA.appearance.name : fighterB.appearance.name;
-  roundDisplay.textContent = `INICIATIVA: ${firstFighter.toUpperCase()} COMEÇA!`;
-
-  playNextStrike();
+  const firstFighter = result.firstAttacker === 'A' ? appearanceA.name : appearanceB.name;
+  document.getElementById('arena-round-display')!.textContent = `INICIATIVA: ${firstFighter.toUpperCase()} COMEÇA!`;
+  document.getElementById('latest-strike-ticker')!.textContent = 'Aperte "INICIAR COMBATE" para ver os disparos!';
 }
 
-playBtn.addEventListener('click', startCombat);
+function renderArenaCardVisual(side: 'a' | 'b', input: FighterInput, appearance: CharacterAppearance) {
+  const stats = derivedStats(input, config);
+  const wep = input.weapon ? getWeaponById(input.weapon.id || 'colt_1911') : WEAPONS_CATALOG[0];
 
-skipBtn.addEventListener('click', () => {
-  if (currentEvents.length === 0) {
-    startCombat();
+  document.getElementById(`name-display-${side}`)!.textContent = appearance.name;
+  const styleBadge = document.getElementById(`style-badge-${side}`)!;
+  styleBadge.textContent = input.style.toUpperCase();
+  styleBadge.className = `gg-style-badge badge-${input.style}`;
+
+  document.getElementById(`level-badge-${side}`)!.textContent = `NÍVEL ${input.level}`;
+  document.getElementById(`weapon-name-${side}`)!.textContent = `${wep.icon} ${wep.name}`;
+  document.getElementById(`weapon-dmg-${side}`)!.textContent = `Dano: ${wep.min}-${wep.max}`;
+
+  document.getElementById(`hp-text-${side}`)!.textContent = `${stats.maxHp} / ${stats.maxHp} (100%)`;
+  const hpFill = document.getElementById(`hp-fill-${side}`)!;
+  hpFill.style.width = '100%';
+  hpFill.className = 'gg-hp-bar-fill';
+
+  document.getElementById(`stat-atk-${side}`)!.textContent = Math.round(stats.attackPower).toLocaleString();
+  document.getElementById(`stat-life-${side}`)!.textContent = stats.maxHp.toLocaleString();
+  document.getElementById(`stat-ast-${side}`)!.textContent = `${(stats.critChance * 100).toFixed(1)}%`;
+  document.getElementById(`stat-ten-${side}`)!.textContent = `${(stats.critReduction * 100).toFixed(1)}%`;
+
+  // Avatar SVG
+  const container = document.getElementById(`avatar-container-${side}`)!;
+  container.innerHTML = renderPaperdollSVG(appearance, { width: 280, height: 340, pose: 'idle' });
+
+  // Weapon holder
+  const weaponHolder = document.getElementById(`weapon-holder-${side}`);
+  if (weaponHolder) {
+    const sp = getWeaponSprite(wep.id, side === 'a' ? 'A' : 'B');
+    weaponHolder.innerHTML = sp.svg;
   }
-  while (eventIdx < currentEvents.length) {
-    applyStrike(currentEvents[eventIdx], false);
-    eventIdx++;
+}
+
+// ARENA CONTROLS IN COMBAT MODAL
+document.getElementById('fight-play-btn')?.addEventListener('click', () => {
+  if (currentEvents.length > 0 && eventIdx < currentEvents.length) {
+    playNextStrike();
   }
-  const last = currentEvents[currentEvents.length - 1];
-  finishCombat(last.attacker);
 });
 
-stepBtn.addEventListener('click', () => {
-  if (currentEvents.length === 0) {
-    startCombat();
-  } else if (eventIdx < currentEvents.length) {
+document.getElementById('fight-step-btn')?.addEventListener('click', () => {
+  if (currentEvents.length > 0 && eventIdx < currentEvents.length) {
     applyStrike(currentEvents[eventIdx], true);
     eventIdx++;
     if (eventIdx >= currentEvents.length) {
@@ -245,6 +1020,25 @@ stepBtn.addEventListener('click', () => {
       finishCombat(last.attacker);
     }
   }
+});
+
+document.getElementById('fight-skip-btn')?.addEventListener('click', () => {
+  while (eventIdx < currentEvents.length) {
+    applyStrike(currentEvents[eventIdx], false);
+    eventIdx++;
+  }
+  if (currentEvents.length > 0) {
+    const last = currentEvents[currentEvents.length - 1];
+    finishCombat(last.attacker);
+  }
+});
+
+document.querySelectorAll('.arena-speed-selector .spd-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.arena-speed-selector .spd-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    speedMs = parseInt(btn.getAttribute('data-speed') ?? '450', 10);
+  });
 });
 
 function playNextStrike() {
@@ -262,226 +1056,199 @@ function playNextStrike() {
 }
 
 function applyStrike(ev: FightEvent, playFx: boolean) {
-  roundDisplay.textContent = `RODADA ${ev.round} • TURNO ${ev.turn}`;
+  document.getElementById('arena-round-display')!.textContent = `RODADA ${ev.round} • TURNO ${ev.turn}`;
 
-  const defSide = ev.defender;
-  const defCard = document.getElementById(`gg-card-${defSide.toLowerCase()}`)!;
-  const floatZone = document.getElementById(`float-zone-${defSide.toLowerCase()}`)!;
-  const hpFill = document.getElementById(`hp-fill-${defSide.toLowerCase()}`)!;
-  const hpText = document.getElementById(`hp-text-${defSide.toLowerCase()}`)!;
+  const defSide = ev.defender.toLowerCase();
+  const atkSide = ev.attacker.toLowerCase();
+  const defCard = document.getElementById(`gg-card-${defSide}`)!;
+  const atkCard = document.getElementById(`gg-card-${atkSide}`)!;
+  const defFrame = document.getElementById(`avatar-frame-${defSide}`);
+  const atkHolder = document.getElementById(`weapon-holder-${atkSide}`);
+  const floatZone = document.getElementById(`float-zone-${defSide}`)!;
+  const hpFill = document.getElementById(`hp-fill-${defSide}`)!;
+  const hpText = document.getElementById(`hp-text-${defSide}`)!;
 
-  const defState = defSide === 'A' ? fighterA : fighterB;
-  const defStats = derivedStats({ style: defState.style, level: defState.level, points: getBuildPoints(defState.build, defState.level, config) }, config);
+  const defInput = defSide === 'a' ? currentCombatFighterA! : currentCombatFighterB!;
+  const defStats = derivedStats(defInput, config);
 
   const pct = Math.max(0, (ev.defenderHpRemaining / defStats.maxHp) * 100);
   hpFill.style.width = `${pct}%`;
   hpText.textContent = `${ev.defenderHpRemaining} / ${defStats.maxHp} (${pct.toFixed(0)}%)`;
 
-  if (pct < 25) {
-    hpFill.className = 'gg-hp-bar-fill danger';
-  } else if (pct < 50) {
-    hpFill.className = 'gg-hp-bar-fill warning';
-  }
+  if (pct < 25) hpFill.className = 'gg-hp-bar-fill danger';
+  else if (pct < 50) hpFill.className = 'gg-hp-bar-fill warning';
 
-  const atkName = ev.attacker === 'A' ? fighterA.appearance.name : fighterB.appearance.name;
-  const defName = ev.defender === 'A' ? fighterA.appearance.name : fighterB.appearance.name;
+  const atkName = ev.attacker === 'A' ? combatSideAName : combatSideBName;
+  const defName = ev.defender === 'A' ? combatSideAName : combatSideBName;
+  const atkInput = ev.attacker === 'A' ? currentCombatFighterA! : currentCombatFighterB!;
+  const weaponUsed = ev.weaponId ? getWeaponById(ev.weaponId) : (atkInput.weapon ? getWeaponById(atkInput.weapon.id || 'colt_1911') : WEAPONS_CATALOG[0]);
 
-  // Floating Numbers & Avatar Animation
   if (playFx) {
+    playWeaponAttackVisual({
+      attackerCard: atkCard,
+      attackerHolder: atkHolder,
+      defenderCard: defCard,
+      defenderFrame: defFrame,
+      weapon: weaponUsed,
+      isCrit: ev.isCrit,
+      isDodge: ev.isDodge,
+      attackerSide: ev.attacker === 'A' ? 'A' : 'B',
+    });
+
     const floatEl = document.createElement('div');
     if (ev.isDodge) {
       floatEl.className = 'floating-damage-text dodge';
       floatEl.textContent = 'ESQUIVOU!';
-      sound.playDodge();
     } else if (ev.isCrit) {
       floatEl.className = 'floating-damage-text crit';
       floatEl.textContent = `💥 CRÍTICO! -${ev.finalDamage}`;
-      defCard.classList.remove('shake');
-      void defCard.offsetWidth;
-      defCard.classList.add('shake');
-      sound.playCrit();
     } else {
       floatEl.className = 'floating-damage-text normal';
       floatEl.textContent = `-${ev.finalDamage}`;
-      defCard.classList.remove('shake');
-      void defCard.offsetWidth;
-      defCard.classList.add('shake');
-      sound.playHit();
     }
     floatZone.appendChild(floatEl);
     setTimeout(() => floatEl.remove(), 1200);
   }
 
-  // Ticker text
-  const tagList: string[] = [];
-  if (ev.isCrit) tagList.push(`Crítico (+${((ev.critBonus ?? 0) * 100).toFixed(0)}%)`);
-  if (ev.openingStrikeBonus) tagList.push(`Abertura (+${((ev.openingStrikeBonus) * 100).toFixed(0)}%)`);
-  if (ev.adaptationBonus) tagList.push(`Adaptação (+${((ev.adaptationBonus) * 100).toFixed(1)}%)`);
-  if (ev.intimidationReductionApplied) tagList.push(`Intimidação (-${((ev.intimidationReductionApplied) * 100).toFixed(0)}%)`);
-
-  const tagStr = tagList.length > 0 ? ` [${tagList.join(', ')}]` : '';
   const strikeMsg = ev.isDodge
-    ? `${atkName} atacou, mas ${defName} ESQUIVOU agilmente!`
-    : `${atkName} desferiu golpe em ${defName} causando ${ev.finalDamage} de dano!${tagStr}`;
+    ? `${atkName} disparou com ${weaponUsed.name}, mas ${defName} ESQUIVOU agilmente!`
+    : `${atkName} atacou com ${weaponUsed.name} causando ${ev.finalDamage} de dano em ${defName}!`;
 
-  tickerContent.textContent = `[R${ev.round}] ${strikeMsg}`;
-
-  // Full Log entry
-  const logRow = document.createElement('div');
-  logRow.className = `log-item-row ${ev.isCrit ? 'crit' : ''} ${ev.isDodge ? 'dodge' : ''}`;
-  logRow.innerHTML = `
-    <span><strong>[R${ev.round} T${ev.turn}]</strong> ${strikeMsg}</span>
-    <span>HP rest.: <strong>${ev.defenderHpRemaining}</strong></span>
-  `;
-  fullLogList.prepend(logRow);
+  document.getElementById('latest-strike-ticker')!.textContent = `[R${ev.round}] ${strikeMsg}`;
 }
 
 function finishCombat(winnerSide: 'A' | 'B') {
+  if (fightTimer) {
+    clearTimeout(fightTimer);
+    fightTimer = null;
+  }
+  const isPlayerWinner = winnerSide === 'A';
+  const winner = isPlayerWinner ? combatSideAName : combatSideBName;
+  document.getElementById('arena-round-display')!.textContent = `🏆 VITÓRIA DE ${winner.toUpperCase()}!`;
   sound.playVictory();
-  const winner = winnerSide === 'A' ? fighterA.appearance.name : fighterB.appearance.name;
-  roundDisplay.textContent = `🏆 VITÓRIA DE ${winner.toUpperCase()}!`;
-  tickerContent.textContent = `COMBATE FINALIZADO: ${winner} venceu o duelo de honra!`;
-}
 
-// ========================================================
-// CUSTOMIZER (CRIADOR DE GANGSTER)
-// ========================================================
+  document.getElementById('fight-close-btn')!.style.display = 'inline-block';
 
-const sideBtns = document.querySelectorAll('.target-side-btn');
-sideBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    sideBtns.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    customizerTargetSide = btn.getAttribute('data-target') as 'A' | 'B';
-    renderCustomizerForm();
-  });
-});
-
-function getActiveCustomizerState(): FighterState {
-  return customizerTargetSide === 'A' ? fighterA : fighterB;
-}
-
-function renderCustomizerForm() {
-  const st = getActiveCustomizerState();
-  const app = st.appearance;
-
-  // Name & Class
-  (document.getElementById('cust-name-input') as HTMLInputElement).value = app.name;
-  (document.getElementById('cust-style-select') as HTMLSelectElement).value = st.style;
-  (document.getElementById('cust-lvl-slider') as HTMLInputElement).value = st.level.toString();
-  document.getElementById('cust-lvl-val')!.textContent = st.level.toString();
-  (document.getElementById('cust-build-select') as HTMLSelectElement).value = st.build;
-
-  // Swatches: Skin
-  const skinContainer = document.getElementById('swatches-skin')!;
-  skinContainer.innerHTML = SKIN_TONES.map(s => `
-    <button class="swatch-btn ${s.value === app.skinTone ? 'active' : ''}" style="background-color: ${s.value};" data-prop="skinTone" data-val="${s.value}" title="${s.name}"></button>
-  `).join('');
-
-  // Swatches: Eyes
-  const eyesContainer = document.getElementById('swatches-eyes')!;
-  eyesContainer.innerHTML = EYE_COLORS.map(e => `
-    <button class="swatch-btn ${e.value === app.eyeColor ? 'active' : ''}" style="background-color: ${e.value};" data-prop="eyeColor" data-val="${e.value}" title="${e.name}"></button>
-  `).join('');
-
-  // Swatches: Hair
-  const hairContainer = document.getElementById('swatches-hair')!;
-  hairContainer.innerHTML = HAIR_COLORS.map(h => `
-    <button class="swatch-btn ${h.value === app.hairColor ? 'active' : ''}" style="background-color: ${h.value};" data-prop="hairColor" data-val="${h.value}" title="${h.name}"></button>
-  `).join('');
-
-  // Swatches: Clothing
-  const clothingContainer = document.getElementById('swatches-clothing')!;
-  clothingContainer.innerHTML = CLOTHING_COLORS.map(c => `
-    <button class="swatch-btn ${c.main === app.clothingColor ? 'active' : ''}" style="background: linear-gradient(135deg, ${c.main} 50%, ${c.sec} 50%);" data-prop="clothingColor" data-val="${c.main}" data-sec="${c.sec}" title="${c.name}"></button>
-  `).join('');
-
-  // Toggle buttons active state
-  updateToggleButtons('gender', app.gender);
-  updateToggleButtons('hairStyle', app.hairStyle);
-  updateToggleButtons('facialHair', app.facialHair);
-  updateToggleButtons('clothing', app.clothing);
-  updateToggleButtons('accessory', app.accessory);
-  updateToggleButtons('cardBackground', app.cardBackground);
-
-  // Live SVG Preview
-  updateCustomizerPreview();
-}
-
-function updateToggleButtons(prop: string, val: string) {
-  document.querySelectorAll(`.choice-btn[data-prop="${prop}"]`).forEach(btn => {
-    btn.classList.toggle('active', btn.getAttribute('data-val') === val);
-  });
-}
-
-function updateCustomizerPreview() {
-  const st = getActiveCustomizerState();
-  const box = document.getElementById('customizer-live-avatar')!;
-  box.innerHTML = renderPaperdollSVG(st.appearance, { width: 280, height: 340 });
-  document.getElementById('customizer-live-name')!.textContent = st.appearance.name;
-}
-
-// BIND CUSTOMIZER INPUTS
-document.getElementById('cust-name-input')!.addEventListener('input', (e) => {
-  const st = getActiveCustomizerState();
-  st.appearance.name = (e.target as HTMLInputElement).value;
-  updateCustomizerPreview();
-});
-
-document.getElementById('cust-style-select')!.addEventListener('change', (e) => {
-  const st = getActiveCustomizerState();
-  st.style = (e.target as HTMLSelectElement).value as StyleId;
-  updateArenaCard(customizerTargetSide);
-});
-
-document.getElementById('cust-lvl-slider')!.addEventListener('input', (e) => {
-  const st = getActiveCustomizerState();
-  st.level = parseInt((e.target as HTMLInputElement).value, 10);
-  document.getElementById('cust-lvl-val')!.textContent = st.level.toString();
-  updateArenaCard(customizerTargetSide);
-});
-
-document.getElementById('cust-build-select')!.addEventListener('change', (e) => {
-  const st = getActiveCustomizerState();
-  st.build = (e.target as HTMLSelectElement).value as BuildType;
-  updateArenaCard(customizerTargetSide);
-});
-
-// Click delegation for buttons and swatches
-document.addEventListener('click', (e) => {
-  const target = (e.target as HTMLElement).closest('[data-prop]') as HTMLElement;
-  if (!target) return;
-
-  const prop = target.getAttribute('data-prop');
-  const val = target.getAttribute('data-val');
-  if (!prop || !val) return;
-
-  const st = getActiveCustomizerState();
-
-  if (prop === 'clothingColor') {
-    st.appearance.clothingColor = val;
-    st.appearance.clothingSecondaryColor = target.getAttribute('data-sec') ?? '#e74c3c';
-  } else if (prop in st.appearance) {
-    (st.appearance as any)[prop] = val;
-    if (prop === 'hairColor') {
-      st.appearance.facialHairColor = val;
+  setTimeout(() => {
+    if (activeCombatCallback) {
+      activeCombatCallback(isPlayerWinner);
     }
+  }, 600);
+}
+
+function showOutcomePopup(title: string, desc: string, rewardsHtml: string) {
+  const popup = document.getElementById('combat-outcome-popup')!;
+  popup.style.display = 'flex';
+  document.getElementById('outcome-title')!.textContent = title;
+  document.getElementById('outcome-desc')!.textContent = desc;
+  document.getElementById('outcome-rewards-box')!.innerHTML = rewardsHtml;
+
+  document.getElementById('outcome-continue-btn')!.onclick = () => {
+    popup.style.display = 'none';
+    document.getElementById('combat-overlay-modal')!.style.display = 'none';
+  };
+}
+
+document.getElementById('fight-close-btn')?.addEventListener('click', () => {
+  document.getElementById('combat-overlay-modal')!.style.display = 'none';
+});
+
+// ========================================================
+// CHARACTER CREATION ONBOARDING WIZARD
+// ========================================================
+let wizSelectedStyle: StyleId = 'carrasco';
+let wizSelectedWeapon: string = 'colt_1911';
+let wizAppearance: CharacterAppearance = { ...DEFAULT_CARRASCO };
+
+function openCharacterCreationModal() {
+  const modal = document.getElementById('creation-modal')!;
+  modal.style.display = 'flex';
+  wizAppearance = { ...DEFAULT_CARRASCO };
+  wizSelectedStyle = 'carrasco';
+  wizSelectedWeapon = 'colt_1911';
+  updateWizardPreview();
+}
+
+function updateWizardPreview() {
+  const svgBox = document.getElementById('wizard-avatar-svg');
+  if (svgBox) {
+    svgBox.innerHTML = renderPaperdollSVG(wizAppearance, { width: 260, height: 320 });
   }
 
-  renderCustomizerForm();
+  const holder = document.getElementById('wizard-weapon-holder');
+  if (holder) {
+    const sp = getWeaponSprite(wizSelectedWeapon, 'preview');
+    holder.innerHTML = sp.svg;
+  }
+
+  document.getElementById('wizard-live-name')!.textContent = wizAppearance.name;
+  const badge = document.getElementById('wizard-live-style')!;
+  badge.textContent = wizSelectedStyle.toUpperCase();
+  badge.className = `gg-style-badge badge-${wizSelectedStyle}`;
+}
+
+document.getElementById('wiz-name-input')?.addEventListener('input', (e) => {
+  wizAppearance.name = (e.target as HTMLInputElement).value;
+  updateWizardPreview();
 });
 
-// RANDOMIZE AVATAR
-document.getElementById('randomize-avatar-btn')!.addEventListener('click', () => {
-  const st = getActiveCustomizerState();
-  st.appearance = generateRandomAppearance(st.style);
-  renderCustomizerForm();
+// Class picker in wizard
+document.querySelectorAll('.class-card-pick').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.class-card-pick').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    wizSelectedStyle = (card.getAttribute('data-class') as StyleId) || 'carrasco';
+    if (wizSelectedStyle === 'carrasco') wizAppearance = { ...DEFAULT_CARRASCO, name: wizAppearance.name };
+    else if (wizSelectedStyle === 'muralha') wizAppearance = { ...DEFAULT_MURALHA, name: wizAppearance.name };
+    else wizAppearance = { ...DEFAULT_MALANDRO, name: wizAppearance.name };
+    updateWizardPreview();
+  });
+});
+
+// Appearance buttons in wizard
+document.addEventListener('click', (e) => {
+  const target = (e.target as HTMLElement).closest('[data-wiz-prop]') as HTMLElement | null;
+  if (!target) return;
+  const prop = target.getAttribute('data-wiz-prop');
+  const val = target.getAttribute('data-wiz-val');
+  if (!prop || !val) return;
+
+  target.parentElement?.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('active'));
+  target.classList.add('active');
+
+  (wizAppearance as any)[prop] = val;
+  updateWizardPreview();
+});
+
+// Starter weapon picker
+document.querySelectorAll('#wiz-starter-weapon-row .choice-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#wiz-starter-weapon-row .choice-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    wizSelectedWeapon = btn.getAttribute('data-wep-start') || 'colt_1911';
+    updateWizardPreview();
+  });
+});
+
+// Finish Creation Button
+document.getElementById('finish-character-creation-btn')?.addEventListener('click', () => {
+  const nameInput = (document.getElementById('wiz-name-input') as HTMLInputElement).value.trim();
+  const finalName = nameInput || 'Don Vincenzo "O Silencioso"';
+  wizAppearance.name = finalName;
+
+  const newPlayer = createNewPlayer(finalName, wizSelectedStyle, wizAppearance, wizSelectedWeapon);
+  Object.assign(gameState.getPlayer(), newPlayer);
+  gameState.saveToStorage();
+
+  document.getElementById('creation-modal')!.style.display = 'none';
+  sound.playCrit();
+  updateHUD();
+  renderActiveTab('perfil');
 });
 
 // ========================================================
-// DASHBOARD SIMULATOR (VIEW 3)
+// SIMULATOR VIEW INTEGRATION
 // ========================================================
-
 function renderDashboard(level: number) {
   activeMatrixLevel = level;
   if (!cachedReport) {
@@ -491,13 +1258,12 @@ function renderDashboard(level: number) {
   const matrixObj = cachedReport.baseMatrices.find(m => m.level === level);
   if (!matrixObj) return;
 
-  // Heatmap 3x3 Table
   const tableContainer = document.getElementById('matrix-table-container')!;
   let tableHtml = `
     <table class="matrix-heatmap-table">
       <thead>
         <tr>
-          <th>Atacante \ Defensor</th>
+          <th>Atacante \\ Defensor</th>
           <th>Carrasco</th>
           <th>Muralha</th>
           <th>Malandro</th>
@@ -521,7 +1287,6 @@ function renderDashboard(level: number) {
   tableHtml += `</tbody></table>`;
   tableContainer.innerHTML = tableHtml;
 
-  // Details Table
   const detailsContainer = document.getElementById('matchup-details-container')!;
   let detailsHtml = `
     <table>
@@ -555,7 +1320,6 @@ function renderDashboard(level: number) {
   detailsHtml += `</tbody></table>`;
   detailsContainer.innerHTML = detailsHtml;
 
-  // Alerts
   const alertsList = document.getElementById('dashboard-alerts-list')!;
   alertsList.innerHTML = cachedReport.alerts.map(a => `
     <div class="alert-item">
@@ -574,15 +1338,26 @@ document.querySelectorAll('.matrix-tab-btn').forEach(btn => {
   });
 });
 
-const runBrowserSimBtn = document.getElementById('run-browser-sim-btn')!;
-const simLiveStatus = document.getElementById('sim-live-status')!;
-runBrowserSimBtn.addEventListener('click', () => {
-  simLiveStatus.textContent = 'Simulando 3.000 lutas por célula...';
+document.getElementById('run-browser-sim-btn')?.addEventListener('click', () => {
+  const statusEl = document.getElementById('sim-live-status')!;
+  statusEl.textContent = 'Simulando 3.000 combates por célula...';
   setTimeout(() => {
     const t0 = performance.now();
     cachedReport = runFullSimulation([1, 10, 50, 100], 3000, Date.now(), config);
     const elapsed = (performance.now() - t0).toFixed(0);
-    simLiveStatus.textContent = `Concluído em ${elapsed}ms! Matrizes atualizadas.`;
+    statusEl.textContent = `Concluído em ${elapsed}ms!`;
     renderDashboard(activeMatrixLevel);
-  }, 50);
+  }, 40);
 });
+
+// ========================================================
+// START GAME RUNTIME
+// ========================================================
+window.addEventListener('DOMContentLoaded', () => {
+  initGame();
+});
+
+// Run immediate in case DOM already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  initGame();
+}

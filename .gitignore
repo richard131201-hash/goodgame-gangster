@@ -5,3 +5,5 @@ output/
 sim-output/
 *.log
 *.csv
+.vercel
+

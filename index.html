@@ -3,446 +3,435 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SUBMUNDO — Gangster Automata</title>
+  <title>SUBMUNDO — Gangster RPG (Estilo Goodgame Gangster)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/web/style.css" />
 </head>
 <body>
   <div id="app">
-    <!-- TOP NAVIGATION BAR -->
-    <header class="app-header">
-      <div class="header-brand">
-        <div class="logo-emblem">♠</div>
-        <div class="brand-text">
-          <h1>SUBMUNDO</h1>
-          <span class="subtitle">GANGSTER COMBAT ENGINE • ESTILO CLÁSSICO 1v1</span>
+
+    <!-- ============================================== -->
+    <!-- TOP BAR HUD (GOODGAME GANGSTER STATUS BAR)     -->
+    <!-- ============================================== -->
+    <header class="hud-header">
+      <!-- PLAYER IDENTITY WIDGET -->
+      <div class="hud-player-widget">
+        <div class="hud-avatar-thumb" id="hud-avatar-thumb">
+          <!-- Mini SVG avatar thumb -->
+        </div>
+        <div class="hud-player-info">
+          <div class="hud-name-row">
+            <span class="hud-player-name" id="hud-name">Carregando...</span>
+            <span class="gg-style-badge" id="hud-style-badge">CARRASCO</span>
+          </div>
+          <div class="hud-xp-box" title="Experiência do Gangster">
+            <div class="hud-lvl-circle" id="hud-lvl">1</div>
+            <div class="hud-xp-track">
+              <div class="hud-xp-fill" id="hud-xp-fill" style="width: 0%;"></div>
+              <span class="hud-xp-text" id="hud-xp-text">0 / 100 XP</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <nav class="header-nav">
-        <button id="nav-arena-btn" class="nav-tab active">
-          <span class="tab-icon">⚔️</span> Duelo 1v1 (Arena)
-        </button>
-        <button id="nav-customizer-btn" class="nav-tab">
-          <span class="tab-icon">👔</span> Criador de Gangster
-        </button>
-        <button id="nav-sim-btn" class="nav-tab">
-          <span class="tab-icon">📊</span> Simulador de Balanceamento
-        </button>
-        <button id="audio-toggle-btn" class="nav-btn-icon" title="Ativar/Desativar Sons">
-          🔊
-        </button>
-      </nav>
+      <!-- RESOURCE COUNTERS -->
+      <div class="hud-resources">
+        <!-- ENERGIA -->
+        <div class="res-card res-energy" title="Energia para Trabalhos e Missões">
+          <div class="res-icon">⚡</div>
+          <div class="res-details">
+            <span class="res-label">ENERGIA</span>
+            <span class="res-val" id="hud-energy">100 / 100</span>
+          </div>
+          <button id="quick-refill-energy-btn" class="res-plus-btn" title="Recarregar Energia">+</button>
+        </div>
+
+        <!-- CASH (DÓLARES) -->
+        <div class="res-card res-cash" title="Cash mafioso para treinos, armas e itens">
+          <div class="res-icon">💵</div>
+          <div class="res-details">
+            <span class="res-label">CASH</span>
+            <span class="res-val" id="hud-cash">$500</span>
+          </div>
+        </div>
+
+        <!-- OURO PREMIUM -->
+        <div class="res-card res-gold" title="Ouro do Sindicato">
+          <div class="res-icon">🪙</div>
+          <div class="res-details">
+            <span class="res-label">OURO</span>
+            <span class="res-val" id="hud-gold">25</span>
+          </div>
+        </div>
+
+        <!-- RESPEITO (HONRA) -->
+        <div class="res-card res-respect" title="Pontos de Respeito nos Duelos">
+          <div class="res-icon">⭐</div>
+          <div class="res-details">
+            <span class="res-label">RESPEITO</span>
+            <span class="res-val" id="hud-respect">100</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SYSTEM ACTIONS -->
+      <div class="hud-system-actions">
+        <button id="audio-toggle-btn" class="hud-btn-icon" title="Ativar/Desativar Som">🔊</button>
+        <button id="new-character-btn" class="hud-btn-outline" title="Criar Novo Personagem / Reiniciar">↺ Novo Gangster</button>
+      </div>
     </header>
 
-    <!-- MAIN VIEWS -->
-    <main class="app-main">
+    <!-- ============================================== -->
+    <!-- MAIN NAVIGATION TABS (7 GOODGAME GANGSTER TABS)-->
+    <!-- ============================================== -->
+    <nav class="game-main-nav">
+      <button class="game-nav-tab active" data-tab="perfil">
+        <span class="tab-emoji">👔</span> Perfil & Atributos
+      </button>
+      <button class="game-nav-tab" data-tab="missoes">
+        <span class="tab-emoji">📜</span> Missões do Don
+      </button>
+      <button class="game-nav-tab" data-tab="duelos">
+        <span class="tab-emoji">⚔️</span> Duelos (Arena 1v1)
+      </button>
+      <button class="game-nav-tab" data-tab="loja">
+        <span class="tab-emoji">🏬</span> Mercado Clandestino
+      </button>
+      <button class="game-nav-tab" data-tab="ranking">
+        <span class="tab-emoji">🏆</span> Ranking da Cidade
+      </button>
+      <button class="game-nav-tab" data-tab="familia">
+        <span class="tab-emoji">🤝</span> Família Mafiosa
+      </button>
+      <button class="game-nav-tab" data-tab="eventos">
+        <span class="tab-emoji">💥</span> Operações & Chefão
+      </button>
+      <button class="game-nav-tab" data-tab="simulador">
+        <span class="tab-emoji">📊</span> Simulador
+      </button>
+    </nav>
+
+    <!-- ============================================== -->
+    <!-- MAIN VIEWS CONTAINER                           -->
+    <!-- ============================================== -->
+    <main class="game-main-content">
 
       <!-- ============================================== -->
-      <!-- VIEW 1: ARENA 1v1 FOCADA (ESTILO GOODGAME GANGSTER) -->
+      <!-- VIEW 1: PERFIL & ATRIBUTOS                     -->
       <!-- ============================================== -->
-      <section id="arena-view" class="view-section active">
-        <!-- ARENA TOP CONTROL BAR -->
-        <div class="arena-top-bar">
-          <div class="round-status-box">
-            <span class="round-label">ESTADO DA LUTA</span>
-            <span class="round-value" id="arena-round-display">PRONTO PARA O DUELO</span>
+      <section id="view-perfil" class="game-view-section active">
+        <div class="profile-layout-grid">
+          
+          <!-- LEFT: PAPERDOLL AVATAR & EQUIPPED GEAR SLOTS -->
+          <div class="profile-doll-panel">
+            <div class="profile-paperdoll-wrapper">
+              <div class="profile-avatar-frame" id="profile-avatar-frame">
+                <div class="avatar-svg-container" id="profile-avatar-svg"></div>
+                <div class="avatar-weapon-holder side-a" id="profile-weapon-holder"></div>
+              </div>
+            </div>
+
+            <!-- EQUIPPED SLOTS -->
+            <div class="equipped-slots-grid">
+              <div class="gear-slot slot-weapon" id="slot-equipped-weapon" title="Arma Primária Equipada">
+                <span class="slot-badge">ARMA</span>
+                <div class="slot-content" id="equipped-wep-display">🔫 Colt M1911</div>
+              </div>
+              <div class="gear-slot slot-armor" id="slot-equipped-armor" title="Blindagem/Colete Equipado">
+                <span class="slot-badge">BLINDAGEM</span>
+                <div class="slot-content" id="equipped-armor-display">Nenhum</div>
+              </div>
+              <div class="gear-slot slot-accessory" id="slot-equipped-accessory" title="Amuleto/Acessório Equipado">
+                <span class="slot-badge">ACESSÓRIO</span>
+                <div class="slot-content" id="equipped-acc-display">Nenhum</div>
+              </div>
+            </div>
+
+            <button id="open-customizer-modal-btn" class="arena-btn-secondary" style="width: 100%; margin-top: 10px;">
+              ✂️ Personalizar Visual do Gangster
+            </button>
           </div>
 
-          <div class="arena-action-controls">
-            <button id="fight-play-btn" class="arena-btn-primary">
-              <span class="btn-icon">⚡</span> INICIAR COMBATE
-            </button>
-            <button id="fight-step-btn" class="arena-btn-secondary" title="Avançar 1 Golpe">
-              ▶ Passo
-            </button>
-            <button id="fight-skip-btn" class="arena-btn-secondary" title="Pular para o Vencedor">
-              ⏩ Instantâneo
-            </button>
-            <button id="fight-reset-btn" class="arena-btn-secondary" title="Reiniciar Luta">
-              ↺ Reiniciar
-            </button>
-          </div>
-
-          <div class="arena-speed-selector">
-            <span class="speed-label">Velocidade:</span>
-            <button class="spd-btn" data-speed="900">0.5x</button>
-            <button class="spd-btn active" data-speed="450">1x</button>
-            <button class="spd-btn" data-speed="200">2x</button>
-            <button class="spd-btn" data-speed="60">5x</button>
-          </div>
-
-          <button id="open-customizer-btn" class="arena-btn-customizer">
-            ✏️ Editar Personagens
-          </button>
-        </div>
-
-        <!-- 1V1 COMBAT STAGE (EXACT GOODGAME GANGSTER CARDS) -->
-        <div class="combat-stage-wrapper">
-          <!-- FIGHTER A CARD -->
-          <div class="gg-fighter-card card-side-a" id="gg-card-a">
-            <!-- CARD HEADER -->
-            <div class="gg-card-header">
-              <div class="gg-name-col">
-                <h2 class="gg-fighter-name" id="name-display-a">Vincenzo "O Carrasco"</h2>
-                <div class="gg-sub-info">
-                  <span class="gg-style-badge badge-carrasco" id="style-badge-a">CARRASCO</span>
-                  <span class="gg-level-badge" id="level-badge-a">NÍVEL 1</span>
-                  <span class="gg-build-badge" id="build-badge-a">Equilibrado</span>
-                </div>
+          <!-- CENTER: STATS SHEET, EVOLUTION & CASH TRAINING -->
+          <div class="profile-stats-panel">
+            <div class="panel-header-banner">
+              <h3>Evolução & Treinamento de Atributos</h3>
+              <div class="free-points-badge" id="free-points-indicator">
+                Pontos Livres para Distribuir: <strong id="free-points-val">0</strong>
               </div>
             </div>
 
-            <!-- HP BAR PROMINENT -->
-            <div class="gg-hp-container">
-              <div class="gg-hp-labels">
-                <span class="hp-title">PONTOS DE VIDA</span>
-                <span class="hp-numbers" id="hp-text-a">500 / 500 (100%)</span>
-              </div>
-              <div class="gg-hp-bar-track">
-                <div class="gg-hp-bar-fill" id="hp-fill-a" style="width: 100%;"></div>
-              </div>
-            </div>
-
-            <!-- AVATAR PAPERDOLL CANVAS/SVG -->
-            <div class="gg-avatar-frame">
-              <div class="avatar-svg-container" id="avatar-container-a">
-                <!-- SVG rendered here -->
-              </div>
-              <div class="floating-damage-zone" id="float-zone-a"></div>
-            </div>
-
-            <!-- ACTIVE PASSIVES BAR -->
-            <div class="gg-active-passives" id="passives-bar-a">
-              <span class="passive-pill pill-abertura">⚡ Golpe de Abertura</span>
-              <span class="passive-pill pill-execucao">🗡️ Execução (-25% Arm.)</span>
-            </div>
-
-            <!-- 4 ATTRIBUTES FOOTER (EXACT GG GANGSTER) -->
-            <div class="gg-attributes-grid">
+            <div class="attributes-evolution-table">
               <!-- ATAQUE -->
-              <div class="gg-stat-box stat-attack">
-                <div class="stat-icon">⚔️</div>
-                <div class="stat-info">
-                  <span class="stat-name">Ataque</span>
-                  <span class="stat-number" id="stat-atk-a">220</span>
+              <div class="attr-row">
+                <div class="attr-meta">
+                  <span class="attr-icon">⚔️</span>
+                  <div class="attr-text-col">
+                    <strong class="attr-title">Ataque Base</strong>
+                    <span class="attr-sub">Dano direto dos golpes</span>
+                  </div>
+                </div>
+                <div class="attr-pts-display">
+                  <span class="attr-pts-total" id="prof-atk-pts">12</span> pts
+                  <span class="attr-calc-val" id="prof-atk-effective">264 Dano</span>
+                </div>
+                <div class="attr-actions">
+                  <button class="btn-attr-add" data-stat="attack" title="Distribuir Ponto Livre">+1</button>
+                  <button class="btn-attr-train" data-train="attack" id="train-btn-attack">
+                    Treinar (<span id="train-cost-attack">$100</span>)
+                  </button>
                 </div>
               </div>
 
               <!-- VIDA -->
-              <div class="gg-stat-box stat-life">
-                <div class="stat-icon">❤️</div>
-                <div class="stat-info">
-                  <span class="stat-name">Vida</span>
-                  <span class="stat-number" id="stat-life-a">500</span>
+              <div class="attr-row">
+                <div class="attr-meta">
+                  <span class="attr-icon">❤️</span>
+                  <div class="attr-text-col">
+                    <strong class="attr-title">Vida Total</strong>
+                    <span class="attr-sub">Pontos de vida do personagem</span>
+                  </div>
+                </div>
+                <div class="attr-pts-display">
+                  <span class="attr-pts-total" id="prof-life-pts">8</span> pts
+                  <span class="attr-calc-val" id="prof-life-effective">400 HP</span>
+                </div>
+                <div class="attr-actions">
+                  <button class="btn-attr-add" data-stat="life" title="Distribuir Ponto Livre">+1</button>
+                  <button class="btn-attr-train" data-train="life" id="train-btn-life">
+                    Treinar (<span id="train-cost-life">$100</span>)
+                  </button>
                 </div>
               </div>
 
               <!-- ASTÚCIA -->
-              <div class="gg-stat-box stat-astucia">
-                <div class="stat-icon">🎯</div>
-                <div class="stat-info">
-                  <span class="stat-name">Astúcia</span>
-                  <span class="stat-number" id="stat-ast-a">33.3%</span>
+              <div class="attr-row">
+                <div class="attr-meta">
+                  <span class="attr-icon">🎯</span>
+                  <div class="attr-text-col">
+                    <strong class="attr-title">Astúcia</strong>
+                    <span class="attr-sub">Chance de crítico & iniciativa</span>
+                  </div>
+                </div>
+                <div class="attr-pts-display">
+                  <span class="attr-pts-total" id="prof-ast-pts">10</span> pts
+                  <span class="attr-calc-val" id="prof-ast-effective">33.3% Crítico</span>
+                </div>
+                <div class="attr-actions">
+                  <button class="btn-attr-add" data-stat="astucia" title="Distribuir Ponto Livre">+1</button>
+                  <button class="btn-attr-train" data-train="astucia" id="train-btn-astucia">
+                    Treinar (<span id="train-cost-astucia">$20</span>)
+                  </button>
                 </div>
               </div>
 
               <!-- TENACIDADE -->
-              <div class="gg-stat-box stat-tenacidade">
-                <div class="stat-icon">🛡️</div>
-                <div class="stat-info">
-                  <span class="stat-name">Tenacidade</span>
-                  <span class="stat-number" id="stat-ten-a">33.3%</span>
+              <div class="attr-row">
+                <div class="attr-meta">
+                  <span class="attr-icon">🛡️</span>
+                  <div class="attr-text-col">
+                    <strong class="attr-title">Tenacidade</strong>
+                    <span class="attr-sub">Mitiga o bônus de crítico sofrido</span>
+                  </div>
+                </div>
+                <div class="attr-pts-display">
+                  <span class="attr-pts-total" id="prof-ten-pts">10</span> pts
+                  <span class="attr-calc-val" id="prof-ten-effective">33.3% Redução</span>
+                </div>
+                <div class="attr-actions">
+                  <button class="btn-attr-add" data-stat="tenacidade" title="Distribuir Ponto Livre">+1</button>
+                  <button class="btn-attr-train" data-train="tenacidade" id="train-btn-tenacidade">
+                    Treinar (<span id="train-cost-tenacidade">$20</span>)
+                  </button>
                 </div>
               </div>
             </div>
 
-            <!-- SECONDARY RATINGS (ARMOR & DODGE) -->
-            <div class="gg-secondary-stats">
-              <span class="sec-stat">Armadura: <strong id="stat-arm-a">15%</strong></span>
-              <span class="sec-stat">Esquiva: <strong id="stat-ddg-a">5%</strong></span>
+            <!-- DERIVED RATINGS SUMMARY -->
+            <div class="derived-stats-box">
+              <div class="derived-col">
+                <span class="d-label">Armadura Fixa:</span>
+                <strong class="d-val" id="prof-armor-val">15%</strong>
+              </div>
+              <div class="derived-col">
+                <span class="d-label">Esquiva Fixa:</span>
+                <strong class="d-val" id="prof-dodge-val">5%</strong>
+              </div>
+              <div class="derived-col">
+                <span class="d-label">Bônus de Crítico:</span>
+                <strong class="d-val" id="prof-critbonus-val">+80% a +120%</strong>
+              </div>
+              <div class="derived-col">
+                <span class="d-label">Passivas Ativas:</span>
+                <strong class="d-val" id="prof-passives-summary">Golpe de Abertura, Execução</strong>
+              </div>
             </div>
           </div>
 
-          <!-- VERSUS CLASH CENTER -->
-          <div class="gg-vs-center">
-            <div class="vs-circle" id="vs-circle-emblem">VS</div>
-            <div class="vs-swords-fx" id="clash-swords">⚔️</div>
-          </div>
-
-          <!-- FIGHTER B CARD -->
-          <div class="gg-fighter-card card-side-b" id="gg-card-b">
-            <!-- CARD HEADER -->
-            <div class="gg-card-header">
-              <div class="gg-name-col">
-                <h2 class="gg-fighter-name" id="name-display-b">Salvatore "A Muralha"</h2>
-                <div class="gg-sub-info">
-                  <span class="gg-style-badge badge-muralha" id="style-badge-b">MURALHA</span>
-                  <span class="gg-level-badge" id="level-badge-b">NÍVEL 1</span>
-                  <span class="gg-build-badge" id="build-badge-b">Equilibrado</span>
-                </div>
-              </div>
+          <!-- RIGHT: INVENTORY / MOCHILA -->
+          <div class="profile-inventory-panel">
+            <div class="panel-header-banner">
+              <h3>Mochila & Inventário</h3>
+              <span class="inv-capacity-text" id="inv-capacity-count">0 / 12 slots</span>
             </div>
 
-            <!-- HP BAR PROMINENT -->
-            <div class="gg-hp-container">
-              <div class="gg-hp-labels">
-                <span class="hp-title">PONTOS DE VIDA</span>
-                <span class="hp-numbers" id="hp-text-b">1950 / 1950 (100%)</span>
-              </div>
-              <div class="gg-hp-bar-track">
-                <div class="gg-hp-bar-fill" id="hp-fill-b" style="width: 100%;"></div>
-              </div>
+            <div class="inventory-slots-grid" id="inventory-grid">
+              <!-- 12 slots dynamically rendered -->
             </div>
 
-            <!-- AVATAR PAPERDOLL CANVAS/SVG -->
-            <div class="gg-avatar-frame">
-              <div class="avatar-svg-container" id="avatar-container-b">
-                <!-- SVG rendered here -->
-              </div>
-              <div class="floating-damage-zone" id="float-zone-b"></div>
-            </div>
-
-            <!-- ACTIVE PASSIVES BAR -->
-            <div class="gg-active-passives" id="passives-bar-b">
-              <span class="passive-pill pill-intim" id="pill-intim-b">🛡️ Intimidação (-25%)</span>
-              <span class="passive-pill pill-casca">🧱 Casca Grossa (x1.4)</span>
-            </div>
-
-            <!-- 4 ATTRIBUTES FOOTER (EXACT GG GANGSTER) -->
-            <div class="gg-attributes-grid">
-              <!-- ATAQUE -->
-              <div class="gg-stat-box stat-attack">
-                <div class="stat-icon">⚔️</div>
-                <div class="stat-info">
-                  <span class="stat-name">Ataque</span>
-                  <span class="stat-number" id="stat-atk-b">55</span>
-                </div>
-              </div>
-
-              <!-- VIDA -->
-              <div class="gg-stat-box stat-life">
-                <div class="stat-icon">❤️</div>
-                <div class="stat-info">
-                  <span class="stat-name">Vida</span>
-                  <span class="stat-number" id="stat-life-b">1950</span>
-                </div>
-              </div>
-
-              <!-- ASTÚCIA -->
-              <div class="gg-stat-box stat-astucia">
-                <div class="stat-icon">🎯</div>
-                <div class="stat-info">
-                  <span class="stat-name">Astúcia</span>
-                  <span class="stat-number" id="stat-ast-b">33.3%</span>
-                </div>
-              </div>
-
-              <!-- TENACIDADE -->
-              <div class="gg-stat-box stat-tenacidade">
-                <div class="stat-icon">🛡️</div>
-                <div class="stat-info">
-                  <span class="stat-name">Tenacidade</span>
-                  <span class="stat-number" id="stat-ten-b">46.7%</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- SECONDARY RATINGS (ARMOR & DODGE) -->
-            <div class="gg-secondary-stats">
-              <span class="sec-stat">Armadura: <strong id="stat-arm-b">25%</strong></span>
-              <span class="sec-stat">Esquiva: <strong id="stat-ddg-b">5%</strong></span>
+            <div class="inv-item-details-box" id="inv-details-card">
+              <span class="text-muted" style="font-size: 12px;">Selecione um item da mochila para ver detalhes, equipar ou vender.</span>
             </div>
           </div>
-        </div>
 
-        <!-- RECENT COMBAT LOG TICKER -->
-        <div class="combat-ticker-box">
-          <div class="ticker-title">ÚLTIMO GOLPE:</div>
-          <div class="ticker-content" id="latest-strike-ticker">
-            Aguardando início do combate. Clique em "INICIAR COMBATE" acima.
-          </div>
-          <button id="toggle-full-log-btn" class="ticker-expand-btn">Ver Histórico Completo ▾</button>
-        </div>
-
-        <div class="full-log-drawer" id="full-log-drawer" style="display: none;">
-          <div class="full-log-list" id="full-log-list"></div>
         </div>
       </section>
 
       <!-- ============================================== -->
-      <!-- VIEW 2: CRIADOR DE GANGSTER (CUSTOMIZADOR PAPERDOLL) -->
+      <!-- VIEW 2: MISSÕES DO DON (GODFATHER CONTRACTS)   -->
       <!-- ============================================== -->
-      <section id="customizer-view" class="view-section">
-        <div class="customizer-header">
-          <h2>👔 Criador e Personalizador de Personagem</h2>
-          <p>Personalize sexo, cabelo, tom de pele, roupas, acessórios e atributos para cada lutador.</p>
+      <section id="view-missoes" class="view-section">
+        <div class="missions-header-banner">
+          <div class="don-portrait-thumb">🌹</div>
+          <div class="don-speech-bubble">
+            <h4>Contratos de Honra do Don Corleone</h4>
+            <p id="don-quote">"A cidade respeita quem tem coragem para cumprir o que promete. Escolha um trabalho, traga a recompensa para a Família e ganhe seu lugar na mesa de honra."</p>
+          </div>
         </div>
 
-        <div class="customizer-layout">
-          <!-- LEFT: LIVE PREVIEW CARD -->
-          <div class="customizer-preview-col">
-            <div class="side-selector-tabs">
-              <button class="target-side-btn active" data-target="A">Editar Lutador A (Esquerda)</button>
-              <button class="target-side-btn" data-target="B">Editar Lutador B (Direita)</button>
-            </div>
+        <div class="missions-catalog-grid" id="missions-list-container">
+          <!-- Mission cards dynamically populated via JS -->
+        </div>
+      </section>
 
-            <div class="preview-card-wrap">
-              <div class="preview-avatar-box" id="customizer-live-avatar">
-                <!-- Live SVG rendered here -->
-              </div>
-              <div class="preview-name-tag" id="customizer-live-name">Vincenzo "O Carrasco"</div>
-            </div>
+      <!-- ============================================== -->
+      <!-- VIEW 3: DUELOS (ARENA PvP MATCHMAKING)         -->
+      <!-- ============================================== -->
+      <section id="view-duelos" class="view-section">
+        <div class="duels-header-banner">
+          <div>
+            <h3>Arena Clandestina de Duelos 1v1</h3>
+            <p>Desafie gangsters rivais do submundo, roube seu cash e conquiste pontos de Respeito no Ranking.</p>
+          </div>
+          <button id="refresh-rivals-btn" class="arena-btn-secondary">🔄 Procurar Novos Rivais</button>
+        </div>
 
-            <div class="preview-actions">
-              <button id="randomize-avatar-btn" class="btn-action-outline">🎲 Gerar Aleatório</button>
-              <button id="apply-to-arena-btn" class="arena-btn-primary">⚔️ Salvar e Voltar ao Duelo</button>
-            </div>
+        <div class="duels-rivals-grid" id="duels-rivals-container">
+          <!-- Rival cards dynamically generated via JS -->
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW 4: MERCADO CLANDESTINO (LOJA DE ARMAS)    -->
+      <!-- ============================================== -->
+      <section id="view-loja" class="view-section">
+        <div class="shop-header-banner">
+          <div>
+            <h3>Traficante de Armas & Mercado Negro</h3>
+            <p>Adquira pistolas, shotguns, metralhadoras, fuzis pesados, blindagens corporais e consumíveis mafiosos.</p>
+          </div>
+          <div class="shop-filter-tabs" id="shop-category-filters">
+            <button class="choice-btn active" data-scat="all">Todos os Artigos</button>
+            <button class="choice-btn" data-scat="weapon">🔫 Armas (15)</button>
+            <button class="choice-btn" data-scat="armor">🛡️ Blindagens</button>
+            <button class="choice-btn" data-scat="accessory">💍 Amuletos</button>
+            <button class="choice-btn" data-scat="consumable">🥃 Consumíveis</button>
+          </div>
+        </div>
+
+        <div class="shop-catalog-grid" id="shop-items-container">
+          <!-- Items dynamically generated via JS -->
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW 5: RANKING DA CIDADE                      -->
+      <!-- ============================================== -->
+      <section id="view-ranking" class="view-section">
+        <div class="ranking-header-banner">
+          <h3>Hall da Fama do Submundo Municipal</h3>
+          <p>Os maiores líderes de famílias, assassinos e chefões temidos de toda a cidade.</p>
+        </div>
+
+        <div class="ranking-table-wrapper">
+          <table class="ranking-table" id="ranking-table">
+            <thead>
+              <tr>
+                <th>Posição</th>
+                <th>Gangster</th>
+                <th>Classe</th>
+                <th>Nível</th>
+                <th>Família Mafiosa</th>
+                <th>Respeito ⭐</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody id="ranking-table-body">
+              <!-- Dynamically populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW 6: FAMÍLIA MAFIOSA (CLÃS)                 -->
+      <!-- ============================================== -->
+      <section id="view-familia" class="view-section">
+        <div class="family-header-banner" id="family-header-banner">
+          <!-- Injected via JS depending on whether player is in a clan -->
+        </div>
+
+        <div class="family-content-grid" id="family-content-grid">
+          <!-- Clan list or clan hub injected via JS -->
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- VIEW 7: EVENTOS & CHEFÃO MUNDIAL               -->
+      <!-- ============================================== -->
+      <section id="view-eventos" class="view-section">
+        <div class="raid-event-card">
+          <div class="raid-header">
+            <span class="raid-tag">⚡ EVENTO MUNDIAL ATIVO</span>
+            <h2 id="raid-title">Operação Lei Seca: O Grande Cerco</h2>
+            <p id="raid-desc">O Juiz Federal "Martelo de Ferro" Hastings está liderando uma força-tarefa especial para erradicar todos os sindicatos mafiosos da cidade.</p>
           </div>
 
-          <!-- RIGHT: CUSTOMIZATION CONTROLS -->
-          <div class="customizer-form-col">
-            <!-- NOME E IDENTIDADE -->
-            <div class="custom-group">
-              <h4 class="group-title">1. Identidade & Classe</h4>
-              <div class="input-grid">
-                <div class="form-field">
-                  <label>Nome do Gangster:</label>
-                  <input type="text" id="cust-name-input" value="Vincenzo 'O Carrasco'" />
-                </div>
-                <div class="form-field">
-                  <label>Estilo de Luta:</label>
-                  <select id="cust-style-select">
-                    <option value="carrasco">Carrasco (Dano Alto, Vida Baixa)</option>
-                    <option value="muralha">Muralha (Vida Colossal, Armadura)</option>
-                    <option value="malandro">Malandro (Equilibrado, Esquiva 15%)</option>
-                  </select>
-                </div>
-                <div class="form-field">
-                  <label>Nível (1 a 100): <strong id="cust-lvl-val">1</strong></label>
-                  <input type="range" id="cust-lvl-slider" min="1" max="100" value="1" />
-                </div>
-                <div class="form-field">
-                  <label>Perfil de Build:</label>
-                  <select id="cust-build-select">
-                    <option value="equilibrado">Equilibrado (25% cada)</option>
-                    <option value="ofensivo">Ofensivo (50% Ataque)</option>
-                    <option value="defensivo">Defensivo (50% Vida)</option>
-                    <option value="critico">Crítico (50% Astúcia)</option>
-                    <option value="antiCritico">Anti-Crítico (50% Tenacidade)</option>
-                  </select>
-                </div>
-              </div>
+          <div class="raid-boss-showcase">
+            <div class="boss-portrait-box">
+              <div class="boss-emblem">⚖️</div>
+              <h3 id="raid-boss-name">Juiz "Martelo de Ferro" Hastings</h3>
+              <span class="gg-style-badge badge-muralha">MURALHA NÍVEL 25</span>
             </div>
 
-            <!-- APARÊNCIA CORPORAL -->
-            <div class="custom-group">
-              <h4 class="group-title">2. Corpo, Sexo e Rosto</h4>
-              <div class="palette-group">
-                <span class="sub-label">Sexo:</span>
-                <div class="btn-toggle-row">
-                  <button class="choice-btn active" data-prop="gender" data-val="male">Masculino</button>
-                  <button class="choice-btn" data-prop="gender" data-val="female">Feminino</button>
-                </div>
+            <div class="boss-hp-gauge-box">
+              <div class="boss-hp-label">
+                <span>VIDA COLETIVA DO CHEFÃO</span>
+                <strong id="raid-boss-hp-text">58.240 / 85.000 HP</strong>
+              </div>
+              <div class="boss-hp-track">
+                <div class="boss-hp-fill" id="raid-boss-hp-fill" style="width: 68%;"></div>
               </div>
 
-              <div class="palette-group">
-                <span class="sub-label">Tom de Pele:</span>
-                <div class="color-swatches" id="swatches-skin">
-                  <!-- Injected via JS -->
-                </div>
+              <div class="raid-rewards-preview">
+                <span>Recompensas Coletivas ao Derrubar:</span>
+                <strong style="color: #f1c40f;">💵 $15.000 Cash • 🪙 100 Ouro • ⭐ 2.500 Respeito</strong>
               </div>
 
-              <div class="palette-group">
-                <span class="sub-label">Cor dos Olhos:</span>
-                <div class="color-swatches" id="swatches-eyes">
-                  <!-- Injected via JS -->
-                </div>
-              </div>
-            </div>
-
-            <!-- CABELO E BARBA -->
-            <div class="custom-group">
-              <h4 class="group-title">3. Cabelo & Barba</h4>
-              <div class="palette-group">
-                <span class="sub-label">Estilo de Cabelo:</span>
-                <div class="btn-toggle-row" id="hair-styles-row">
-                  <button class="choice-btn active" data-prop="hairStyle" data-val="slick">Slick Clássico</button>
-                  <button class="choice-btn" data-prop="hairStyle" data-val="pompadour">Pompadour</button>
-                  <button class="choice-btn" data-prop="hairStyle" data-val="buzz">Buzz Militar</button>
-                  <button class="choice-btn" data-prop="hairStyle" data-val="bob">Bob Retrô</button>
-                  <button class="choice-btn" data-prop="hairStyle" data-val="bald">Careca</button>
-                </div>
-              </div>
-
-              <div class="palette-group">
-                <span class="sub-label">Cor do Cabelo:</span>
-                <div class="color-swatches" id="swatches-hair">
-                  <!-- Injected via JS -->
-                </div>
-              </div>
-
-              <div class="palette-group" id="facial-hair-section">
-                <span class="sub-label">Pelos Faciais (Masculino):</span>
-                <div class="btn-toggle-row">
-                  <button class="choice-btn" data-prop="facialHair" data-val="none">Sem Barba</button>
-                  <button class="choice-btn active" data-prop="facialHair" data-val="stubble">Por Fazer</button>
-                  <button class="choice-btn" data-prop="facialHair" data-val="mustache">Bigode Fino</button>
-                  <button class="choice-btn" data-prop="facialHair" data-val="beard">Barba de Chefe</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- ROUPAS E ACESSÓRIOS -->
-            <div class="custom-group">
-              <h4 class="group-title">4. Roupas, Acessórios & Cenário</h4>
-              <div class="palette-group">
-                <span class="sub-label">Traje Mafioso:</span>
-                <div class="btn-toggle-row">
-                  <button class="choice-btn active" data-prop="clothing" data-val="trenchcoat">Sobretudo Noir</button>
-                  <button class="choice-btn" data-prop="clothing" data-val="pinstripe_suit">Terno Risca de Giz</button>
-                  <button class="choice-btn" data-prop="clothing" data-val="vest_suspenders">Colete & Suspensórios</button>
-                </div>
-              </div>
-
-              <div class="palette-group">
-                <span class="sub-label">Paleta do Traje:</span>
-                <div class="color-swatches" id="swatches-clothing">
-                  <!-- Injected via JS -->
-                </div>
-              </div>
-
-              <div class="palette-group">
-                <span class="sub-label">Acessório Distintivo:</span>
-                <div class="btn-toggle-row">
-                  <button class="choice-btn active" data-prop="accessory" data-val="scar">Cicatriz</button>
-                  <button class="choice-btn" data-prop="accessory" data-val="fedora">Chapéu Fedora</button>
-                  <button class="choice-btn" data-prop="accessory" data-val="cigar">Charuto Cubano</button>
-                  <button class="choice-btn" data-prop="accessory" data-val="sunglasses">Óculos Escuros</button>
-                  <button class="choice-btn" data-prop="accessory" data-val="gold_chain">Corrente de Ouro</button>
-                  <button class="choice-btn" data-prop="accessory" data-val="none">Nenhum</button>
-                </div>
-              </div>
-
-              <div class="palette-group">
-                <span class="sub-label">Cenário de Fundo do Card:</span>
-                <div class="btn-toggle-row">
-                  <button class="choice-btn active" data-prop="cardBackground" data-val="alley">Beco Noturno</button>
-                  <button class="choice-btn" data-prop="cardBackground" data-val="bar">Speakeasy / Bar</button>
-                  <button class="choice-btn" data-prop="cardBackground" data-val="dock">Cais com Neblina</button>
-                </div>
-              </div>
+              <button id="attack-raid-boss-btn" class="arena-btn-primary" style="margin-top: 16px; width: 100%;">
+                ⚔️ Lançar Ataque contra o Chefão (-25 Energia)
+              </button>
             </div>
           </div>
         </div>
       </section>
 
       <!-- ============================================== -->
-      <!-- VIEW 3: PAINEL DE BALANCEAMENTO (SIMULADOR) -->
+      <!-- VIEW 8: SIMULADOR DE BALANCEAMENTO             -->
       <!-- ============================================== -->
-      <section id="sim-view" class="view-section">
+      <section id="view-simulador" class="view-section">
         <div class="dashboard-banner">
           <h2>📊 Matrizes de Vitória & Análise de Balanceamento</h2>
           <p>Resultados estatísticos calculados pelo motor de combate puro com alternância de posições A/B.</p>
@@ -488,6 +477,277 @@
       </section>
 
     </main>
+
+    <!-- ============================================== -->
+    <!-- MODAL / ARENA DE COMBATE 1v1                   -->
+    <!-- ============================================== -->
+    <div class="combat-overlay-modal" id="combat-overlay-modal" style="display: none;">
+      <div class="combat-modal-container">
+        <!-- TOP COMBAT BAR -->
+        <div class="arena-top-bar">
+          <div class="round-status-box">
+            <span class="round-label">ESTADO DO CONFRONTO</span>
+            <span class="round-value" id="arena-round-display">PRONTO PARA O DUELO</span>
+          </div>
+
+          <div class="arena-action-controls">
+            <button id="fight-play-btn" class="arena-btn-primary">
+              <span class="btn-icon">⚡</span> INICIAR COMBATE
+            </button>
+            <button id="fight-step-btn" class="arena-btn-secondary" title="Avançar 1 Golpe">
+              ▶ Passo
+            </button>
+            <button id="fight-skip-btn" class="arena-btn-secondary" title="Pular para o Vencedor">
+              ⏩ Instantâneo
+            </button>
+            <button id="fight-close-btn" class="arena-btn-secondary" title="Fechar Combate" style="display: none;">
+              ✕ Sair do Combate
+            </button>
+          </div>
+
+          <div class="arena-speed-selector">
+            <span class="speed-label">Velocidade:</span>
+            <button class="spd-btn" data-speed="900">0.5x</button>
+            <button class="spd-btn active" data-speed="450">1x</button>
+            <button class="spd-btn" data-speed="200">2x</button>
+            <button class="spd-btn" data-speed="60">5x</button>
+          </div>
+        </div>
+
+        <!-- 1V1 COMBAT STAGE (EXACT GOODGAME GANGSTER CARDS) -->
+        <div class="combat-stage-wrapper">
+          <!-- ARENA PROJECTILE / TRACER LAYER -->
+          <div class="arena-tracer-layer" id="arena-tracer-layer"></div>
+
+          <!-- FIGHTER A (JOGADOR) -->
+          <div class="gg-fighter-card card-side-a" id="gg-card-a">
+            <div class="gg-card-header">
+              <div class="gg-name-col">
+                <h2 class="gg-fighter-name" id="name-display-a">Vincenzo "O Carrasco"</h2>
+                <div class="gg-sub-info">
+                  <span class="gg-style-badge badge-carrasco" id="style-badge-a">CARRASCO</span>
+                  <span class="gg-level-badge" id="level-badge-a">NÍVEL 1</span>
+                </div>
+                <div class="gg-weapon-bar">
+                  <span class="weapon-label">Arma:</span>
+                  <span class="weapon-name-tag" id="weapon-name-a">Colt M1911 (.45)</span>
+                  <span class="weapon-damage-pill" id="weapon-dmg-a">Dano: 12-22</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="gg-hp-container">
+              <div class="gg-hp-labels">
+                <span class="hp-title">PONTOS DE VIDA</span>
+                <span class="hp-numbers" id="hp-text-a">500 / 500 (100%)</span>
+              </div>
+              <div class="gg-hp-bar-track">
+                <div class="gg-hp-bar-fill" id="hp-fill-a" style="width: 100%;"></div>
+              </div>
+            </div>
+
+            <div class="gg-avatar-frame" id="avatar-frame-a">
+              <div class="avatar-svg-container" id="avatar-container-a"></div>
+              <div class="avatar-weapon-holder side-a" id="weapon-holder-a"></div>
+              <div class="combat-impact-layer" id="impact-layer-a"></div>
+              <div class="floating-damage-zone" id="float-zone-a"></div>
+            </div>
+
+            <div class="gg-active-passives" id="passives-bar-a"></div>
+
+            <div class="gg-attributes-grid">
+              <div class="gg-stat-box stat-attack"><div class="stat-icon">⚔️</div><div class="stat-info"><span class="stat-name">Ataque</span><span class="stat-number" id="stat-atk-a">220</span></div></div>
+              <div class="gg-stat-box stat-life"><div class="stat-icon">❤️</div><div class="stat-info"><span class="stat-name">Vida</span><span class="stat-number" id="stat-life-a">500</span></div></div>
+              <div class="gg-stat-box stat-astucia"><div class="stat-icon">🎯</div><div class="stat-info"><span class="stat-name">Astúcia</span><span class="stat-number" id="stat-ast-a">33.3%</span></div></div>
+              <div class="gg-stat-box stat-tenacidade"><div class="stat-icon">🛡️</div><div class="stat-info"><span class="stat-name">Tenacidade</span><span class="stat-number" id="stat-ten-a">33.3%</span></div></div>
+            </div>
+          </div>
+
+          <!-- VERSUS CLASH CENTER -->
+          <div class="gg-vs-center">
+            <div class="vs-circle" id="vs-circle-emblem">VS</div>
+            <div class="vs-swords-fx" id="clash-swords">⚔️</div>
+          </div>
+
+          <!-- FIGHTER B (RIVAL / NPC) -->
+          <div class="gg-fighter-card card-side-b" id="gg-card-b">
+            <div class="gg-card-header">
+              <div class="gg-name-col">
+                <h2 class="gg-fighter-name" id="name-display-b">Salvatore "A Muralha"</h2>
+                <div class="gg-sub-info">
+                  <span class="gg-style-badge badge-muralha" id="style-badge-b">MURALHA</span>
+                  <span class="gg-level-badge" id="level-badge-b">NÍVEL 1</span>
+                </div>
+                <div class="gg-weapon-bar">
+                  <span class="weapon-label">Arma:</span>
+                  <span class="weapon-name-tag" id="weapon-name-b">Escopeta Cano Duplo</span>
+                  <span class="weapon-damage-pill" id="weapon-dmg-b">Dano: 22-38</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="gg-hp-container">
+              <div class="gg-hp-labels">
+                <span class="hp-title">PONTOS DE VIDA</span>
+                <span class="hp-numbers" id="hp-text-b">1950 / 1950 (100%)</span>
+              </div>
+              <div class="gg-hp-bar-track">
+                <div class="gg-hp-bar-fill" id="hp-fill-b" style="width: 100%;"></div>
+              </div>
+            </div>
+
+            <div class="gg-avatar-frame" id="avatar-frame-b">
+              <div class="avatar-svg-container" id="avatar-container-b"></div>
+              <div class="avatar-weapon-holder side-b" id="weapon-holder-b"></div>
+              <div class="combat-impact-layer" id="impact-layer-b"></div>
+              <div class="floating-damage-zone" id="float-zone-b"></div>
+            </div>
+
+            <div class="gg-active-passives" id="passives-bar-b"></div>
+
+            <div class="gg-attributes-grid">
+              <div class="gg-stat-box stat-attack"><div class="stat-icon">⚔️</div><div class="stat-info"><span class="stat-name">Ataque</span><span class="stat-number" id="stat-atk-b">55</span></div></div>
+              <div class="gg-stat-box stat-life"><div class="stat-icon">❤️</div><div class="stat-info"><span class="stat-name">Vida</span><span class="stat-number" id="stat-life-b">1950</span></div></div>
+              <div class="gg-stat-box stat-astucia"><div class="stat-icon">🎯</div><div class="stat-info"><span class="stat-name">Astúcia</span><span class="stat-number" id="stat-ast-b">33.3%</span></div></div>
+              <div class="gg-stat-box stat-tenacidade"><div class="stat-icon">🛡️</div><div class="stat-info"><span class="stat-name">Tenacidade</span><span class="stat-number" id="stat-ten-b">46.7%</span></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TICKER & COMBAT LOG -->
+        <div class="combat-ticker-box">
+          <div class="ticker-title">ÚLTIMO GOLPE:</div>
+          <div class="ticker-content" id="latest-strike-ticker">
+            Aguardando início do combate.
+          </div>
+        </div>
+
+        <!-- VICTORY REWARD MODAL POPUP (OVERLAY) -->
+        <div class="combat-outcome-popup" id="combat-outcome-popup" style="display: none;">
+          <div class="outcome-card">
+            <h2 id="outcome-title">🏆 VITÓRIA GLORIOSA!</h2>
+            <p id="outcome-desc">Você derrotou seu oponente e garantiu respeito para a Família.</p>
+            <div class="outcome-rewards-box" id="outcome-rewards-box">
+              <!-- Rewarded XP, Cash, Drops -->
+            </div>
+            <button id="outcome-continue-btn" class="arena-btn-primary" style="width: 100%; margin-top: 14px;">
+              Continuar
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- MODAL DE CRIAÇÃO DE PERSONAGEM (ONBOARDING)    -->
+    <!-- ============================================== -->
+    <div class="creation-modal-overlay" id="creation-modal" style="display: none;">
+      <div class="creation-wizard-card">
+        <div class="wizard-header">
+          <div class="logo-emblem">♠</div>
+          <h2>Criação de Personagem — Goodgame Gangster Era</h2>
+          <p>Jure lealdade à Família, defina sua classe e forje sua lenda no submundo.</p>
+        </div>
+
+        <div class="wizard-body-grid">
+          <!-- LEFT: LIVE AVATAR PREVIEW -->
+          <div class="wizard-preview-col">
+            <div class="wizard-avatar-box">
+              <div class="avatar-svg-container" id="wizard-avatar-svg"></div>
+              <div class="avatar-weapon-holder side-preview" id="wizard-weapon-holder"></div>
+            </div>
+            <div class="wizard-avatar-name" id="wizard-live-name">Don Vito "O Carrasco"</div>
+            <span class="gg-style-badge" id="wizard-live-style">CARRASCO</span>
+          </div>
+
+          <!-- RIGHT: CUSTOMIZATION STEPS -->
+          <div class="wizard-steps-col">
+            <!-- 1. IDENTIDADE -->
+            <div class="wizard-group">
+              <span class="w-group-title">1. Nome do Mafioso & Apelido</span>
+              <div class="form-field">
+                <input type="text" id="wiz-name-input" value="Don Vito 'O Carrasco'" placeholder="Ex: Tony 'Navalha'" />
+              </div>
+            </div>
+
+            <!-- 2. CLASSE / ESTILO -->
+            <div class="wizard-group">
+              <span class="w-group-title">2. Escolha sua Classe Mafiosa</span>
+              <div class="class-picker-grid">
+                <div class="class-card-pick selected" data-class="carrasco">
+                  <div class="c-pick-header">
+                    <span class="c-pick-icon">🗡️</span>
+                    <strong>Carrasco</strong>
+                  </div>
+                  <span class="c-pick-role">Dano Máximo (Escala ×2,2)</span>
+                  <p>Inicia a luta com o devastador <strong>Golpe de Abertura</strong> e ignora 25% da armadura do oponente.</p>
+                </div>
+
+                <div class="class-card-pick" data-class="muralha">
+                  <div class="c-pick-header">
+                    <span class="c-pick-icon">🛡️</span>
+                    <strong>Muralha</strong>
+                  </div>
+                  <span class="c-pick-role">Tanque Colossal (Escala ×1,95)</span>
+                  <p>Armadura pesada de 25%, <strong>Intimidação</strong> reduzindo dano nas 3 primeiras rodadas e Casca Grossa.</p>
+                </div>
+
+                <div class="class-card-pick" data-class="malandro">
+                  <div class="c-pick-header">
+                    <span class="c-pick-icon">🎭</span>
+                    <strong>Malandro</strong>
+                  </div>
+                  <span class="c-pick-role">Equilibrado & Esquiva</span>
+                  <p>Esquiva nativa triplicada (15%), maior prioridade de primeiro ataque e <strong>Adaptação</strong> de dano com vida perdida.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. APARÊNCIA -->
+            <div class="wizard-group">
+              <span class="w-group-title">3. Estilo Visual & Acessório de Respeito</span>
+              <div class="palette-group">
+                <span class="sub-label">Sexo & Traje:</span>
+                <div class="btn-toggle-row">
+                  <button class="choice-btn active" data-wiz-prop="gender" data-wiz-val="male">Masculino</button>
+                  <button class="choice-btn" data-wiz-prop="gender" data-wiz-val="female">Feminino</button>
+                  <button class="choice-btn active" data-wiz-prop="clothing" data-wiz-val="pinstripe_suit">Terno Risca</button>
+                  <button class="choice-btn" data-wiz-prop="clothing" data-wiz-val="trenchcoat">Sobretudo</button>
+                  <button class="choice-btn" data-wiz-prop="clothing" data-wiz-val="vest_suspenders">Colete</button>
+                </div>
+              </div>
+
+              <div class="palette-group">
+                <span class="sub-label">Acessório Distintivo:</span>
+                <div class="btn-toggle-row">
+                  <button class="choice-btn active" data-wiz-prop="accessory" data-wiz-val="scar">Cicatriz</button>
+                  <button class="choice-btn" data-wiz-prop="accessory" data-wiz-val="fedora">Chapéu Fedora</button>
+                  <button class="choice-btn" data-wiz-prop="accessory" data-wiz-val="cigar">Charuto</button>
+                  <button class="choice-btn" data-wiz-prop="accessory" data-wiz-val="sunglasses">Óculos</button>
+                  <button class="choice-btn" data-wiz-prop="accessory" data-wiz-val="gold_chain">Corrente</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4. ARMA INICIAL -->
+            <div class="wizard-group">
+              <span class="w-group-title">4. Arma Inicial de Contrabando</span>
+              <div class="btn-toggle-row" id="wiz-starter-weapon-row">
+                <button class="choice-btn active" data-wep-start="colt_1911">🔫 Colt M1911 (.45)</button>
+                <button class="choice-btn" data-wep-start="double_barrel">💥 Escopeta Cano Duplo</button>
+                <button class="choice-btn" data-wep-start="tommy_gun">🌪️ Tommy Gun 1928</button>
+              </div>
+            </div>
+
+            <button id="finish-character-creation-btn" class="arena-btn-primary" style="width: 100%; padding: 14px; font-size: 16px; margin-top: 10px;">
+              ♠️ JURAR LEALDADE E ENTRAR NO SUBMUNDO
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script type="module" src="/src/web/main.ts"></script>
