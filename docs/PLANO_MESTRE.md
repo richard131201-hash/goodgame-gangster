@@ -5,9 +5,9 @@
 ## Onde estamos
 
 - Tarefas: **41** em **6** etapas
-- Feitas: **21** (com nível 2 ou mais registrado: **7**)
+- Feitas: **23** (com nível 2 ou mais registrado: **11**)
 - Em andamento: **0**
-- Liberadas para começar: **11**
+- Liberadas para começar: **9**
 - Bloqueadas por outra tarefa ou etapa: **9**
 
 | Etapa | Feitas / Total | Situação |
@@ -15,7 +15,7 @@
 | A. Fundação do processo | 3 / 3 | Concluída |
 | B. Verificação do que existe | 3 / 3 | Concluída |
 | C. MVP jogável (local) | 8 / 15 | Liberada |
-| D. Servidor e banco (Supabase) | 7 / 12 | Liberada |
+| D. Servidor e banco (Supabase) | 9 / 12 | Liberada |
 | E. Estrutura e mercado (paralela) | 0 / 5 | Liberada |
 | F. Lançamento e receita | 0 / 3 | Aguarda C |
 
@@ -66,13 +66,13 @@
 | D1 | Arquitetura Supabase (docs/arquitetura/BANCO_DE_DADOS.md) com cenários de custo e recomendação (nível 0) | CLAUDE + FUNDADOR | ✅ FEITO | Aprovado em 2026-11-11 com as recomendações (login e-mail e senha primeiro; Google depois; saves locais descartados; lógica nas funções da Vercel) |
 | D2a | Migração 001 (tabela de jogadores, RLS, visão pública) em supabase/migrations. Pronto = rodou no projeto real e o teste de RLS prova que um jogador não lê nem grava dado de outro (nível 2) | CLAUDE | ✅ FEITO | Feito em 2026-11-11: 15 de 15 verificações de segurança passaram no banco real (npm run test:rls) |
 | D2b | Criar conta e entrar (e-mail e senha) dentro do jogo; sem as chaves o jogo segue em modo local (nível 2) | CLAUDE | ✅ FEITO | Feito em 2026-11-11: provado no localhost e também no site da Vercel (criar conta, sair, senha errada, entrar, personagem restaurado), com a conta de teste apagada no fim |
-| D2c | Personagem e progresso salvos no banco por função do servidor (Vercel), nunca direto do navegador; nome único; uma conta um personagem (nível 1) | CLAUDE | ✅ FEITO | Código e testes automáticos prontos (banco de mentira). Falta provar com o banco real: depende de D2c-sql e D2c-secret |
-| D2d | Ranking real e duelo entre jogadores reais (servidor luta e paga; duelo não gasta energia) (nível 1) | CLAUDE | ✅ FEITO | Código e testes automáticos prontos. Falta provar com o banco real e com duas contas no navegador |
+| D2c | Personagem e progresso salvos no banco por função do servidor (Vercel), nunca direto do navegador; nome único; uma conta um personagem (nível 2) | CLAUDE | ✅ FEITO | Feito em 2026-11-11: teste de ponta a ponta (21 verificações) passou no localhost e no site no ar, contra o banco real |
+| D2d | Ranking real e duelo entre jogadores reais (servidor luta e paga; duelo não gasta energia) (nível 2) | CLAUDE | ✅ FEITO | Feito em 2026-11-11: duelo e ranking provados no navegador (localhost) com 2 contas e no site no ar pelo teste de ponta a ponta |
 | D2 | Ações do jogo (missões, duelos, loja, drops, energia) decididas no servidor, à prova de trapaça | CLAUDE | ⏳ A FAZER | Depois de D2c; antes de qualquer pagamento |
 | D3 | Famílias reais (jogadores de verdade) | CLAUDE | ⏳ A FAZER | Depois de D2d |
 | D4 | Antifraude do produto: limites, rate limit, auditoria de transações, contas duplicadas | CLAUDE | ⏳ A FAZER | Depois de D2, antes de abrir ao público |
-| D2c-sql | Colar a migração 002 (supabase/migrations/002_duelos_e_ranking.sql) no SQL Editor do Supabase e rodar | FUNDADOR | ⏳ A FAZER | Agora; sem ela o ranking e o duelo não funcionam |
-| D2c-secret | Criar na Vercel a variável SUPABASE_SERVICE_ROLE_KEY como Secret (valor igual ao do .env.local), em Production, e redeploy. Nunca no chat | FUNDADOR | ⏳ A FAZER | Antes de eu publicar; sem ela o site fica em modo local com aviso |
+| D2c-sql | Colar a migração 002 (supabase/migrations/002_duelos_e_ranking.sql) no SQL Editor do Supabase e rodar (nível 2) | FUNDADOR | ✅ FEITO | Feito em 2026-11-11 |
+| D2c-secret | Criar na Vercel a variável SUPABASE_SERVICE_ROLE_KEY como Secret (valor igual ao do .env.local), em Production, e redeploy. Nunca no chat (nível 2) | FUNDADOR | ✅ FEITO | Feito em 2026-11-11: o site no ar responde com a chave |
 
 ### Etapa E: Estrutura e mercado (paralela)
 
