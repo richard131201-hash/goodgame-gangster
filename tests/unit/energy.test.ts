@@ -4,6 +4,19 @@ import { regenEnergy, msToNextEnergy, ENERGY_SECONDS_PER_POINT } from '../../src
 const S = ENERGY_SECONDS_PER_POINT * 1000; // 1 ponto
 const T0 = 1_000_000;
 
+describe('regra do fundador (R-ENERGIA-1)', () => {
+  it('1 ponto a cada 7 minutos', () => {
+    expect(ENERGY_SECONDS_PER_POINT).toBe(420);
+  });
+
+  it('100 de energia levam 11h40 do zero, e o teto é 100', () => {
+    const start = T0;
+    expect(regenEnergy(0, 100, start, start + 99 * S).energy).toBe(99);
+    expect(regenEnergy(0, 100, start, start + 100 * S).energy).toBe(100);
+    expect(regenEnergy(0, 100, start, start + 500 * S).energy).toBe(100);
+  });
+});
+
 describe('regenEnergy', () => {
   it('não muda antes de completar 1 ponto', () => {
     expect(regenEnergy(50, 100, T0, T0 + S - 1)).toEqual({ energy: 50, lastAt: T0 });

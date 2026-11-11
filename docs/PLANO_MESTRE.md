@@ -4,18 +4,18 @@
 
 ## Onde estamos
 
-- Tarefas: **25** em **6** etapas
-- Feitas: **10** (com nível 2 ou mais registrado: **1**)
-- Em andamento: **0**
-- Liberadas para começar: **5**
+- Tarefas: **26** em **6** etapas
+- Feitas: **11** (com nível 2 ou mais registrado: **1**)
+- Em andamento: **1**
+- Liberadas para começar: **4**
 - Bloqueadas por outra tarefa ou etapa: **10**
 
 | Etapa | Feitas / Total | Situação |
 |---|---|---|
 | A. Fundação do processo | 3 / 3 | Concluída |
 | B. Verificação do que existe | 3 / 3 | Concluída |
-| C. MVP jogável (local) | 4 / 9 | Liberada |
-| D. Servidor e banco (Supabase) | 0 / 4 | Aguarda C |
+| C. MVP jogável (local) | 5 / 9 | Liberada |
+| D. Servidor e banco (Supabase) | 0 / 5 | Aguarda C |
 | E. Estrutura e mercado (paralela) | 0 / 3 | Liberada |
 | F. Lançamento e receita | 0 / 3 | Aguarda C |
 
@@ -42,21 +42,22 @@
 | ID | Tarefa | Dono | Estado | Quando |
 |---|---|---|---|---|
 | C1 | Lista de lacunas do MVP em ordem (ver STATUS.md) (nível 1) | CLAUDE | ✅ FEITO | Feito em 2026-11-11 |
-| C2 | Energia regenera com o tempo (hoje o jogador trava sem energia). Pronto = teste automático + prova no localhost (nível 1) | CLAUDE | ✅ FEITO | Feito em 2026-11-11 (120 s por ponto é hipótese; C6 revisa) |
+| C2 | Energia regenera com o tempo (hoje o jogador trava sem energia). Pronto = teste automático + prova no localhost (nível 1) | CLAUDE | ✅ FEITO | Feito em 2026-11-11 (regra do fundador: 7 min por ponto, teto 100; R-ENERGIA-1) |
 | C3 | Corrigir erro de tipo em strike.ts:53 e criar script "typecheck" (o build não checa tipos) (nível 1) | CLAUDE | ✅ FEITO | Feito em 2026-11-11 (npm run typecheck) |
 | C4 | Trocar o nome para Mobster Rise (título, textos, criação de personagem); tirar "Goodgame Gangster" do que o jogador vê (nível 1) | CLAUDE | ✅ FEITO | Feito em 2026-11-11 (título e criação; chave do save e comentários internos mantêm o nome antigo) |
-| C5 | Ranking, Família e Eventos hoje são falsos: decidir o que o MVP mostra (NPCs assumidos) e implementar | FUNDADOR + CLAUDE | ⏳ A FAZER | Decisão sua; depois de C2 |
+| C5 | Ranking, Família e Eventos hoje são falsos: decidir o que o MVP mostra (NPCs assumidos) e implementar (nível 1) | FUNDADOR + CLAUDE | ✅ FEITO | Feito em 2026-11-11: NPCs assumidos (escolha do Claude, autorizada pelo fundador; pode trocar) |
 | C6 | Balanceamento do início (duelo de nível 1 perdido; inimigo de missão com 935 de vida) usando o simulador | CLAUDE | ⏳ A FAZER | Depois de C2 |
 | C7 | Tutorial mínimo e teste de 30 a 60 minutos seguidos sem erro nem beco sem saída | CLAUDE | ⏳ A FAZER | Depois de C2, C4, C5 e C6 |
 | C8 | Atualizar o README (descreve só a Fase 1) | CLAUDE | ⏳ A FAZER | Depois de C7 |
-| C9 | Dependências com alerta no npm audit (zod alto; tinypool crítico): atualizar em cópia isolada com testes | CLAUDE | ⏳ A FAZER | Qualquer momento; saltos de versão maior são migração planejada |
+| C9 | Dependências com alerta no npm audit (zod alto; tinypool crítico): atualizar em cópia isolada com testes | CLAUDE | ⏳ A FAZER | Adiado para o início de D2 (zod passa a validar dado de fora); risco atual baixo, ver DECISOES.md |
 
 ### Etapa D: Servidor e banco (Supabase)
 
 | ID | Tarefa | Dono | Estado | Quando |
 |---|---|---|---|---|
-| D1 | Arquitetura Supabase (contas, save, regras no servidor) com cenários de custo e recomendação | CLAUDE + FUNDADOR | ⏳ A FAZER | Depois do MVP; a aprovação é sua |
-| D2 | Contas e save no banco; ouro, itens, drops e resultado de lutas decididos no servidor | CLAUDE | ⏳ A FAZER | Depois de D1; antes de qualquer pagamento |
+| D0a | Criar conta e projeto no Supabase (com 2FA) e colocar as chaves em .env.local e na Vercel. Nunca no chat | FUNDADOR | ⏳ A FAZER | Depois de aprovar D1; antes de D2a |
+| D1 | Arquitetura Supabase (docs/arquitetura/BANCO_DE_DADOS.md) com cenários de custo e recomendação | CLAUDE + FUNDADOR | 🔄 EM ANDAMENTO | Documento pronto; falta a sua aprovação |
+| D2 | Contas e save no banco; ouro, itens, drops e resultado de lutas decididos no servidor (começa por prova de conceito D2a) | CLAUDE | ⏳ A FAZER | Depois de D0a; antes de qualquer pagamento |
 | D3 | Ranking e Família reais (jogadores de verdade) | CLAUDE | ⏳ A FAZER | Depois de D2 |
 | D4 | Antifraude do produto: limites, rate limit, auditoria de transações, contas duplicadas | CLAUDE | ⏳ A FAZER | Depois de D2, antes de abrir ao público |
 

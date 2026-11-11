@@ -732,38 +732,44 @@ function renderRankingView() {
     { rank: 6, name: 'Gina "Dama de Espadas"', style: 'malandro', level: 16, family: 'Sindicato Luciano', respect: 1600 },
   ];
 
-  // Insert player ranking
-  let playerRank = 7;
-  if (player.respect > 4200) playerRank = 1;
-  else if (player.respect > 3500) playerRank = 2;
-  else if (player.respect > 2950) playerRank = 3;
+  // Posição do jogador: conta quantos NPCs têm mais Respeito (empate favorece o NPC)
+  const playerFamily = MAFIA_FAMILIES_LIST.find(f => f.id === player.familyId);
+  type RankRow = { name: string; style: string; level: number; family: string; respect: number; isPlayer: boolean };
+  const rows: RankRow[] = [
+    ...mockRankings.map(r => ({ name: r.name, style: r.style, level: r.level, family: r.family, respect: r.respect, isPlayer: false })),
+    {
+      name: player.name,
+      style: player.style,
+      level: player.level,
+      family: playerFamily ? playerFamily.name : 'Sem Família',
+      respect: player.respect,
+      isPlayer: true,
+    },
+  ];
+  // Ordenação estável: em empate, o NPC (que veio primeiro na lista) fica acima do jogador
+  rows.sort((a, b) => b.respect - a.respect);
 
-  let html = '';
-  mockRankings.forEach(r => {
-    html += `
+  const html = rows.map((r, i) => r.isPlayer ? `
+      <tr class="player-rank-row">
+        <td><strong style="color: #f1c40f;">#${i + 1}</strong></td>
+        <td><strong>${r.name} (Você)</strong></td>
+        <td><span class="gg-style-badge badge-${r.style}">${r.style.toUpperCase()}</span></td>
+        <td><strong>Nv. ${r.level}</strong></td>
+        <td>${r.family}</td>
+        <td style="color: #f1c40f; font-weight: 800;">⭐ ${r.respect.toLocaleString()}</td>
+        <td><span style="font-size: 11px; color: #2ecc71;">Seu Personagem</span></td>
+      </tr>
+    ` : `
       <tr>
-        <td><strong>#${r.rank}</strong></td>
+        <td><strong>#${i + 1}</strong></td>
         <td>${r.name}</td>
         <td><span class="gg-style-badge badge-${r.style}">${r.style.toUpperCase()}</span></td>
         <td>Nv. ${r.level}</td>
         <td>${r.family}</td>
         <td style="color: #f1c40f; font-weight: 700;">⭐ ${r.respect.toLocaleString()}</td>
-        <td><button class="arena-btn-secondary" style="padding: 2px 8px; font-size: 11px;">Desafiar</button></td>
+        <td><span style="font-size: 11px; color: var(--text-muted);">NPC</span></td>
       </tr>
-    `;
-  });
-
-  html += `
-    <tr class="player-rank-row">
-      <td><strong style="color: #f1c40f;">#${playerRank}</strong></td>
-      <td><strong>${player.name} (Você)</strong></td>
-      <td><span class="gg-style-badge badge-${player.style}">${player.style.toUpperCase()}</span></td>
-      <td><strong>Nv. ${player.level}</strong></td>
-      <td>${player.familyId ? 'Família Ativa' : 'Sem Família'}</td>
-      <td style="color: #f1c40f; font-weight: 800;">⭐ ${player.respect.toLocaleString()}</td>
-      <td><span style="font-size: 11px; color: #2ecc71;">Seu Personagem</span></td>
-    </tr>
-  `;
+    `).join('');
 
   tbody.innerHTML = html;
 }
@@ -821,7 +827,9 @@ function renderFamilyView() {
     `;
   }
 
-  grid.innerHTML = MAFIA_FAMILIES_LIST.map(fam => {
+  const familyNote = `<p class="npc-note" style="grid-column: 1 / -1;">Por enquanto as Famílias são NPCs e os membros e cofres são ilustrativos. As Famílias com jogadores reais chegam com o servidor.</p>`;
+
+  grid.innerHTML = familyNote + MAFIA_FAMILIES_LIST.map(fam => {
     const isMember = player.familyId === fam.id;
     return `
       <div class="family-card-item">

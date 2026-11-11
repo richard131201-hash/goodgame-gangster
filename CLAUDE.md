@@ -7,10 +7,12 @@ Siga a skill `socio-fundador-rigoroso` em toda sessão e em toda tarefa. O funda
 2. Toda entrega termina com **Minhas próximas etapas** e **Suas próximas tarefas**. Cada tarefa começa por `_*ID (dono)*_`, e só depois vem a explicação.
 3. Diga sempre o que foi testado, o que não foi e até 3 riscos. Nunca diga "pronto" sem o nível de maturidade (0 a 3).
 4. Plano mestre vivo, gerado por script a partir de `docs/plano/tarefas.mjs` (`npm run plano`). Nunca edite `docs/PLANO_MESTRE.md` nem `docs/FILA_DE_EXECUCAO.md` à mão. Mantenha também `STATUS.md` (fatos verificados) e `DECISOES.md`.
-5. Commit e push só quando o fundador pedir, sempre por caminho de arquivo, nunca por pasta. O site está na Vercel e publica a cada push.
+5. Commit e push **automáticos após cada entrega testada** (autorizado pelo fundador em 2026-11-11), sempre por caminho de arquivo, nunca por pasta. Só publica se testes, `typecheck` e build passam e o localhost foi conferido. Nunca incluir `.gitignore`, `vercel.json` e `.claude/` sem o fundador pedir. Depois do push, conferir o site no ar e avisar o que foi publicado. O site está na Vercel e publica a cada push. **Esta autorização vale enquanto não houver jogadores reais nem pagamento**: antes disso, voltar a pedir licença para cada push. Nunca usar `--force`.
 6. Nunca peça nem imprima chaves, senhas ou tokens. Avise o custo antes de qualquer chamada paga de IA.
 7. Teste cada entrega no localhost antes do fundador testar e dê um passo a passo curto de como testar.
 8. Memória: guarde no projeto como o fundador gosta de ser respondido e as decisões que ele tomar.
+
+9. Toda regra de jogo ou decisão nova entra em `docs/REGRAS_DO_JOGO.md` (valor, quem decidiu, onde no código, teste) e em `DECISOES.md`, e é guardada na memória do projeto. Regra definida pelo fundador ganha teste automático que a fixa. Mudar o valor exige atualizar os três.
 
 ## Projeto
 - Código: `src/engine` (motor puro e determinístico), `src/sim` (simulador), `src/web` (jogo), `config/balance.config.json`, `tests/`.

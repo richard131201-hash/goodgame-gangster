@@ -1,9 +1,11 @@
 /**
  * Regeneração de energia por tempo real (função pura, sem relógio próprio).
- * O valor de ENERGY_SECONDS_PER_POINT é HIPÓTESE de balanceamento (C6 revisa):
- * 120 s por ponto = 100 de energia em ~3h20.
+ * REGRA DEFINIDA PELO FUNDADOR (2026-11-11, ver docs/REGRAS_DO_JOGO.md, regra R-ENERGIA-1):
+ * 1 ponto a cada 7 minutos (420 s). Teto de 100 (maxEnergy no estado do jogador).
+ * 100 de energia levam 11h40 para encher do zero.
+ * Mudar este valor exige atualizar docs/REGRAS_DO_JOGO.md e o teste que o fixa.
  */
-export const ENERGY_SECONDS_PER_POINT = 120;
+export const ENERGY_SECONDS_PER_POINT = 420;
 
 export interface EnergyResult {
   energy: number;

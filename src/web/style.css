@@ -144,6 +144,18 @@ body {
 }
 
 /* ======================================================== */
+/* Aviso de conteúdo NPC (Ranking, Família, Eventos) */
+.npc-note {
+  margin-top: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--text-muted);
+  border-left: 3px solid #d4af37;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+}
+
 /* ARENA 1v1 FOCADA (ESTILO GOODGAME GANGSTER)             */
 /* ======================================================== */
 

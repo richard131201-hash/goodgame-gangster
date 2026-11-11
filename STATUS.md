@@ -20,7 +20,7 @@ Jogo de navegador de gângsteres, nostálgico (era Goodgame Gangster), meta de r
 | Aleatoriedade no cliente | Drops de missão e seed das lutas usam `Math.random()` no navegador (`main.ts:478`, `main.ts:962`) | Código |
 | Ranking | Lista fixa escrita no código (`main.ts:706`). Não há outros jogadores | Código |
 | Família | Falsa: entrar e doar só alteram o save local | Código |
-| Energia | **Corrigido (C2):** regenera 1 ponto a cada 120 s (hipótese de balanceamento), inclusive com o jogo fechado, e o bônus de Família acelera. HUD mostra a contagem ao passar o mouse. Provado no localhost simulando 10 min fora (50 para 55) e gasto a partir de energia cheia | `tests/unit/energy.test.ts` + jogo |
+| Energia | **Corrigido (C2):** regenera 1 ponto a cada **7 minutos** (regra do fundador, R-ENERGIA-1), teto 100, inclusive com o jogo fechado, e o bônus de Família acelera. HUD mostra a contagem ao passar o mouse. Provado no localhost simulando 10 min fora (50 para 55) e gasto a partir de energia cheia | `tests/unit/energy.test.ts` + jogo |
 | Tipos | **Corrigido (C3):** `npm run typecheck` passa sem erros | `tsc --noEmit` |
 | Nome | **Corrigido (C4):** título da aba e tela de criação dizem "Mobster Rise". Comentários internos e a chave do save ainda têm o nome antigo (jogador não vê) | `index.html` |
 
@@ -45,7 +45,7 @@ Jogo de navegador de gângsteres, nostálgico (era Goodgame Gangster), meta de r
 1. ~~Energia não regenera com o tempo (C2)~~ feito.
 2. ~~Erro de tipo em `strike.ts:53` (C3)~~ feito.
 3. ~~Nome e marca no jogo (C4)~~ feito.
-4. Ranking, Família e Eventos falsos (C5).
+4. ~~Ranking, Família e Eventos falsos (C5)~~ agora assumem ser NPCs, com aviso na tela. Conteúdo real só com servidor (D3). Pendência conhecida: o cofre da Família (doações) é alterado só na memória da página e some ao recarregar.
 5. Equilíbrio do início do jogo (C6).
 6. Tutorial e teste longo de jogo (C7).
 7. README desatualizado (C8).
