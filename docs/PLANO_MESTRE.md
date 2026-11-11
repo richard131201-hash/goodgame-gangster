@@ -4,19 +4,19 @@
 
 ## Onde estamos
 
-- Tarefas: **33** em **6** etapas
-- Feitas: **16** (com nível 2 ou mais registrado: **4**)
+- Tarefas: **36** em **6** etapas
+- Feitas: **17** (com nível 2 ou mais registrado: **4**)
 - Em andamento: **0**
-- Liberadas para começar: **7**
-- Bloqueadas por outra tarefa ou etapa: **10**
+- Liberadas para começar: **8**
+- Bloqueadas por outra tarefa ou etapa: **11**
 
 | Etapa | Feitas / Total | Situação |
 |---|---|---|
 | A. Fundação do processo | 3 / 3 | Concluída |
 | B. Verificação do que existe | 3 / 3 | Concluída |
-| C. MVP jogável (local) | 6 / 11 | Liberada |
-| D. Servidor e banco (Supabase) | 4 / 9 | Liberada |
-| E. Estrutura e mercado (paralela) | 0 / 4 | Liberada |
+| C. MVP jogável (local) | 6 / 12 | Liberada |
+| D. Servidor e banco (Supabase) | 5 / 10 | Liberada |
+| E. Estrutura e mercado (paralela) | 0 / 5 | Liberada |
 | F. Lançamento e receita | 0 / 3 | Aguarda C |
 
 ## Tarefas por etapa
@@ -52,11 +52,13 @@
 | C9 | Dependências com alerta no npm audit (zod alto; tinypool crítico): atualizar em cópia isolada com testes | CLAUDE | ⏳ A FAZER | Adiado para o início de D2 (zod passa a validar dado de fora); risco atual baixo, ver DECISOES.md |
 | C11 | Margem preta em % no desktop (R-LAYOUT-1), abas em 2 linhas e perfil em 1 coluna nos desktops menores (nível 1) | CLAUDE | ✅ FEITO | Feito em 2026-11-11: medido de 1024 a 2560 px (6% de cada lado) |
 | C10 | Layout do jogo no celular: a página transborda na horizontal (413 px numa tela de 390). Pronto = sem rolagem lateral em 360 a 430 px | CLAUDE | ⏳ A FAZER | Antes de divulgar; achado em 2026-11-11 (já existia antes do login) |
+| C13 | Botão "Personalizar Visual do Gangster" do perfil não faz nada: reaproveitar o criador novo para mudar o visual depois (decidir se custa algo) | CLAUDE | ⏳ A FAZER | Achado em 2026-11-11; depois de C10 |
 
 ### Etapa D: Servidor e banco (Supabase)
 
 | ID | Tarefa | Dono | Estado | Quando |
 |---|---|---|---|---|
+| D2e | Fluxo de entrada em 3 telas (Entrar / Crie seu personagem / Sua conta) com criador de variedade real: o jogador monta o personagem, nada é sorteado (nível 1) | CLAUDE | ✅ FEITO | Feito em 2026-11-11; provado no localhost com o Supabase real. Falta conferir no site da Vercel |
 | D0a | Criar conta e projeto no Supabase (2FA), rodar a migração 001 no SQL Editor e colocar as chaves em .env.local e na Vercel. Nunca no chat (passo a passo no chat) (nível 2) | FUNDADOR | ✅ FEITO | Feito em 2026-11-11: variáveis VITE_ na Vercel confirmadas no site no ar. A chave secreta fica fora da Vercel até a etapa D2c |
 | D1 | Arquitetura Supabase (docs/arquitetura/BANCO_DE_DADOS.md) com cenários de custo e recomendação (nível 0) | CLAUDE + FUNDADOR | ✅ FEITO | Aprovado em 2026-11-11 com as recomendações (login e-mail e senha primeiro; Google depois; saves locais descartados; lógica nas funções da Vercel) |
 | D2a | Migração 001 (tabela de jogadores, RLS, visão pública) em supabase/migrations. Pronto = rodou no projeto real e o teste de RLS prova que um jogador não lê nem grava dado de outro (nível 2) | CLAUDE | ✅ FEITO | Feito em 2026-11-11: 15 de 15 verificações de segurança passaram no banco real (npm run test:rls) |
@@ -74,6 +76,7 @@
 | E1 | Busca de marca "Mobster Rise" e registro de domínio | FUNDADOR | ⏳ A FAZER | Em paralelo; antes de divulgar |
 | E2 | Termos de uso e política de privacidade (exigidos ao criar conta); classificação 14+. Revisão profissional a confirmar | FUNDADOR | ⏳ A FAZER | Em paralelo; antes de abrir cadastro |
 | E3 | Escolher meio de pagamento (adulto responsável paga) e política de estorno | FUNDADOR + CLAUDE | ⏳ A FAZER | Depois de D2 |
+| E5 | Esqueci a senha (recuperar por e-mail): depende de E4 (envio de e-mail do Supabase) | CLAUDE | ⏳ A FAZER | Depois de E4 |
 | E4 | Antes de abrir ao público: ligar a confirmação de e-mail no Supabase, configurar o e-mail de envio e a URL do site (Authentication) | FUNDADOR + CLAUDE | ⏳ A FAZER | Antes de divulgar; hoje a confirmação está desligada só para testes |
 
 ### Etapa F: Lançamento e receita

@@ -54,6 +54,18 @@ Observação: com 7 minutos por ponto, uma missão de 15 energia custa 1h45 de e
 | R-CONTA-4 | Confirmação de e-mail | Desligada só durante os testes. Tem de ser ligada antes de abrir ao público (E4) | Fundador (desligar nos testes), 2026-11-11 | painel do Supabase | sem teste |
 | R-CONTA-5 | Saves locais antigos | Não são migrados para a conta (decisão D1: descartar) | Fundador, 2026-11-11 | n/a | n/a |
 
+## Entrada e personagem
+
+| ID | Regra | Valor | Origem | Onde no código | Teste |
+|---|---|---|---|---|---|
+| R-FLUXO-1 | Fluxo de entrada em 3 telas | **Entrar** (padrão ao abrir) com botão grande "Novo por aqui?"; **Crie seu personagem**; **Sua conta** (nome, e-mail, senha). Ao criar a conta, o personagem montado já vem com ela e o jogo abre direto. Referência: só o fluxo de um jogo do gênero; nenhuma arte, logo ou texto de terceiros | Fundador, 2026-11-11 | `index.html`, `src/web/authUi.ts`, `onboarding.ts` | provado no localhost com conta real |
+| R-FLUXO-2 | Conta sem personagem e modo local | Quem já tem conta mas não tem personagem, e o modo sem Supabase, passam por "Crie seu personagem" e depois só pelo nome (sem e-mail e senha) | Claude, 2026-11-11 (a confirmar) | `authUi.ts` (`startCharacterCreation`) | provado no localhost |
+| R-FLUXO-3 | "Esqueci a senha" | Ainda não existe; depende do envio de e-mail do Supabase (E4/E5) | Claude, 2026-11-11 | n/a | n/a |
+| R-PERSONAGEM-1 | O personagem é **montado pelo jogador**, nada é sorteado | Opções (por gênero): **tom de pele 8**, **penteados 7 (masc.) e 5 (fem.)**, **cor do cabelo 10**, **olhos 8**, **barbas 7** (só masc.), **trajes 6 (masc.) e 7 (fem.)**, **cor do traje 10**, **chapéus 4**, **acessórios 9 (masc.) e 8 (fem.)**, **fundo 4**, mais **3 classes e 3 armas**. Dá **270.950.400** combinações de visual (masc.) e **28.672.000** (fem.). Cada opção tem desenho próprio | Fundador (pediu variedade e que não fosse aleatório), 2026-11-11; lista do Claude | `src/web/characterOptions.ts`, `paperdoll.ts`, `onboarding.ts` | `tests/unit/characterOptions.test.ts` |
+| R-PERSONAGEM-2 | Nome do personagem | 3 a 24 caracteres; só letras (com acento), números, espaço e `. ' " - _`; sem HTML. Nome **único** só será garantido com o banco (D2c) | Claude, 2026-11-11 (a confirmar) | `src/web/authRules.ts` | `characterOptions.test.ts` |
+| R-PERSONAGEM-3 | A classe não muda o visual | Escolher Carrasco, Muralha ou Malandro não altera a aparência montada (antes trocava o visual inteiro) | Claude, 2026-11-11 | `onboarding.ts` | provado no localhost |
+| R-PERSONAGEM-4 | Chapéu e acessório são escolhas separadas | O campo `hat` é novo; saves antigos com `accessory: fedora` continuam mostrando o chapéu | Claude, 2026-11-11 | `paperdoll.ts` | `characterOptions.test.ts` |
+
 ## Layout
 
 | ID | Regra | Valor | Origem | Onde no código | Teste |

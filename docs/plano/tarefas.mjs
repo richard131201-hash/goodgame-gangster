@@ -38,6 +38,7 @@ export const tarefas = [
 
   // ---- D ----
   { id: 'C11', etapa: 'C', titulo: 'Margem preta em % no desktop (R-LAYOUT-1), abas em 2 linhas e perfil em 1 coluna nos desktops menores', dono: 'CLAUDE', estado: 'FEITO', nivel: 1, quando: 'Feito em 2026-11-11: medido de 1024 a 2560 px (6% de cada lado)', depende: [] },
+  { id: 'D2e', etapa: 'D', titulo: 'Fluxo de entrada em 3 telas (Entrar / Crie seu personagem / Sua conta) com criador de variedade real: o jogador monta o personagem, nada é sorteado', dono: 'CLAUDE', estado: 'FEITO', nivel: 1, quando: 'Feito em 2026-11-11; provado no localhost com o Supabase real. Falta conferir no site da Vercel', depende: [] },
   { id: 'D0a', etapa: 'D', titulo: 'Criar conta e projeto no Supabase (2FA), rodar a migração 001 no SQL Editor e colocar as chaves em .env.local e na Vercel. Nunca no chat (passo a passo no chat)', dono: 'FUNDADOR', estado: 'FEITO', nivel: 2, quando: 'Feito em 2026-11-11: variáveis VITE_ na Vercel confirmadas no site no ar. A chave secreta fica fora da Vercel até a etapa D2c', depende: [] },
   { id: 'D1', etapa: 'D', titulo: 'Arquitetura Supabase (docs/arquitetura/BANCO_DE_DADOS.md) com cenários de custo e recomendação', dono: 'CLAUDE + FUNDADOR', estado: 'FEITO', nivel: 0, quando: 'Aprovado em 2026-11-11 com as recomendações (login e-mail e senha primeiro; Google depois; saves locais descartados; lógica nas funções da Vercel)', depende: [] },
   { id: 'D2a', etapa: 'D', titulo: 'Migração 001 (tabela de jogadores, RLS, visão pública) em supabase/migrations. Pronto = rodou no projeto real e o teste de RLS prova que um jogador não lê nem grava dado de outro', dono: 'CLAUDE', estado: 'FEITO', nivel: 2, quando: 'Feito em 2026-11-11: 15 de 15 verificações de segurança passaram no banco real (npm run test:rls)', depende: [] },
@@ -55,6 +56,8 @@ export const tarefas = [
 
   // ---- F ----
   { id: 'C10', etapa: 'C', titulo: 'Layout do jogo no celular: a página transborda na horizontal (413 px numa tela de 390). Pronto = sem rolagem lateral em 360 a 430 px', dono: 'CLAUDE', estado: 'A_FAZER', quando: 'Antes de divulgar; achado em 2026-11-11 (já existia antes do login)', depende: ['C1'] },
+  { id: 'C13', etapa: 'C', titulo: 'Botão "Personalizar Visual do Gangster" do perfil não faz nada: reaproveitar o criador novo para mudar o visual depois (decidir se custa algo)', dono: 'CLAUDE', estado: 'A_FAZER', quando: 'Achado em 2026-11-11; depois de C10', depende: ['C1'] },
+  { id: 'E5', etapa: 'E', titulo: 'Esqueci a senha (recuperar por e-mail): depende de E4 (envio de e-mail do Supabase)', dono: 'CLAUDE', estado: 'A_FAZER', quando: 'Depois de E4', depende: ['E4'] },
   { id: 'E4', etapa: 'E', titulo: 'Antes de abrir ao público: ligar a confirmação de e-mail no Supabase, configurar o e-mail de envio e a URL do site (Authentication)', dono: 'FUNDADOR + CLAUDE', estado: 'A_FAZER', quando: 'Antes de divulgar; hoje a confirmação está desligada só para testes', depende: [] },
   { id: 'F1', etapa: 'F', titulo: 'Teste fechado com poucos jogadores e coleta de feedback', dono: 'FUNDADOR + CLAUDE', estado: 'A_FAZER', quando: 'Depois de C7', depende: ['C7'] },
   { id: 'F2', etapa: 'F', titulo: 'Divulgação nostálgica (lista de espera, comunidades) só com demonstração real', dono: 'FUNDADOR', estado: 'A_FAZER', quando: 'Depois de F1', depende: ['F1'] },

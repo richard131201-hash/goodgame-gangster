@@ -47,6 +47,18 @@ Provado no localhost contra o Supabase real (nível 1 no site; as contas de test
 - **Site no ar (Vercel), verificado em 2026-11-11 (nível 2):** depois de criar as 2 variáveis `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` (Config, Production) e dar Redeploy sem cache, o pacote do site contém a URL e a chave pública, e **não** contém a chave secreta. A tela de login aparece; criei uma conta de teste no site no ar, saí, errei a senha, entrei de novo e o personagem voltou. A conta foi apagada (0 contas no banco). A chave secreta **não está na Vercel** (só entra em D2c).
 - **Ainda não verificado:** celular real; confirmação por e-mail; recuperação de senha (não existe).
 
+## Entrada e criador de personagem (2026-11-11)
+Provado no localhost contra o Supabase real (nível 1 no site até a conferência no ar; contas de teste apagadas, 0 contas no fim):
+- **Fluxo:** Entrar → "Novo por aqui?" → Crie seu personagem (6 abas: Corpo, Cabelo, Rosto, Roupa, Extras, Classe e arma) → Sua conta (nome, e-mail, senha) → jogo abre com o personagem escolhido. Conferi no save da conta: gênero, penteado, traje, chapéu, acessório, fundo, classe, arma e nome batem com o que foi escolhido.
+- **Validações:** nome vazio, curto (< 3), com HTML (`<b>x</b>`) e com símbolos recusados; e-mail inválido e senha curta recusados; "Voltar" mantém o personagem montado.
+- **Sair e entrar de novo** devolve o mesmo personagem; senha errada mostra "E-mail ou senha incorretos."
+- **Conta sem personagem** (apaguei só o save da conta): aparece "Sair da conta", o criador, e depois pede só o nome. Bigode de guidão escolhido apareceu no perfil.
+- **Modo local** (Supabase desligado de propósito numa segunda instância): abre direto no criador, sem login, só o nome no fim, e o jogo abre.
+- **Layout:** celular (390 px) sem rolagem lateral e cartão dentro da tela; 1024 px com margem de 6% e cartão dentro da moldura.
+- **Variedade:** 270.950.400 combinações de visual (masc.) e 28.672.000 (fem.). Teste automático prova que **nenhuma opção cai no desenho de outra** (antes só 3 trajes eram distintos e "ondas" saía igual a "desgrenhado").
+- **Pendências achadas:** o botão "Personalizar Visual do Gangster" do perfil não faz nada (sem função no código) → tarefa C13. "Esqueci a senha" não existe → E5. Nome único só com o banco (D2c). A pasta `C:\RODRIG~1` foi criada por mim por engano (arquivo de teste de 2 bytes) e a remoção foi bloqueada por segurança: o fundador precisa apagar.
+- **Não verificado:** celular real, Safari/Firefox, leitor de tela, e o fluxo no site da Vercel (a verificar após publicar).
+
 ## Layout (2026-11-11)
 - Margem preta de **6% de cada lado** e 2% em cima e embaixo no desktop (a partir de 1024 px); medida no navegador em 1024, 1280, 1366, 1440, 1920 e 2560 px: sempre 6,00%, sem rolagem lateral, sem aba cortada (2 linhas até 1440 px, 1 linha em 1920 px ou mais). Em 768 px nada mudou. 4 testes automáticos em `layout.test.ts`.
 - **Tela de login com a mesma margem (2026-11-11):** moldura medida em 1024, 1366, 1920 e 2560 px: 6,00% de cada lado e 2% em cima, com o cartão de login dentro da moldura e sem rolagem lateral. Em 390 px (celular) a imagem continua de ponta a ponta, sem rolagem. Observação do teste: uma primeira medição deu zero porque havia uma sessão antiga no navegador (a tela de login estava fechada); refeita com o armazenamento limpo.

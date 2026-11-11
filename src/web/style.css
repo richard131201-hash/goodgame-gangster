@@ -2972,3 +2972,119 @@ body.auth-open #app { display: none; }
     grid-template-columns: 1fr;
   }
 }
+
+/* ===================================================== */
+/* PORTA DE ENTRADA: 3 TELAS (Entrar / Personagem / Conta) */
+/* ===================================================== */
+.auth-panel[hidden] { display: none; }
+
+.auth-card-wide {
+  max-width: 980px;
+  text-align: left;
+}
+
+.auth-title-sm {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 24px;
+  text-align: center;
+  color: var(--gold-light);
+}
+
+.auth-new-btn {
+  width: 100%;
+  margin: 2px 0 16px;
+  padding: 14px;
+  font: 800 15px var(--font-sans);
+  color: #111;
+  background: linear-gradient(180deg, #ffd752 0%, #d4af37 100%);
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(212, 175, 55, 0.25);
+}
+.auth-new-btn:hover { filter: brightness(1.06); }
+.auth-new-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+.creator-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 22px;
+  margin-top: 12px;
+  align-items: start;
+}
+
+.creator-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.creator-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 10px;
+}
+.creator-tab {
+  padding: 8px 14px;
+  font: 700 13px var(--font-sans);
+  color: var(--text-muted);
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  cursor: pointer;
+}
+.creator-tab:hover { color: #fff; }
+.creator-tab.active { color: #111; background: var(--gold-primary); }
+.creator-tab:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 2px; }
+
+.creator-tabpanel {
+  min-height: 250px;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.creator-actions,
+.account-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}
+.creator-actions .arena-btn-primary { padding: 12px 26px; font-size: 15px; }
+.account-actions .auth-submit { width: auto; margin-top: 0; padding: 12px 20px; }
+
+.auth-link {
+  padding: 4px 2px;
+  font: 600 13px var(--font-sans);
+  color: var(--gold-light);
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.auth-link:hover { color: #fff; }
+
+.account-summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 12px 0 4px;
+  text-align: left;
+}
+.account-avatar svg { display: block; border-radius: 10px; border: 1px solid var(--border-color); }
+.account-summary-text p { margin: 6px 0 0; font-size: 12px; color: var(--text-muted); }
+
+@media (max-width: 760px) {
+  .creator-grid { grid-template-columns: 1fr; }
+  .creator-tabpanel { max-height: none; }
+  .creator-options .class-picker-grid { grid-template-columns: 1fr; }
+  .creator-actions, .account-actions { flex-direction: column-reverse; align-items: stretch; }
+  .creator-actions .arena-btn-primary, .account-actions .auth-submit { width: 100%; }
+}

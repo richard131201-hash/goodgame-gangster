@@ -19,6 +19,29 @@ export function validateCredentials(email: string, password: string, mode: AuthM
   return null;
 }
 
+/**
+ * Nome do personagem (R-PERSONAGEM-2): 3 a 24 caracteres (igual à regra do banco), só letras
+ * (com acento), números, espaço e . ' " - _ . Sem < > & etc., pois o nome aparece em listas
+ * (ranking) e não pode carregar HTML.
+ */
+export const MIN_NAME_LENGTH = 3;
+export const MAX_NAME_LENGTH = 24;
+const NAME_RE = /^[\p{L}\p{N} '".\-_]+$/u;
+
+export function validateCharacterName(raw: string): string | null {
+  const name = raw.trim().replace(/\s+/g, ' ');
+  if (!name) return 'Escolha um nome para o seu personagem.';
+  if (name.length < MIN_NAME_LENGTH) return `O nome precisa ter pelo menos ${MIN_NAME_LENGTH} letras.`;
+  if (name.length > MAX_NAME_LENGTH) return `O nome pode ter no máximo ${MAX_NAME_LENGTH} caracteres.`;
+  if (!NAME_RE.test(name)) return 'Use só letras, números, espaço e os sinais . \' " - _';
+  return null;
+}
+
+/** Nome já limpo (sem espaços nas pontas nem repetidos), pronto para gravar. */
+export function cleanCharacterName(raw: string): string {
+  return raw.trim().replace(/\s+/g, ' ');
+}
+
 /** Traduz o erro do Supabase (pelo código; se não houver, pela mensagem) para português. */
 export function translateAuthError(code: string | undefined | null, message: string | undefined | null): string {
   const c = (code || '').toLowerCase();

@@ -642,152 +642,99 @@
       </div>
     </div>
 
-    <!-- ============================================== -->
-    <!-- MODAL DE CRIAÇÃO DE PERSONAGEM (ONBOARDING)    -->
-    <!-- ============================================== -->
-    <div class="creation-modal-overlay" id="creation-modal" style="display: none;">
-      <div class="creation-wizard-card">
-        <div class="wizard-header">
-          <div class="logo-emblem">♠</div>
-          <h2>Criação de Personagem — Mobster Rise</h2>
-          <p>Jure lealdade à Família, defina sua classe e forje sua lenda no submundo.</p>
-        </div>
-
-        <div class="wizard-body-grid">
-          <!-- LEFT: LIVE AVATAR PREVIEW -->
-          <div class="wizard-preview-col">
-            <div class="wizard-avatar-box">
-              <div class="avatar-svg-container" id="wizard-avatar-svg"></div>
-              <div class="avatar-weapon-holder side-preview" id="wizard-weapon-holder"></div>
-            </div>
-            <div class="wizard-avatar-name" id="wizard-live-name">Don Vito "O Carrasco"</div>
-            <span class="gg-style-badge" id="wizard-live-style">CARRASCO</span>
-          </div>
-
-          <!-- RIGHT: CUSTOMIZATION STEPS -->
-          <div class="wizard-steps-col">
-            <!-- 1. IDENTIDADE -->
-            <div class="wizard-group">
-              <span class="w-group-title">1. Nome do Mafioso & Apelido</span>
-              <div class="form-field">
-                <input type="text" id="wiz-name-input" value="Don Vito 'O Carrasco'" placeholder="Ex: Tony 'Navalha'" />
-              </div>
-            </div>
-
-            <!-- 2. CLASSE / ESTILO -->
-            <div class="wizard-group">
-              <span class="w-group-title">2. Escolha sua Classe Mafiosa</span>
-              <div class="class-picker-grid">
-                <div class="class-card-pick selected" data-class="carrasco">
-                  <div class="c-pick-header">
-                    <span class="c-pick-icon">🗡️</span>
-                    <strong>Carrasco</strong>
-                  </div>
-                  <span class="c-pick-role">Dano Máximo (Escala ×2,2)</span>
-                  <p>Inicia a luta com o devastador <strong>Golpe de Abertura</strong> e ignora 25% da armadura do oponente.</p>
-                </div>
-
-                <div class="class-card-pick" data-class="muralha">
-                  <div class="c-pick-header">
-                    <span class="c-pick-icon">🛡️</span>
-                    <strong>Muralha</strong>
-                  </div>
-                  <span class="c-pick-role">Tanque Colossal (Escala ×1,95)</span>
-                  <p>Armadura pesada de 25%, <strong>Intimidação</strong> reduzindo dano nas 3 primeiras rodadas e Casca Grossa.</p>
-                </div>
-
-                <div class="class-card-pick" data-class="malandro">
-                  <div class="c-pick-header">
-                    <span class="c-pick-icon">🎭</span>
-                    <strong>Malandro</strong>
-                  </div>
-                  <span class="c-pick-role">Equilibrado & Esquiva</span>
-                  <p>Esquiva nativa triplicada (15%), maior prioridade de primeiro ataque e <strong>Adaptação</strong> de dano com vida perdida.</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- 3. APARÊNCIA -->
-            <div class="wizard-group">
-              <span class="w-group-title">3. Estilo Visual & Acessório de Respeito</span>
-              <div class="palette-group">
-                <span class="sub-label">Sexo & Traje:</span>
-                <div class="btn-toggle-row">
-                  <button class="choice-btn active" data-wiz-prop="gender" data-wiz-val="male">Masculino</button>
-                  <button class="choice-btn" data-wiz-prop="gender" data-wiz-val="female">Feminino</button>
-                  <button class="choice-btn active" data-wiz-prop="clothing" data-wiz-val="pinstripe_suit">Terno Risca</button>
-                  <button class="choice-btn" data-wiz-prop="clothing" data-wiz-val="trenchcoat">Sobretudo</button>
-                  <button class="choice-btn" data-wiz-prop="clothing" data-wiz-val="vest_suspenders">Colete</button>
-                </div>
-              </div>
-
-              <div class="palette-group">
-                <span class="sub-label">Acessório Distintivo:</span>
-                <div class="btn-toggle-row">
-                  <button class="choice-btn active" data-wiz-prop="accessory" data-wiz-val="scar">Cicatriz</button>
-                  <button class="choice-btn" data-wiz-prop="accessory" data-wiz-val="fedora">Chapéu Fedora</button>
-                  <button class="choice-btn" data-wiz-prop="accessory" data-wiz-val="cigar">Charuto</button>
-                  <button class="choice-btn" data-wiz-prop="accessory" data-wiz-val="sunglasses">Óculos</button>
-                  <button class="choice-btn" data-wiz-prop="accessory" data-wiz-val="gold_chain">Corrente</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- 4. ARMA INICIAL -->
-            <div class="wizard-group">
-              <span class="w-group-title">4. Arma Inicial de Contrabando</span>
-              <div class="btn-toggle-row" id="wiz-starter-weapon-row">
-                <button class="choice-btn active" data-wep-start="colt_1911">🔫 Colt M1911 (.45)</button>
-                <button class="choice-btn" data-wep-start="double_barrel">💥 Escopeta Cano Duplo</button>
-                <button class="choice-btn" data-wep-start="tommy_gun">🌪️ Tommy Gun 1928</button>
-              </div>
-            </div>
-
-            <button id="finish-character-creation-btn" class="arena-btn-primary" style="width: 100%; padding: 14px; font-size: 16px; margin-top: 10px;">
-              ♠️ JURAR LEALDADE E ENTRAR NO SUBMUNDO
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <!-- ============================================== -->
-  <!-- TELA DE ENTRAR / CRIAR CONTA (só com Supabase) -->
+  <!-- PORTA DE ENTRADA: Entrar / Crie seu personagem / Sua conta -->
   <!-- ============================================== -->
   <div class="auth-screen" id="auth-screen" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="auth-title">
    <div class="auth-frame">
-    <div class="auth-card">
+
+    <!-- TELA 1: ENTRAR -->
+    <section class="auth-card auth-panel" id="panel-login">
       <div class="auth-emblem" aria-hidden="true">♠</div>
       <h1 class="auth-title" id="auth-title">Mobster Rise</h1>
       <p class="auth-sub">Entre no submundo</p>
 
-      <div class="auth-tabs" role="tablist">
-        <button type="button" class="auth-tab active" id="auth-tab-login" role="tab" aria-selected="true">Entrar</button>
-        <button type="button" class="auth-tab" id="auth-tab-signup" role="tab" aria-selected="false">Criar conta</button>
-      </div>
+      <button type="button" class="auth-new-btn" id="auth-go-create">Novo por aqui? Crie seu personagem</button>
 
-      <form id="auth-form" novalidate>
-        <label class="auth-label" for="auth-email">E-mail</label>
-        <input class="auth-input" id="auth-email" type="email" inputmode="email" autocomplete="email" maxlength="120" placeholder="voce@exemplo.com" />
+      <form id="login-form" novalidate>
+        <label class="auth-label" for="login-email">E-mail</label>
+        <input class="auth-input" id="login-email" type="email" inputmode="email" autocomplete="email" maxlength="120" placeholder="voce@exemplo.com" />
 
-        <label class="auth-label" for="auth-password">Senha</label>
-        <input class="auth-input" id="auth-password" type="password" autocomplete="current-password" maxlength="72" placeholder="Sua senha" />
-        <p class="auth-hint" id="auth-hint"></p>
+        <label class="auth-label" for="login-password">Senha</label>
+        <input class="auth-input" id="login-password" type="password" autocomplete="current-password" maxlength="72" placeholder="Sua senha" />
 
         <label class="auth-check">
-          <input type="checkbox" id="auth-show-password" aria-label="Mostrar senha" /> Mostrar senha
+          <input type="checkbox" id="login-show" aria-label="Mostrar senha" /> Mostrar senha
         </label>
 
-        <p class="auth-error" id="auth-error" role="alert" aria-live="assertive"></p>
-        <p class="auth-info" id="auth-info" role="status" aria-live="polite"></p>
+        <p class="auth-error" id="login-error" role="alert" aria-live="assertive"></p>
+        <p class="auth-info" id="login-info" role="status" aria-live="polite"></p>
 
-        <button type="submit" class="arena-btn-primary auth-submit" id="auth-submit">Entrar</button>
+        <button type="submit" class="arena-btn-primary auth-submit" id="login-submit">Entrar</button>
       </form>
 
       <p class="auth-fine">Jogo recomendado para maiores de 14 anos.</p>
-    </div>
+    </section>
+
+    <!-- TELA 2: CRIE SEU PERSONAGEM -->
+    <section class="auth-card auth-card-wide auth-panel" id="panel-create" hidden>
+      <h2 class="auth-title-sm">Crie seu personagem</h2>
+      <p class="auth-sub">Escolha cada detalhe do seu mafioso. Você pode mudar o visual depois.</p>
+
+      <div class="creator-grid">
+        <div class="creator-preview">
+          <div class="wizard-avatar-box">
+            <div class="avatar-svg-container" id="creator-avatar"></div>
+            <div class="avatar-weapon-holder side-preview" id="creator-weapon"></div>
+          </div>
+          <span class="gg-style-badge" id="creator-class-badge">CARRASCO</span>
+        </div>
+
+        <div class="creator-options">
+          <div class="creator-tabs" id="creator-tabs" role="tablist"></div>
+          <div class="creator-tabpanel" id="creator-tabpanel"></div>
+        </div>
+      </div>
+
+      <div class="creator-actions">
+        <button type="button" class="auth-link" id="creator-back-login">Já tem conta? Entrar</button>
+        <button type="button" class="arena-btn-primary" id="creator-next">Continuar</button>
+      </div>
+    </section>
+
+    <!-- TELA 3: SUA CONTA -->
+    <section class="auth-card auth-panel" id="panel-account" hidden>
+      <h2 class="auth-title-sm" id="account-title">Sua conta</h2>
+      <div class="account-summary" id="account-summary"></div>
+
+      <form id="account-form" novalidate>
+        <label class="auth-label" for="account-name">Nome do personagem</label>
+        <input class="auth-input" id="account-name" type="text" autocomplete="nickname" maxlength="24" placeholder="Ex.: Tony 'Navalha'" />
+
+        <div id="account-credentials">
+          <label class="auth-label" for="account-email">E-mail</label>
+          <input class="auth-input" id="account-email" type="email" inputmode="email" autocomplete="email" maxlength="120" placeholder="voce@exemplo.com" />
+
+          <label class="auth-label" for="account-password">Senha</label>
+          <input class="auth-input" id="account-password" type="password" autocomplete="new-password" maxlength="72" placeholder="Mínimo de 8 caracteres" />
+
+          <label class="auth-check">
+            <input type="checkbox" id="account-show" aria-label="Mostrar senha" /> Mostrar senha
+          </label>
+        </div>
+
+        <p class="auth-error" id="account-error" role="alert" aria-live="assertive"></p>
+        <p class="auth-info" id="account-info" role="status" aria-live="polite"></p>
+
+        <div class="account-actions">
+          <button type="button" class="auth-link" id="account-back">← Voltar ao personagem</button>
+          <button type="submit" class="arena-btn-primary auth-submit" id="account-submit">Criar conta e jogar</button>
+        </div>
+      </form>
+    </section>
+
    </div>
   </div>
 

@@ -2,15 +2,17 @@ export interface CharacterAppearance {
   name: string;
   gender: 'male' | 'female';
   skinTone: string;
-  hairStyle: 'slick' | 'pompadour' | 'messy' | 'buzz' | 'bob' | 'wavy' | 'bald';
+  hairStyle: 'slick' | 'pompadour' | 'messy' | 'buzz' | 'bob' | 'wavy' | 'bald' | 'side_part' | 'curly' | 'updo';
   hairColor: string;
   eyeColor: string;
-  facialHair: 'none' | 'mustache' | 'goatee' | 'stubble' | 'beard';
+  facialHair: 'none' | 'mustache' | 'goatee' | 'stubble' | 'beard' | 'handlebar' | 'vandyke';
   facialHairColor: string;
-  clothing: 'pinstripe_suit' | 'trenchcoat' | 'vest_suspenders' | 'leather_jacket' | 'classic_suit';
+  clothing: 'pinstripe_suit' | 'trenchcoat' | 'vest_suspenders' | 'leather_jacket' | 'classic_suit' | 'turtleneck' | 'flapper_dress';
   clothingColor: string;
   clothingSecondaryColor: string;
-  accessory: 'none' | 'fedora' | 'sunglasses' | 'cigar' | 'scar' | 'gold_chain';
+  accessory: 'none' | 'fedora' | 'sunglasses' | 'cigar' | 'scar' | 'gold_chain' | 'eyepatch' | 'monocle' | 'earring' | 'flower';
+  /** Chapéu (separado do acessório). Saves antigos não têm este campo: o 'fedora' antigo continua valendo. */
+  hat?: 'none' | 'fedora' | 'flat_cap' | 'bowler';
   cardBackground: 'alley' | 'bar' | 'bank' | 'dock';
 }
 
@@ -20,6 +22,9 @@ export const SKIN_TONES = [
   { id: 'olive', name: 'Oliva', value: '#c5926b' },
   { id: 'brown', name: 'Moreno', value: '#8f5c38' },
   { id: 'dark', name: 'Escuro', value: '#583620' },
+  { id: 'porcelain', name: 'Porcelana', value: '#fdeee4' },
+  { id: 'caramel', name: 'Caramelo', value: '#b07a4f' },
+  { id: 'ebony', name: 'Ébano', value: '#3b2314' },
 ];
 
 export const HAIR_COLORS = [
@@ -30,6 +35,9 @@ export const HAIR_COLORS = [
   { id: 'ginger', name: 'Ruivo', value: '#b7410e' },
   { id: 'grey', name: 'Grisalho', value: '#9e9e9e' },
   { id: 'white', name: 'Branco', value: '#eceff1' },
+  { id: 'chestnut', name: 'Castanha', value: '#8b5a2b' },
+  { id: 'platinum', name: 'Platinado', value: '#e8dcb5' },
+  { id: 'burgundy', name: 'Vinho', value: '#6b1d2a' },
 ];
 
 export const EYE_COLORS = [
@@ -38,6 +46,9 @@ export const EYE_COLORS = [
   { id: 'green', name: 'Verde', value: '#2e7d32' },
   { id: 'amber', name: 'Âmbar', value: '#f57c00' },
   { id: 'grey', name: 'Cinza', value: '#546e7a' },
+  { id: 'hazel', name: 'Mel', value: '#8d6e3b' },
+  { id: 'black', name: 'Preto', value: '#1a1a1a' },
+  { id: 'ice', name: 'Azul Gelo', value: '#64b5f6' },
 ];
 
 export const CLOTHING_COLORS = [
@@ -47,6 +58,10 @@ export const CLOTHING_COLORS = [
   { id: 'forest', name: 'Verde Máfia', main: '#1b3a27', sec: '#2ecc71' },
   { id: 'cream', name: 'Creme', main: '#dcd6cd', sec: '#8d6e63' },
   { id: 'pure_black', name: 'Preto Total', main: '#121212', sec: '#333333' },
+  { id: 'mustard', name: 'Mostarda', main: '#8a6d1d', sec: '#1b1b1e' },
+  { id: 'steel', name: 'Aço', main: '#555b66', sec: '#e74c3c' },
+  { id: 'teal', name: 'Petróleo', main: '#0e4a4f', sec: '#f1c40f' },
+  { id: 'coffee', name: 'Café', main: '#4a2f1c', sec: '#d4af37' },
 ];
 
 export const DEFAULT_CARRASCO: CharacterAppearance = {
@@ -215,10 +230,13 @@ export function renderPaperdollSVG(
           ${app.gender === 'male' ? renderFacialHair(app.facialHair, app.facialHairColor) : ''}
 
           <!-- HAIR LAYER -->
-          ${renderHair(app.hairStyle, app.hairColor, app.gender)}
+          ${renderHair(app.hairStyle, app.hairColor, app.gender, (app.hat ?? (app.accessory === 'fedora' ? 'fedora' : 'none')) !== 'none')}
 
           <!-- ACCESSORIES (FACE / HEAD) -->
           ${renderAccessory(app.accessory, app.clothingSecondaryColor)}
+
+          <!-- HAT -->
+          ${renderHat(app.hat ?? (app.accessory === 'fedora' ? 'fedora' : 'none'), app.clothingColor, app.clothingSecondaryColor)}
         </g>
       </g>
     </svg>
@@ -241,6 +259,17 @@ function renderBackgroundDetails(type: string): string {
       <rect x="30" y="20" width="12" height="20" rx="2" fill="#d4af37" opacity="0.4" />
       <rect x="50" y="16" width="14" height="24" rx="2" fill="#e67e22" opacity="0.5" />
       <rect x="220" y="18" width="16" height="22" rx="2" fill="#b7410e" opacity="0.4" />
+    `;
+  }
+  if (type === 'bank') {
+    return `
+      <!-- Marble bank columns and gold glow -->
+      <rect x="18" y="30" width="16" height="250" fill="rgba(255,255,255,0.06)" />
+      <rect x="56" y="30" width="16" height="250" fill="rgba(255,255,255,0.05)" />
+      <rect x="208" y="30" width="16" height="250" fill="rgba(255,255,255,0.05)" />
+      <rect x="246" y="30" width="16" height="250" fill="rgba(255,255,255,0.06)" />
+      <rect x="10" y="22" width="260" height="8" fill="rgba(212,175,55,0.35)" />
+      <circle cx="140" cy="60" r="30" fill="#d4af37" opacity="0.14" filter="url(#soft-glow)" />
     `;
   }
   return `
@@ -329,10 +358,24 @@ function renderFacialHair(type: string, color: string): string {
       <path d="M 105 90 C 105 145 118 160 140 160 C 162 160 175 145 175 90 C 172 120 165 140 152 142 Q 140 135 128 142 C 115 140 108 120 105 90 Z" fill="${color}" stroke="#111" stroke-width="1.8" />
     `;
   }
+  if (type === 'handlebar') {
+    return `
+      <!-- Waxed handlebar mustache -->
+      <path d="M 120 120 Q 130 112 140 119 Q 150 112 160 120 Q 150 127 140 123 Q 130 127 120 120 Z" fill="${color}" stroke="#111" stroke-width="1" />
+      <path d="M 120 120 Q 112 119 112 111 M 160 120 Q 168 119 168 111" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round" />
+    `;
+  }
+  if (type === 'vandyke') {
+    return `
+      <!-- Van Dyke: mustache + pointed goatee -->
+      <path d="M 127 119 Q 140 115 140 122 Q 140 115 153 119 Q 140 124 127 119 Z" fill="${color}" stroke="#111" stroke-width="1" />
+      <path d="M 131 130 Q 140 126 149 130 L 142 152 Q 140 156 138 152 Z" fill="${color}" stroke="#111" stroke-width="1" />
+    `;
+  }
   return '';
 }
 
-function renderHair(style: string, color: string, gender: string): string {
+function renderHair(style: string, color: string, gender: string, hasHat = false): string {
   if (style === 'bald') return '';
 
   if (style === 'pompadour') {
@@ -354,10 +397,43 @@ function renderHair(style: string, color: string, gender: string): string {
       <path d="M 103 68 C 104 38 130 32 140 32 C 150 32 176 38 177 68 C 170 55 155 48 140 48 C 125 48 110 55 103 68 Z" fill="${color}" opacity="0.9" stroke="#111" stroke-width="1.5" />
     `;
   }
-  if (style === 'bob' || gender === 'female') {
+  if (style === 'bob') {
     return `
       <!-- Vintage 1920s Flapper Bob -->
       <path d="M 100 70 C 95 35 130 20 140 20 C 150 20 185 35 180 70 C 188 110 175 130 168 135 C 165 110 170 70 140 50 C 110 70 115 110 112 135 C 105 130 92 110 100 70 Z" fill="${color}" stroke="#111" stroke-width="2.5" />
+    `;
+  }
+
+  if (style === 'wavy') {
+    return `
+      <!-- Long 1930s finger waves -->
+      <path d="M 100 72 C 92 30 126 16 140 16 C 154 16 188 30 180 72 C 190 100 184 132 192 156 C 178 150 170 128 168 100 C 164 64 118 64 112 100 C 110 128 102 150 88 156 C 96 132 90 100 100 72 Z" fill="${color}" stroke="#111" stroke-width="2.5" />
+      <path d="M 118 34 Q 140 46 162 34" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none" />
+      <path d="M 97 112 Q 104 126 96 142 M 183 112 Q 176 126 184 142" stroke="rgba(255,255,255,0.2)" stroke-width="2" fill="none" />
+    `;
+  }
+  if (style === 'side_part') {
+    return `
+      <!-- Classic side part -->
+      <path d="M 102 68 C 100 28 128 18 142 18 C 162 18 182 30 178 68 C 174 50 164 40 150 38 C 134 36 112 44 102 68 Z" fill="${color}" stroke="#111" stroke-width="2.5" />
+      <path d="M 126 20 Q 124 34 112 46" stroke="rgba(0,0,0,0.4)" stroke-width="2" fill="none" />
+      <path d="M 146 24 Q 166 28 176 50" stroke="rgba(255,255,255,0.22)" stroke-width="2" fill="none" />
+    `;
+  }
+  if (style === 'curly') {
+    const puffs = [[110, 56, 17], [126, 36, 19], [154, 36, 19], [170, 56, 17], [140, 26, 17], [103, 76, 11], [177, 76, 11]];
+    return `
+      <!-- Curly voluminous hair -->
+      <g stroke="#111" stroke-width="5">${puffs.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${color}" />`).join('')}</g>
+      <g>${puffs.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r - 1.5}" fill="${color}" />`).join('')}</g>
+    `;
+  }
+  if (style === 'updo') {
+    return `
+      <!-- Elegant updo with bun -->
+      ${hasHat ? '' : `<circle cx="140" cy="14" r="17" fill="${color}" stroke="#111" stroke-width="2.5" />`}
+      <path d="M 102 65 C 102 28 130 22 140 22 C 150 22 178 28 178 65 C 170 50 155 42 140 42 C 125 42 110 50 102 65 Z" fill="${color}" stroke="#111" stroke-width="2.5" />
+      <path d="M 118 30 Q 140 42 162 30" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none" />
     `;
   }
 
@@ -411,6 +487,58 @@ function renderClothing(app: CharacterAppearance, headX: number, bodyY: number):
     `;
   }
 
+  const BODY = 'M 45 340 L 55 205 L 100 160 L 124 165 L 140 195 L 156 165 L 180 160 L 225 205 L 235 340 Z';
+
+  if (app.clothing === 'leather_jacket') {
+    return `
+      <!-- Biker-style leather jacket over a white tee -->
+      <path d="${BODY}" fill="${main}" stroke="#111" stroke-width="3" />
+      <polygon points="126,165 154,165 140,208" fill="#ececec" stroke="#111" stroke-width="1.5" />
+      <path d="M 100 160 L 126 168 L 140 208 L 122 246 L 84 210 Z" fill="${main}" stroke="#111" stroke-width="2.5" />
+      <path d="M 180 160 L 154 168 L 140 208 L 158 246 L 196 210 Z" fill="${main}" stroke="#111" stroke-width="2.5" />
+      <path d="M 140 208 L 140 340" stroke="#9aa0a6" stroke-width="3" stroke-dasharray="4,3" />
+      <path d="M 60 220 L 54 340 M 220 220 L 226 340" stroke="${sec}" stroke-width="6" />
+      <rect x="86" y="292" width="34" height="6" rx="2" fill="rgba(0,0,0,0.35)" />
+      <rect x="160" y="292" width="34" height="6" rx="2" fill="rgba(0,0,0,0.35)" />
+    `;
+  }
+
+  if (app.clothing === 'classic_suit') {
+    return `
+      <!-- Classic single-breasted suit with pocket square -->
+      <path d="${BODY}" fill="${main}" stroke="#111" stroke-width="3" />
+      <polygon points="126,165 154,165 140,215" fill="#fff" stroke="#111" stroke-width="1.5" />
+      <polygon points="137,170 143,170 145,225 140,235 135,225" fill="${sec}" stroke="#111" stroke-width="1.5" />
+      <path d="M 100 160 L 140 245 L 140 340" stroke="#111" stroke-width="2.5" fill="none" />
+      <path d="M 180 160 L 140 245" stroke="#111" stroke-width="2.5" fill="none" />
+      <circle cx="140" cy="266" r="4" fill="#d4af37" />
+      <circle cx="140" cy="298" r="4" fill="#d4af37" />
+      <polygon points="168,232 184,232 182,243 170,243" fill="${sec}" stroke="#111" stroke-width="1.2" />
+    `;
+  }
+
+  if (app.clothing === 'turtleneck') {
+    return `
+      <!-- Noir knit turtleneck -->
+      <path d="${BODY}" fill="${main}" stroke="#111" stroke-width="3" />
+      <path d="M 80 190 L 70 340 M 105 170 L 97 340 M 175 170 L 183 340 M 200 190 L 210 340" stroke="rgba(255,255,255,0.1)" stroke-width="2" />
+      <path d="M 110 150 C 110 182 170 182 170 150 L 176 176 C 176 206 104 206 104 176 Z" fill="${main}" stroke="#111" stroke-width="2.5" />
+      <path d="M 112 168 Q 140 188 168 168" stroke="rgba(255,255,255,0.14)" stroke-width="2" fill="none" />
+      <path d="M 108 182 Q 140 202 172 182" stroke="rgba(255,255,255,0.1)" stroke-width="2" fill="none" />
+    `;
+  }
+
+  if (app.clothing === 'flapper_dress') {
+    return `
+      <!-- Elegant 1920s dress with pearls -->
+      <path d="M 60 340 L 68 214 Q 98 176 124 166 Q 140 204 156 166 Q 182 176 212 214 L 220 340 Z" fill="${main}" stroke="#111" stroke-width="3" />
+      <path d="M 100 188 Q 140 238 180 188 L 160 160 L 120 160 Z" fill="${app.skinTone}" stroke="#111" stroke-width="2" />
+      <path d="M 96 262 Q 140 276 184 262 L 186 282 Q 140 296 94 282 Z" fill="${sec}" stroke="#111" stroke-width="2" />
+      <path d="M 112 180 Q 140 234 168 180" stroke="#f6f3ea" stroke-width="5" stroke-linecap="round" stroke-dasharray="0.1,7" fill="none" />
+      <path d="M 78 300 L 74 340 M 100 300 L 98 340 M 180 300 L 182 340 M 202 300 L 206 340" stroke="rgba(255,255,255,0.25)" stroke-width="2" />
+    `;
+  }
+
   // Vest with Suspenders
   return `
     <!-- White shirt with vest and suspenders -->
@@ -426,16 +554,33 @@ function renderClothing(app: CharacterAppearance, headX: number, bodyY: number):
 }
 
 function renderAccessory(acc: string, color: string): string {
-  if (acc === 'fedora') {
+  if (acc === 'eyepatch') {
     return `
-      <!-- Gangster Fedora Hat -->
-      <g transform="translate(0, -8)">
-        <!-- Brim -->
-        <ellipse cx="140" cy="40" rx="68" ry="16" fill="#1b1b1e" stroke="#000" stroke-width="2.5" />
-        <!-- Crown -->
-        <path d="M 98 38 C 100 0 120 5 130 8 C 140 5 155 3 162 10 C 172 8 180 20 182 38 Z" fill="#1b1b1e" stroke="#000" stroke-width="2.5" />
-        <!-- Ribbon Band -->
-        <path d="M 103 36 C 120 32 160 32 177 36 L 178 30 C 160 26 120 26 102 30 Z" fill="${color}" />
+      <!-- Pirate-noir eyepatch with strap -->
+      <path d="M 104 74 L 176 68" stroke="#111" stroke-width="2.5" fill="none" />
+      <path d="M 114 78 Q 125 70 138 80 Q 138 96 125 98 Q 112 96 114 78 Z" fill="#111" stroke="#000" stroke-width="1.5" />
+    `;
+  }
+  if (acc === 'monocle') {
+    return `
+      <!-- Gold monocle with chain -->
+      <circle cx="155" cy="85" r="11" fill="rgba(255,255,255,0.14)" stroke="#d4af37" stroke-width="2.2" />
+      <path d="M 164 93 Q 178 112 172 140" stroke="#d4af37" stroke-width="1.6" fill="none" stroke-dasharray="3,2" />
+    `;
+  }
+  if (acc === 'earring') {
+    return `
+      <!-- Gold hoop earring -->
+      <circle cx="103" cy="116" r="5" fill="none" stroke="#d4af37" stroke-width="2.2" />
+    `;
+  }
+  if (acc === 'flower') {
+    return `
+      <!-- Red carnation on the lapel -->
+      <g transform="translate(40, 120)">
+        <circle cx="150" cy="108" r="7" fill="#c0392b" stroke="#111" stroke-width="1.5" />
+        <circle cx="150" cy="108" r="3" fill="#e74c3c" />
+        <path d="M 150 115 L 146 126" stroke="#2e7d32" stroke-width="2.2" />
       </g>
     `;
   }
@@ -469,6 +614,41 @@ function renderAccessory(acc: string, color: string): string {
     return `
       <!-- Heavy Gold Mob Chain -->
       <path d="M 115 160 Q 140 210 165 160" stroke="#d4af37" stroke-width="3.5" fill="none" stroke-dasharray="4,2" />
+    `;
+  }
+  return '';
+}
+
+function renderHat(hat: string, main: string, sec: string): string {
+  if (hat === 'fedora') {
+    return `
+      <!-- Gangster Fedora Hat -->
+      <g transform="translate(0, 6)">
+        <ellipse cx="140" cy="40" rx="68" ry="16" fill="#1b1b1e" stroke="#000" stroke-width="2.5" />
+        <path d="M 98 38 C 100 0 120 5 130 8 C 140 5 155 3 162 10 C 172 8 180 20 182 38 Z" fill="#1b1b1e" stroke="#000" stroke-width="2.5" />
+        <path d="M 103 36 C 120 32 160 32 177 36 L 178 30 C 160 26 120 26 102 30 Z" fill="${sec}" />
+      </g>
+    `;
+  }
+  if (hat === 'flat_cap') {
+    return `
+      <!-- Newsboy flat cap -->
+      <g transform="translate(0, -4)">
+        <path d="M 102 56 C 102 20 178 20 178 56 C 190 56 194 64 180 66 L 100 66 C 86 64 90 56 102 56 Z" fill="${main}" stroke="#000" stroke-width="2.5" />
+        <path d="M 98 62 C 100 76 140 82 172 66 L 150 62 Z" fill="#1b1b1e" stroke="#000" stroke-width="2" />
+        <path d="M 108 48 Q 140 36 172 48" stroke="rgba(255,255,255,0.22)" stroke-width="2" fill="none" />
+        <circle cx="140" cy="26" r="3.5" fill="${main}" stroke="#000" stroke-width="1.5" />
+      </g>
+    `;
+  }
+  if (hat === 'bowler') {
+    return `
+      <!-- Bowler / derby hat -->
+      <g transform="translate(0, -4)">
+        <ellipse cx="140" cy="54" rx="52" ry="11" fill="#1b1b1e" stroke="#000" stroke-width="2.5" />
+        <path d="M 106 52 C 104 6 176 6 174 52 Z" fill="#1b1b1e" stroke="#000" stroke-width="2.5" />
+        <path d="M 107 46 C 125 52 155 52 173 46 L 174 52 C 155 58 125 58 106 52 Z" fill="${sec}" />
+      </g>
     `;
   }
   return '';

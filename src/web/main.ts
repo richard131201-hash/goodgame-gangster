@@ -8,15 +8,12 @@ import type { StyleId, FighterInput, FightEvent } from '../engine/types.js';
 import { WEAPONS_CATALOG, getWeaponById, type WeaponDef } from '../engine/weapons.js';
 import {
   renderPaperdollSVG,
-  DEFAULT_CARRASCO,
-  DEFAULT_MURALHA,
-  DEFAULT_MALANDRO,
   type CharacterAppearance,
 } from './paperdoll.js';
 import { sound } from './sound.js';
 import { msToNextEnergy } from './energy.js';
 import { cloudEnabled, supabase } from './supabaseClient.js';
-import { initAuthUi, showAuthScreen, signOutAccount } from './authUi.js';
+import { initAuthUi, showAuthScreen, signOutAccount, startCharacterCreation, type CreatedCharacter } from './authUi.js';
 import { playWeaponAttackVisual, clearAllImpacts } from './animations.js';
 import { getWeaponSprite } from './weaponSprites.js';
 import {
@@ -64,11 +61,8 @@ let bootStarted = false;
 /** Mostra o jogo para o save atual: criação de personagem se for novo, senão o perfil. */
 function enterGame() {
   const player = gameState.getPlayer();
-  const creation = document.getElementById('creation-modal');
-  if (creation) creation.style.display = 'none'; // não herdar modal aberto de outra conta
-
   if (!player.hasCreatedCharacter) {
-    openCharacterCreationModal();
+    startCharacterCreation(applyCreatedCharacter);
   } else {
     updateHUD();
     renderActiveTab('perfil');
@@ -90,8 +84,11 @@ function initGame() {
 }
 
 /** Login concluído (ou sessão já existente): carrega o save DESTA conta e abre o jogo. */
-function onLoggedIn(session: { user: { id: string; email?: string } }) {
+function onLoggedIn(session: { user: { id: string; email?: string } }, created?: CreatedCharacter) {
   gameState.setAccount(session.user.id);
+  if (created) {
+    applyCreatedCharacter(created, false); // conta nova: o personagem montado já vem com ela
+  }
   document.body.classList.remove('auth-open');
   const logout = document.getElementById('logout-btn');
   if (logout) logout.title = session.user.email ? `Sair da conta (${session.user.email})` : 'Sair da conta';
@@ -108,6 +105,7 @@ async function boot() {
   bootStarted = true;
 
   if (!cloudEnabled || !supabase) {
+    initAuthUi({ onLoggedIn });
     initGame();
     return;
   }
@@ -120,7 +118,7 @@ async function boot() {
       if (confirm('Sair da conta?')) void signOutAccount();
     });
   }
-  initAuthUi(onLoggedIn);
+  initAuthUi({ onLoggedIn });
   supabase.auth.onAuthStateChange((event) => {
     if (event === 'SIGNED_OUT') showAuthScreen();
   });
@@ -206,7 +204,7 @@ document.getElementById('audio-toggle-btn')?.addEventListener('click', () => {
 document.getElementById('new-character-btn')?.addEventListener('click', () => {
   if (confirm('Deseja criar um novo gangster? Seu progresso atual será reiniciado.')) {
     gameState.resetAllProgress();
-    openCharacterCreationModal();
+    startCharacterCreation(applyCreatedCharacter);
   }
 });
 
@@ -1238,97 +1236,23 @@ document.getElementById('fight-close-btn')?.addEventListener('click', () => {
 });
 
 // ========================================================
-// CHARACTER CREATION ONBOARDING WIZARD
+// PERSONAGEM CRIADO NA PORTA DE ENTRADA
 // ========================================================
-let wizSelectedStyle: StyleId = 'carrasco';
-let wizSelectedWeapon: string = 'colt_1911';
-let wizAppearance: CharacterAppearance = { ...DEFAULT_CARRASCO };
-
-function openCharacterCreationModal() {
-  const modal = document.getElementById('creation-modal')!;
-  modal.style.display = 'flex';
-  wizAppearance = { ...DEFAULT_CARRASCO };
-  wizSelectedStyle = 'carrasco';
-  wizSelectedWeapon = 'colt_1911';
-  updateWizardPreview();
-}
-
-function updateWizardPreview() {
-  const svgBox = document.getElementById('wizard-avatar-svg');
-  if (svgBox) {
-    svgBox.innerHTML = renderPaperdollSVG(wizAppearance, { width: 260, height: 320 });
-  }
-
-  const holder = document.getElementById('wizard-weapon-holder');
-  if (holder) {
-    const sp = getWeaponSprite(wizSelectedWeapon, 'preview');
-    holder.innerHTML = sp.svg;
-  }
-
-  document.getElementById('wizard-live-name')!.textContent = wizAppearance.name;
-  const badge = document.getElementById('wizard-live-style')!;
-  badge.textContent = wizSelectedStyle.toUpperCase();
-  badge.className = `gg-style-badge badge-${wizSelectedStyle}`;
-}
-
-document.getElementById('wiz-name-input')?.addEventListener('input', (e) => {
-  wizAppearance.name = (e.target as HTMLInputElement).value;
-  updateWizardPreview();
-});
-
-// Class picker in wizard
-document.querySelectorAll('.class-card-pick').forEach(card => {
-  card.addEventListener('click', () => {
-    document.querySelectorAll('.class-card-pick').forEach(c => c.classList.remove('selected'));
-    card.classList.add('selected');
-    wizSelectedStyle = (card.getAttribute('data-class') as StyleId) || 'carrasco';
-    if (wizSelectedStyle === 'carrasco') wizAppearance = { ...DEFAULT_CARRASCO, name: wizAppearance.name };
-    else if (wizSelectedStyle === 'muralha') wizAppearance = { ...DEFAULT_MURALHA, name: wizAppearance.name };
-    else wizAppearance = { ...DEFAULT_MALANDRO, name: wizAppearance.name };
-    updateWizardPreview();
-  });
-});
-
-// Appearance buttons in wizard
-document.addEventListener('click', (e) => {
-  const target = (e.target as HTMLElement).closest('[data-wiz-prop]') as HTMLElement | null;
-  if (!target) return;
-  const prop = target.getAttribute('data-wiz-prop');
-  const val = target.getAttribute('data-wiz-val');
-  if (!prop || !val) return;
-
-  target.parentElement?.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('active'));
-  target.classList.add('active');
-
-  (wizAppearance as any)[prop] = val;
-  updateWizardPreview();
-});
-
-// Starter weapon picker
-document.querySelectorAll('#wiz-starter-weapon-row .choice-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('#wiz-starter-weapon-row .choice-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    wizSelectedWeapon = btn.getAttribute('data-wep-start') || 'colt_1911';
-    updateWizardPreview();
-  });
-});
-
-// Finish Creation Button
-document.getElementById('finish-character-creation-btn')?.addEventListener('click', () => {
-  const nameInput = (document.getElementById('wiz-name-input') as HTMLInputElement).value.trim();
-  const finalName = nameInput || 'Don Vincenzo "O Silencioso"';
-  wizAppearance.name = finalName;
-
-  const newPlayer = createNewPlayer(finalName, wizSelectedStyle, wizAppearance, wizSelectedWeapon);
+/**
+ * Aplica o personagem montado pelo jogador (visual, classe, arma e nome) ao save atual.
+ * `showNow`: false quando o jogo ainda vai abrir logo depois (login recém-feito).
+ */
+function applyCreatedCharacter(created: CreatedCharacter, showNow = true) {
+  const appearance = { ...created.draft.appearance, name: created.name };
+  const newPlayer = createNewPlayer(created.name, created.draft.style, appearance, created.draft.weapon);
   Object.assign(gameState.getPlayer(), newPlayer);
   gameState.saveToStorage();
-
-  document.getElementById('creation-modal')!.style.display = 'none';
   sound.playCrit();
-  updateHUD();
-  renderActiveTab('perfil');
-});
+  if (showNow) {
+    updateHUD();
+    renderActiveTab('perfil');
+  }
+}
 
 // ========================================================
 // SIMULATOR VIEW INTEGRATION
