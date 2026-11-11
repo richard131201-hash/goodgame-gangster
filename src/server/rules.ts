@@ -325,12 +325,11 @@ export interface DuelContext {
   duelsLastHour: number;
 }
 
-export type DuelBlock = 'si_mesmo' | 'nivel' | 'espera' | 'limite_hora';
+export type DuelBlock = 'si_mesmo' | 'espera' | 'limite_hora';
 
 /** Por que o duelo não pode acontecer (ou null se pode). */
 export function duelBlockReason(attacker: DbPlayerRow, defender: DbPlayerRow, ctx: DuelContext): DuelBlock | null {
   if (attacker.id === defender.id) return 'si_mesmo';
-  if (Math.abs(attacker.level - defender.level) > DUEL.levelRange) return 'nivel';
   if (ctx.lastPairDuelAt !== null && ctx.now - ctx.lastPairDuelAt < DUEL.pairCooldownMs) return 'espera';
   if (ctx.duelsLastHour >= DUEL.maxPerHour) return 'limite_hora';
   return null;

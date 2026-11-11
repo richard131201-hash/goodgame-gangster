@@ -987,22 +987,21 @@ function renderDuelsView() {
   if (!syncEnabled()) return renderNpcDuelsView();
   const container = document.getElementById('duels-rivals-container');
   if (!container) return;
-  const lvl = gameState.getPlayer().level;
   if (!realRivalsCache) container.innerHTML = '<p style="padding:12px;color:var(--text-muted);">Procurando rivais...</p>';
-  else paintRealRivals(container, lvl);
+  else paintRealRivals(container);
   if (!realRivalsCache || Date.now() - realRivalsCache.at > REAL_CACHE_MS) void loadRealRivals();
 }
 
 async function loadRealRivals() {
   if (!currentUserId) return;
-  const r = await fetchRivals(currentUserId, gameState.getPlayer().level, DUEL.levelRange);
+  const r = await fetchRivals(currentUserId);
   realRivalsCache = { at: Date.now(), rows: r.rows, error: r.error };
   const container = document.getElementById('duels-rivals-container');
   const active = document.querySelector('.game-nav-tab.active')?.getAttribute('data-tab');
-  if (container && active === 'duelos') paintRealRivals(container, gameState.getPlayer().level);
+  if (container && active === 'duelos') paintRealRivals(container);
 }
 
-function paintRealRivals(container: HTMLElement, myLevel: number) {
+function paintRealRivals(container: HTMLElement) {
   const cache = realRivalsCache;
   if (!cache) return;
   if (cache.error) {
@@ -1010,7 +1009,7 @@ function paintRealRivals(container: HTMLElement, myLevel: number) {
     return;
   }
   if (cache.rows.length === 0) {
-    container.innerHTML = `<p style="padding:12px;color:var(--text-muted);">Nenhum outro jogador entre os níveis ${Math.max(1, myLevel - DUEL.levelRange)} e ${myLevel + DUEL.levelRange} ainda. Chame um amigo para criar uma conta!</p>`;
+    container.innerHTML = `<p style="padding:12px;color:var(--text-muted);">Nenhum outro jogador ainda. Chame um amigo para criar uma conta!</p>`;
     return;
   }
   container.innerHTML = cache.rows.map(r => {
@@ -1311,16 +1310,12 @@ function paintRealRanking(tbody: HTMLElement) {
     tbody.innerHTML = `<tr><td colspan="7" style="padding:14px;color:#e67e22;">Não deu para carregar o ranking agora. Detalhe: ${escHtml(cache.error)}</td></tr>`;
     return;
   }
-  const myLevel = gameState.getPlayer().level;
   tbody.innerHTML = cache.rows.map((r, i) => {
     const me = r.id === currentUserId;
     const fam = MAFIA_FAMILIES_LIST.find(f => f.id === r.family_id);
-    const inRange = !me && Math.abs(r.level - myLevel) <= DUEL.levelRange;
     const action = me
       ? '<span style="font-size: 11px; color: #2ecc71;">Seu Personagem</span>'
-      : inRange
-        ? `<button class="arena-btn-primary rank-duel-btn" data-riv-id="${r.id}" style="padding: 3px 10px; font-size: 11px;">⚔️ Duelar</button>`
-        : '<span style="font-size: 11px; color: var(--text-muted);">fora da faixa de nível</span>';
+      : `<button class="arena-btn-primary rank-duel-btn" data-riv-id="${r.id}" style="padding: 3px 10px; font-size: 11px;">⚔️ Duelar</button>`;
     return `
       <tr class="${me ? 'player-rank-row' : ''}">
         <td><strong${me ? ' style="color: #f1c40f;"' : ''}>#${i + 1}</strong></td>

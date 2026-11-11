@@ -138,14 +138,12 @@ export async function fetchRanking(limit = 50): Promise<{ rows: PublicPlayer[]; 
   return { rows: (data ?? []) as PublicPlayer[], error: null };
 }
 
-export async function fetchRivals(myId: string, myLevel: number, range: number, limit = 12): Promise<{ rows: PublicPlayer[]; error: string | null }> {
+export async function fetchRivals(myId: string, limit = 12): Promise<{ rows: PublicPlayer[]; error: string | null }> {
   if (!supabase) return { rows: [], error: 'sem_nuvem' };
   const { data, error } = await supabase
     .from('public_players')
     .select(PUBLIC_COLUMNS)
     .neq('id', myId)
-    .gte('level', Math.max(1, myLevel - range))
-    .lte('level', myLevel + range)
     .order('respect', { ascending: false })
     .limit(limit);
   if (error) return { rows: [], error: error.message };

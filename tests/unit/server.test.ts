@@ -347,14 +347,13 @@ describe('servidor: duelo entre jogadores (R-DUELO-1 a R-DUELO-5)', () => {
     expect(ghost.status).toBe(404);
   });
 
-  it('só duela dentro da faixa de nível', async () => {
+  it('duela com qualquer nível, sem faixa (decisão do fundador, R-DUELO-4)', async () => {
     const db = await setup();
-    db.rows.get('def')!.level = 1 + DUEL.levelRange + 1;
-    db.rows.get('def')!.save.level = 1 + DUEL.levelRange + 1;
+    db.rows.get('def')!.level = 80;
+    db.rows.get('def')!.save.level = 80;
     const r = await duel(db);
-    expect(r.status).toBe(429);
-    expect(r.body.error).toBe('nivel');
-    expect(db.duels).toHaveLength(0);
+    expect(r.status).toBe(200);
+    expect(db.duels).toHaveLength(1);
   });
 
   it('espera entre duelos contra o mesmo rival, e depois libera', async () => {

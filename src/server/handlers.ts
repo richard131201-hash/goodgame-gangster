@@ -108,7 +108,6 @@ export async function opDuel(ctx: Ctx, body: ApiBody): Promise<ApiResponse> {
   if (block) {
     const msg: Record<string, string> = {
       si_mesmo: 'Você não pode duelar contra você mesmo.',
-      nivel: `Só dá para duelar com jogadores até ${DUEL.levelRange} níveis de diferença.`,
       espera: `Você já desafiou esse rival há pouco. Espere ${Math.round(DUEL.pairCooldownMs / 60000)} minutos ou escolha outro.`,
       limite_hora: `Limite de ${DUEL.maxPerHour} duelos por hora atingido. Tente mais tarde.`,
     };
