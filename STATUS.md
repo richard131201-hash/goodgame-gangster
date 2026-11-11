@@ -44,7 +44,8 @@ Provado no localhost contra o Supabase real (nível 1 no site; as contas de test
 - A chave secreta **não** está no pacote do navegador (busca pelo valor real: não encontrado). O texto `sb_secret_` aparece só como código da biblioteca.
 - Os 2 erros de console (400 e 422) eram dos testes negativos de propósito.
 - **Achado:** o jogo transborda na horizontal no celular (413 px numa tela de 390). Já existia antes; tarefa C10.
-- **Ainda não verificado:** o login no site da Vercel (depende das variáveis de lá); celular real; confirmação por e-mail; recuperação de senha (não existe).
+- **Site no ar (Vercel), verificado em 2026-11-11:** a versão nova está publicada (tela e imagem existem), mas o login **não aparece**. Busca no pacote do site no ar: URL do Supabase = NÃO, chave pública = NÃO, chave secreta = não (ok). Ou seja, `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` **não chegaram à compilação da Vercel**, e por isso o site roda em modo local. Causas prováveis: variáveis sem o ambiente Production marcado, nome diferente do esperado, ou criadas depois e sem recompilar sem cache. Corrigir no painel da Vercel e dar Redeploy.
+- **Ainda não verificado:** celular real; confirmação por e-mail; recuperação de senha (não existe).
 
 ## Jogado no localhost (2026-11-11)
 - Criação de personagem funciona.

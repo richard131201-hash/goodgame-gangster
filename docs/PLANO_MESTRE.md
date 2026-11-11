@@ -5,8 +5,8 @@
 ## Onde estamos
 
 - Tarefas: **32** em **6** etapas
-- Feitas: **15** (com nível 2 ou mais registrado: **3**)
-- Em andamento: **0**
+- Feitas: **14** (com nível 2 ou mais registrado: **2**)
+- Em andamento: **1**
 - Liberadas para começar: **7**
 - Bloqueadas por outra tarefa ou etapa: **10**
 
@@ -15,7 +15,7 @@
 | A. Fundação do processo | 3 / 3 | Concluída |
 | B. Verificação do que existe | 3 / 3 | Concluída |
 | C. MVP jogável (local) | 5 / 10 | Liberada |
-| D. Servidor e banco (Supabase) | 4 / 9 | Liberada |
+| D. Servidor e banco (Supabase) | 3 / 9 | Liberada |
 | E. Estrutura e mercado (paralela) | 0 / 4 | Liberada |
 | F. Lançamento e receita | 0 / 3 | Aguarda C |
 
@@ -56,7 +56,7 @@
 
 | ID | Tarefa | Dono | Estado | Quando |
 |---|---|---|---|---|
-| D0a | Criar conta e projeto no Supabase (2FA), rodar a migração 001 no SQL Editor e colocar as chaves em .env.local e na Vercel. Nunca no chat (passo a passo no chat) (nível 2) | FUNDADOR | ✅ FEITO | Feito em 2026-11-11: projeto, SQL 001 e .env.local verificados no banco real. As variáveis da Vercel NÃO foram verificadas (confirmar quando o jogo no ar usar o banco) |
+| D0a | Criar conta e projeto no Supabase (2FA), rodar a migração 001 no SQL Editor e colocar as chaves em .env.local e na Vercel. Nunca no chat (passo a passo no chat) (nível 2) | FUNDADOR | 🔄 EM ANDAMENTO | Local verificado. FALTA a Vercel: as variáveis VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY não chegaram ao site no ar (verificado em 2026-11-11). Conferir nomes e ambiente Production e dar Redeploy sem cache |
 | D1 | Arquitetura Supabase (docs/arquitetura/BANCO_DE_DADOS.md) com cenários de custo e recomendação (nível 0) | CLAUDE + FUNDADOR | ✅ FEITO | Aprovado em 2026-11-11 com as recomendações (login e-mail e senha primeiro; Google depois; saves locais descartados; lógica nas funções da Vercel) |
 | D2a | Migração 001 (tabela de jogadores, RLS, visão pública) em supabase/migrations. Pronto = rodou no projeto real e o teste de RLS prova que um jogador não lê nem grava dado de outro (nível 2) | CLAUDE | ✅ FEITO | Feito em 2026-11-11: 15 de 15 verificações de segurança passaram no banco real (npm run test:rls) |
 | D2b | Criar conta e entrar (e-mail e senha) dentro do jogo; sem as chaves o jogo segue em modo local (nível 1) | CLAUDE | ✅ FEITO | Feito em 2026-11-11: provado no localhost com o Supabase real (conta criada, sair, entrar, senha errada, e-mail repetido, segunda conta isolada, sessão persiste). Falta provar no site da Vercel |
