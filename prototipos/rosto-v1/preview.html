@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Protótipo de rosto v1 (fora do jogo)</title>
+<style>
+  body { margin: 0; padding: 16px; background: #0b0c10; color: #e6e6e6; font: 14px/1.4 system-ui, sans-serif; }
+  h1 { margin: 0 0 4px; font-size: 18px; }
+  p.aviso { margin: 0 0 16px; color: #9aa0ad; font-size: 13px; max-width: 760px; }
+  .layout { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 20px; align-items: start; max-width: 900px; }
+  .grupo { margin: 0 0 10px; }
+  .grupo b { display: block; font-size: 12px; color: #9aa0ad; font-weight: 500; margin-bottom: 4px; }
+  .linha { display: flex; flex-wrap: wrap; gap: 4px; }
+  button { background: #1b1e27; color: #e6e6e6; border: 1px solid #343846; border-radius: 6px; padding: 4px 9px; font-size: 12px; cursor: pointer; }
+  button.on { background: #2b3a5a; border-color: #5b7bc0; }
+  button.cor { width: 22px; height: 22px; padding: 0; border-radius: 50%; }
+  button.cor.on { outline: 2px solid #8fb0ff; outline-offset: 1px; }
+  .galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; max-width: 900px; margin-top: 16px; }
+  .galeria button { padding: 0; overflow: hidden; text-align: center; font-size: 12px; }
+  .galeria svg { display: block; }
+  @media (max-width: 640px) { .layout { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<h1>Protótipo de rosto v1 (fora do jogo)</h1>
+<p class="aviso">Experimento de estilo guardado para consulta. Não é usado pelo jogo. Foi pausado porque a qualidade ficou abaixo do alvo (ver README.md desta pasta).</p>
+<div class="layout">
+  <div id="principal"></div>
+  <div id="controles"></div>
+</div>
+<div class="galeria" id="galeria"></div>
+
+<script src="./faces.js"></script>
+<script>
+  const base = { skin:'#e2b38f', hairColor:'#2b1d16', eyeColor:'#5b3a29', eyes:'amendoado', brows:'grossa', nose:'reto', mouth:'neutra', ears:'normal', hair:'padrao', beard:'nenhuma', glasses:'nenhum', scar:'nenhuma', cigar:false, hat:'nenhum', patch:false, earring:false, chain:false, suit:'#232830', tie:'#8c2a2f' };
+  const P = { ...base };
+  const GRUPOS = [
+    ['eyes', 'Olhos', [['amendoado','Amendoados'],['redondo','Redondos'],['estreito','Estreitos'],['pesado','Pálpebra pesada'],['obliquo','Oblíquos'],['aberto','Abertos']]],
+    ['brows', 'Sobrancelhas', [['grossa','Grossas'],['fina','Finas'],['arqueada','Arqueadas'],['reta','Retas'],['brava','Bravas'],['alta','Altas']]],
+    ['nose', 'Nariz', [['reto','Reto'],['largo','Largo'],['pequeno','Pequeno'],['aquilino','Aquilino'],['fino','Fino'],['quebrado','Quebrado']]],
+    ['mouth', 'Boca', [['neutra','Neutra'],['sorriso','Sorriso'],['ladino','Ladina'],['seria','Séria'],['cheia','Cheia'],['fina','Fina']]],
+    ['ears', 'Orelhas', [['normal','Normais'],['grande','Grandes'],['pequena','Pequenas'],['couveflor','Couve-flor']]],
+    ['hair', 'Cabelo', [['padrao','Penteado'],['topete','Topete'],['risca','Risca de lado'],['raspado','Raspado'],['bagunçado','Bagunçado'],['cacheado','Cacheado'],['ondulado','Ondulado'],['careca','Careca']]],
+    ['beard', 'Barba', [['nenhuma','Nenhuma'],['sombra','Por fazer'],['bigode','Bigode'],['guidao','Bigode de guidão'],['cavanhaque','Cavanhaque'],['cheia','Barba cheia']]],
+    ['glasses', 'Óculos', [['nenhum','Nenhum'],['redondo','Redondo'],['retangular','Retangular'],['escuro','Escuro'],['aviador','Aviador'],['monoculo','Monóculo']]],
+    ['scar', 'Cicatriz', [['nenhuma','Nenhuma'],['bochecha','Bochecha'],['sobrancelha','Sobrancelha']]],
+    ['hat', 'Chapéu', [['nenhum','Nenhum'],['fedora','Fedora'],['boina','Boina'],['coco','Chapéu coco']]],
+  ];
+  const EXTRAS = [['cigar','Charuto'],['patch','Tapa-olho'],['earring','Brinco'],['chain','Corrente']];
+  const CORES = [
+    ['skin', 'Pele', ['#fdeee4','#fae0cd','#e2b38f','#c5926b','#b07a4f','#8f5c38','#583620','#3b2314']],
+    ['hairColor', 'Cor do cabelo', ['#111111','#2b1d16','#5d4037','#8b5a2b','#d9b45a','#b7410e','#9e9e9e','#6b1d2a']],
+    ['eyeColor', 'Cor dos olhos', ['#5b3a29','#2b1d16','#8d6e3b','#2e7d32','#1e88e5','#64b5f6','#546e7a','#f57c00']],
+    ['suit', 'Terno', ['#232830','#1a2a44','#4a1a22','#3b2a1e','#1d3326','#555b66']],
+  ];
+  const PRONTOS = [
+    ['Contador', { eyes:'redondo', brows:'fina', nose:'pequeno', mouth:'sorriso', hair:'risca', skin:'#fae0cd', hairColor:'#8b5a2b', eyeColor:'#2e7d32', glasses:'redondo' }],
+    ['Capanga', { eyes:'estreito', brows:'brava', nose:'aquilino', mouth:'seria', hair:'topete', beard:'cavanhaque', skin:'#c5926b', hairColor:'#111111', eyeColor:'#2b1d16', glasses:'escuro', cigar:true }],
+    ['Chefe', { eyes:'pesado', brows:'reta', nose:'largo', mouth:'ladino', hair:'raspado', beard:'cheia', skin:'#8f5c38', hairColor:'#2b1d16', eyeColor:'#2b1d16', scar:'bochecha', ears:'couveflor', hat:'fedora', suit:'#1a2a44' }],
+    ['Dândi', { eyes:'obliquo', brows:'arqueada', nose:'quebrado', mouth:'cheia', hair:'cacheado', beard:'guidao', skin:'#583620', hairColor:'#111111', eyeColor:'#2b1d16', glasses:'retangular', ears:'grande', earring:true, chain:true, suit:'#4a1a22' }],
+    ['Dama', { eyes:'amendoado', brows:'arqueada', nose:'pequeno', mouth:'cheia', hair:'ondulado', skin:'#e2b38f', hairColor:'#6b1d2a', eyeColor:'#8d6e3b', earring:true, chain:true, suit:'#4a1a22', tie:'#d4af37' }],
+    ['Velho lobo', { hat:'coco', patch:true, beard:'guidao', skin:'#e2b38f', hairColor:'#9e9e9e' }],
+  ];
+
+  const ctl = document.getElementById('controles');
+  let h = '';
+  GRUPOS.forEach(([k, t, ops]) => { h += '<div class="grupo"><b>' + t + '</b><div class="linha">' + ops.map(([v, l]) => '<button data-k="' + k + '" data-v="' + v + '">' + l + '</button>').join('') + '</div></div>'; });
+  h += '<div class="grupo"><b>Extras</b><div class="linha">' + EXTRAS.map(([k, l]) => '<button data-t="' + k + '">' + l + '</button>').join('') + '</div></div>';
+  CORES.forEach(([k, t, cs]) => { h += '<div class="grupo"><b>' + t + '</b><div class="linha">' + cs.map(v => '<button class="cor" data-c="' + k + '" data-v="' + v + '" style="background:' + v + '" aria-label="' + t + ' ' + v + '"></button>').join('') + '</div></div>'; });
+  ctl.innerHTML = h;
+
+  function desenhar() {
+    document.getElementById('principal').innerHTML = window.__face(P, 'm');
+    ctl.querySelectorAll('button').forEach(b => {
+      let on = false;
+      if (b.dataset.k) on = P[b.dataset.k] === b.dataset.v;
+      else if (b.dataset.t) on = !!P[b.dataset.t];
+      else if (b.dataset.c) on = P[b.dataset.c] === b.dataset.v;
+      b.classList.toggle('on', on);
+    });
+  }
+  ctl.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.k) P[b.dataset.k] = b.dataset.v;
+    else if (b.dataset.t) P[b.dataset.t] = !P[b.dataset.t];
+    else if (b.dataset.c) P[b.dataset.c] = b.dataset.v;
+    desenhar();
+  });
+
+  const gal = document.getElementById('galeria');
+  PRONTOS.forEach(([nome, o], i) => {
+    const b = document.createElement('button');
+    b.innerHTML = window.__face({ ...base, ...o }, 'p' + i) + '<div style="padding:4px 2px">' + nome + '</div>';
+    b.addEventListener('click', () => { Object.keys(P).forEach(k => delete P[k]); Object.assign(P, base, o); desenhar(); });
+    gal.appendChild(b);
+  });
+  desenhar();
+</script>
+</body>
+</html>
