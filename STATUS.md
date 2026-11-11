@@ -66,6 +66,13 @@ Provado no localhost contra o Supabase real (nível 1 no site até a conferênci
 - 25 testes novos (`weaponSlot.test.ts`), total 130.
 - **Pendências:** armadura e acessório ainda não têm arrastar; no celular só funciona pelos botões (arrastar com o dedo não existe); a arma só aparece na mão do personagem quando está equipada.
 
+## Servidor, ranking e duelo (D2c e D2d, 2026-11-11)
+- **Escrito e testado só com banco de mentira (nível 1):** `src/server/` (regras, operações, ligação com o Supabase), `api/game.ts` (função da Vercel), `vite.config.ts` (mesma função no `npm run dev`), `src/shared/` (contas do jogador e do duelo usadas pelo jogo e pelo servidor), `src/web/cloudSync.ts` (salvar com espera, ranking, rivais, duelo) e a **migração 002** (colunas de placar, tabela `duels`, visão `public_players` com placar e arma).
+- **Faltam para o nível 2:** (1) o fundador colar a migração 002 no SQL Editor (conferi: ainda **não** está no banco: `duels_won` e a tabela `duels` não existem); (2) o fundador criar o Secret `SUPABASE_SERVICE_ROLE_KEY` na Vercel; (3) eu testar com duas contas reais no localhost e no site no ar.
+- **Funciona assim:** ao entrar, o servidor diz se a conta tem personagem. Sem personagem, o jogo abre a criação e o servidor cria (nome único). Com personagem, o save do servidor vale. A cada mudança o jogo manda o progresso ao servidor (espera de 1,5 s); o servidor confere e recusa exageros. Duelo: o servidor luta e devolve o replay. Se a função do servidor não responde, o jogo avisa e roda só neste navegador.
+- **Contas que já existiam:** o save local delas não é enviado (não dá para provar que é honesto); ao entrar com migração e Secret prontos, a conta cria o personagem de novo.
+- **Não é à prova de trapaça ainda:** missões, loja e treino são decididos no navegador (tarefa D2). O servidor segura exageros de nível, missões, cash, ouro e Respeito, mas quem conhece o código ainda consegue andar mais rápido que o normal dentro desses limites.
+
 ## Comparação, atributos e mochila (2026-11-11)
 - **Defeito reproduzido e corrigido:** depois de trocar a arma arrastando, o balão de comparação não aparecia mais (o item arrastado some da tela na troca e o aviso de fim do arrastar nunca chegava). Prova: com o código antigo o balão ficou escondido com o mouse sobre uma arma da mochila; com o novo aparece comparando com a nova equipada. Também vale com a mochila cheia.
 - **Painel de atributos compacto** ao lado do personagem, sem emojis (pontos + botões). Balão: Ataque mostra "Dano base: 1.822, cada ponto a mais: +152" e lembra que o dano da arma é somado; Astúcia mostra "chance de crítico 1,2%, +0,12% por ponto". Layout medido em 1.280, 1.101, 1.024 e 390 px, sem rolagem lateral.

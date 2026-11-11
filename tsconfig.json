@@ -17,6 +17,8 @@
   "include": [
     "src/**/*",
     "tests/**/*",
-    "config/**/*"
+    "config/**/*",
+    "api/**/*",
+    "vite.config.ts"
   ]
 }

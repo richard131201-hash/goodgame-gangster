@@ -13,7 +13,23 @@ import {
 import { sound } from './sound.js';
 import { msToNextEnergy } from './energy.js';
 import { cloudEnabled, supabase } from './supabaseClient.js';
-import { initAuthUi, showAuthScreen, signOutAccount, startCharacterCreation, type CreatedCharacter } from './authUi.js';
+import { initAuthUi, showAuthScreen, signOutAccount, startCharacterCreation, reopenNameStep, type CreatedCharacter } from './authUi.js';
+import {
+  startSync,
+  stopSync,
+  syncEnabled,
+  markDirty,
+  flushSave,
+  fetchMe,
+  createOnServer,
+  fetchRanking,
+  fetchRivals,
+  duelOnServer,
+  serverUnavailable,
+  type PublicPlayer,
+  type DuelReply,
+} from './cloudSync.js';
+import { DUEL, duelBounty } from '../shared/duel.js';
 import { playWeaponAttackVisual, clearAllImpacts } from './animations.js';
 import { getWeaponSprite } from './weaponSprites.js';
 import {
@@ -82,7 +98,7 @@ let bootStarted = false;
 function enterGame() {
   const player = gameState.getPlayer();
   if (!player.hasCreatedCharacter) {
-    startCharacterCreation(applyCreatedCharacter);
+    startCharacterCreation(finishCharacterCreation);
   } else {
     updateHUD();
     renderActiveTab('perfil');
@@ -103,17 +119,129 @@ function initGame() {
   });
 }
 
-/** Login concluído (ou sessão já existente): carrega o save DESTA conta e abre o jogo. */
-function onLoggedIn(session: { user: { id: string; email?: string } }, created?: CreatedCharacter) {
-  gameState.setAccount(session.user.id);
-  if (created) {
-    applyCreatedCharacter(created, false); // conta nova: o personagem montado já vem com ela
+/** Id da conta logada (usado para marcar "você" no ranking e para listar rivais). */
+let currentUserId: string | null = null;
+
+/** Desenha um aviso fixo quando o jogo roda sem servidor (só neste navegador). */
+function setOfflineNotice(on: boolean) {
+  let el = document.getElementById('offline-notice');
+  if (!el && on) {
+    el = document.createElement('div');
+    el.id = 'offline-notice';
+    el.style.cssText = 'position:fixed;bottom:8px;left:50%;transform:translateX(-50%);z-index:9999;background:#7a4a00;color:#fff;padding:6px 14px;border-radius:6px;font-size:12px;';
+    el.textContent = 'Servidor indisponível: seu progresso está só neste navegador e não aparece no ranking.';
+    document.body.appendChild(el);
   }
-  document.body.classList.remove('auth-open');
-  const logout = document.getElementById('logout-btn');
-  if (logout) logout.title = session.user.email ? `Sair da conta (${session.user.email})` : 'Sair da conta';
+  if (el) el.style.display = on ? 'block' : 'none';
+}
+
+let lastRejectAlertAt = 0;
+function beginSync() {
+  startSync(
+    () => gameState.getPlayer(),
+    (serverSave, message) => {
+      gameState.adoptServerSave(serverSave); // volta ao que o servidor considera válido
+      if (Date.now() - lastRejectAlertAt > 10000) {
+        lastRejectAlertAt = Date.now();
+        alert(message);
+      }
+    },
+  );
+  gameState.setPersistHook(markDirty);
+  setOfflineNotice(false);
+}
+
+function endSync() {
+  stopSync();
+  gameState.setPersistHook(null);
+}
+
+/** O que o servidor precisa para criar o personagem (o visual sem o nome, que vai à parte). */
+function characterPayload(created: CreatedCharacter) {
+  const { name: _ignored, ...appearance } = created.draft.appearance;
+  return { name: created.name, style: created.draft.style, weapon: created.draft.weapon, appearance };
+}
+
+/** Entra no jogo (primeira vez ou depois de uma criação de personagem). */
+function openGame() {
   if (gameInitialized) enterGame();
   else initGame();
+}
+
+/**
+ * Fim da criação do personagem. Com servidor: ele cria, confere o nome único e devolve o save.
+ * Sem servidor (modo local ou servidor fora do ar): cria só neste navegador.
+ */
+async function finishCharacterCreation(created: CreatedCharacter) {
+  if (!cloudEnabled || !currentUserId) {
+    applyCreatedCharacter(created, false);
+    openGame();
+    return;
+  }
+  const r = await createOnServer(characterPayload(created));
+  if (r.body.ok && r.body.save) {
+    gameState.adoptServerSave(r.body.save);
+    sound.playCrit();
+    openGame();
+    if (gameInitialized) {
+      updateHUD();
+      renderActiveTab('perfil');
+    }
+    return;
+  }
+  if (serverUnavailable(r)) {
+    endSync();
+    setOfflineNotice(true);
+    applyCreatedCharacter(created, false);
+    openGame();
+    return;
+  }
+  reopenNameStep(created, r.body.message ?? 'Não foi possível criar o personagem. Tente de novo.', finishCharacterCreation);
+}
+
+/** Login concluído (ou sessão já existente): o servidor diz quem é o personagem desta conta. */
+async function onLoggedIn(session: { user: { id: string; email?: string } }, created?: CreatedCharacter) {
+  currentUserId = session.user.id;
+  endSync();
+  gameState.setAccount(session.user.id);
+  const logout = document.getElementById('logout-btn');
+  if (logout) logout.title = session.user.email ? `Sair da conta (${session.user.email})` : 'Sair da conta';
+
+  if (!cloudEnabled) {
+    if (created) applyCreatedCharacter(created, false);
+    document.body.classList.remove('auth-open');
+    openGame();
+    return;
+  }
+
+  const me = await fetchMe();
+  if (serverUnavailable(me)) {
+    // Servidor fora do ar (ou ainda não configurado): joga só neste navegador, sem ranking nem duelo.
+    setOfflineNotice(true);
+    if (created) applyCreatedCharacter(created, false);
+    document.body.classList.remove('auth-open');
+    openGame();
+    return;
+  }
+
+  if (me.body.exists && me.body.save) {
+    gameState.adoptServerSave(me.body.save);
+    beginSync();
+    document.body.classList.remove('auth-open');
+    openGame();
+    return;
+  }
+
+  // A conta ainda não tem personagem no servidor: qualquer save local não conferido é descartado.
+  gameState.resetAllProgress();
+  beginSync();
+  if (created) {
+    await finishCharacterCreation(created);
+    document.body.classList.remove('auth-open');
+    return;
+  }
+  document.body.classList.remove('auth-open');
+  openGame(); // abre a criação de personagem
 }
 
 /**
@@ -135,12 +263,20 @@ async function boot() {
   if (logout) {
     logout.style.display = '';
     logout.addEventListener('click', () => {
-      if (confirm('Sair da conta?')) void signOutAccount();
+      if (confirm('Sair da conta?')) {
+        void flushSave().finally(() => {
+          endSync();
+          void signOutAccount();
+        });
+      }
     });
   }
   initAuthUi({ onLoggedIn });
   supabase.auth.onAuthStateChange((event) => {
-    if (event === 'SIGNED_OUT') showAuthScreen();
+    if (event === 'SIGNED_OUT') {
+      endSync();
+      showAuthScreen();
+    }
   });
 
   const { data } = await supabase.auth.getSession();
@@ -222,9 +358,13 @@ document.getElementById('audio-toggle-btn')?.addEventListener('click', () => {
 
 // NEW CHARACTER BUTTON
 document.getElementById('new-character-btn')?.addEventListener('click', () => {
+  if (syncEnabled()) {
+    alert('Cada conta tem um personagem só. Para jogar com outro, crie outra conta.');
+    return;
+  }
   if (confirm('Deseja criar um novo gangster? Seu progresso atual será reiniciado.')) {
     gameState.resetAllProgress();
-    startCharacterCreation(applyCreatedCharacter);
+    startCharacterCreation(finishCharacterCreation);
   }
 });
 
@@ -840,7 +980,118 @@ function startMissionCombat(mission: MissionDef) {
 // ========================================================
 let cachedRivals: DuelRival[] = [];
 
+let realRivalsCache: { at: number; rows: PublicPlayer[]; error: string | null } | null = null;
+const REAL_CACHE_MS = 20000;
+
 function renderDuelsView() {
+  if (!syncEnabled()) return renderNpcDuelsView();
+  const container = document.getElementById('duels-rivals-container');
+  if (!container) return;
+  const lvl = gameState.getPlayer().level;
+  if (!realRivalsCache) container.innerHTML = '<p style="padding:12px;color:var(--text-muted);">Procurando rivais...</p>';
+  else paintRealRivals(container, lvl);
+  if (!realRivalsCache || Date.now() - realRivalsCache.at > REAL_CACHE_MS) void loadRealRivals();
+}
+
+async function loadRealRivals() {
+  if (!currentUserId) return;
+  const r = await fetchRivals(currentUserId, gameState.getPlayer().level, DUEL.levelRange);
+  realRivalsCache = { at: Date.now(), rows: r.rows, error: r.error };
+  const container = document.getElementById('duels-rivals-container');
+  const active = document.querySelector('.game-nav-tab.active')?.getAttribute('data-tab');
+  if (container && active === 'duelos') paintRealRivals(container, gameState.getPlayer().level);
+}
+
+function paintRealRivals(container: HTMLElement, myLevel: number) {
+  const cache = realRivalsCache;
+  if (!cache) return;
+  if (cache.error) {
+    container.innerHTML = `<p style="padding:12px;color:#e67e22;">Não deu para carregar os rivais agora. Se o problema continuar, o banco pode estar sem a migração 002. Detalhe: ${escHtml(cache.error)}</p>`;
+    return;
+  }
+  if (cache.rows.length === 0) {
+    container.innerHTML = `<p style="padding:12px;color:var(--text-muted);">Nenhum outro jogador entre os níveis ${Math.max(1, myLevel - DUEL.levelRange)} e ${myLevel + DUEL.levelRange} ainda. Chame um amigo para criar uma conta!</p>`;
+    return;
+  }
+  container.innerHTML = cache.rows.map(r => {
+    const rWep = equippedWeaponDef(r.weapon_id);
+    return `
+      <div class="rival-card-item">
+        <div class="rival-thumb-wrap">
+          ${renderPaperdollSVG(r.appearance, { width: 68, height: 75 })}
+        </div>
+        <div class="rival-info-col">
+          <div class="rival-name">${escHtml(r.name)}</div>
+          <div class="rival-meta-badges">
+            <span class="gg-style-badge badge-${r.style}">${r.style.toUpperCase()}</span>
+            <span class="gg-level-badge">NV ${r.level}</span>
+          </div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">
+            Arma: ${rWep.icon ?? ''} ${rWep.name} • Respeito: ⭐${r.respect} • ${r.duels_won}V / ${r.duels_lost}D
+          </div>
+          <button class="arena-btn-primary btn-challenge-real" data-riv-id="${r.id}" style="padding: 6px 14px; font-size: 12px; width: 100%;">
+            ⚔️ Desafiar Duelo • Saquear $${duelBounty(r.level)}
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.querySelectorAll<HTMLButtonElement>('.btn-challenge-real').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-riv-id');
+      if (id) void challengeRealRival(id, btn);
+    });
+  });
+}
+
+/** Duelo de verdade: o servidor luta e paga; aqui só se reproduz o replay e se mostra o resultado. */
+async function challengeRealRival(opponentId: string, btn?: HTMLButtonElement) {
+  if (btn) btn.disabled = true;
+  await flushSave(); // o servidor usa o seu personagem salvo: manda o que estiver pendente
+  const r = await duelOnServer(opponentId);
+  const d = r.body;
+  if (!d.ok || !d.events || !d.attacker || !d.defender || !d.save || !d.rewards || d.firstAttacker === undefined) {
+    alert(d.message ?? 'Não foi possível duelar agora. Tente de novo.');
+    realRivalsCache = null;
+    renderDuelsView();
+    return;
+  }
+  const reply = d as DuelReply;
+  launchArenaCombatModal(
+    reply.attacker.input,
+    reply.defender.input,
+    gameState.getPlayer().appearance,
+    reply.defender.appearance,
+    won => {
+      gameState.adoptServerSave(reply.save); // só agora o resultado aparece no HUD
+      const rw = reply.rewards;
+      if (won) {
+        showOutcomePopup(
+          '🏆 DUELO VENCIDO!',
+          `Você derrotou ${reply.defender.name} na Arena Clandestina.`,
+          `
+            <div style="font-size: 14px; font-weight: 700; color: #f1c40f;">+$${rw.cash} Cash Saqueado</div>
+            <div style="font-size: 14px; font-weight: 700; color: #e67e22;">+${rw.respect} Respeito ⭐</div>
+            <div style="font-size: 13px; font-weight: 700; color: #2ecc71;">+${rw.xp} XP de Duelo</div>
+            ${rw.leveledUp ? '<div style="margin-top: 10px; font-size: 16px; color: #d4af37; font-weight: 900;">⭐ VOCÊ SUBIU DE NÍVEL!</div>' : ''}
+          `,
+        );
+      } else {
+        showOutcomePopup(
+          '💀 DERROTA NO DUELO',
+          `${reply.defender.name} venceu esta luta.`,
+          `<span style="color: #e74c3c;">${rw.respect} Respeito. Treine seus atributos e melhore sua arma!</span>`,
+        );
+      }
+      realRivalsCache = null;
+      rankingCache = null;
+    },
+    { events: reply.events, firstAttacker: reply.firstAttacker },
+  );
+}
+
+function renderNpcDuelsView() {
   const container = document.getElementById('duels-rivals-container');
   if (!container) return;
 
@@ -866,7 +1117,7 @@ function renderDuelsView() {
             Arma: ${rWep.icon} ${rWep.name} • Respeito: ⭐${r.respect}
           </div>
           <button class="arena-btn-primary btn-challenge-rival" data-riv-id="${r.id}" style="padding: 6px 14px; font-size: 12px; width: 100%;">
-            ⚔️ Desafiar Duelo (-10⚡) • Saquear $${r.bountyCash}
+            ⚔️ Desafiar Duelo • Saquear $${r.bountyCash}
           </button>
         </div>
       </div>
@@ -879,17 +1130,17 @@ function renderDuelsView() {
       const rival = cachedRivals.find(r => r.id === rivId);
       if (!rival) return;
 
-      if (!gameState.consumeEnergy(10)) {
-        alert('Energia insuficiente para desafiar em duelo! Aguarde ou recarregue.');
-        return;
-      }
-
-      startDuelCombat(rival);
+      startDuelCombat(rival); // duelo não gasta energia (decisão do fundador)
     });
   });
 }
 
 document.getElementById('refresh-rivals-btn')?.addEventListener('click', () => {
+  if (syncEnabled()) {
+    realRivalsCache = null;
+    renderDuelsView();
+    return;
+  }
   const player = gameState.getPlayer();
   cachedRivals = generateRivalPool(player.level);
   renderDuelsView();
@@ -1032,7 +1283,66 @@ document.querySelectorAll('#shop-category-filters .choice-btn').forEach(btn => {
 // ========================================================
 // VIEW 5: RANKING DA CIDADE
 // ========================================================
+let rankingCache: { at: number; rows: PublicPlayer[]; error: string | null } | null = null;
+
 function renderRankingView() {
+  if (!syncEnabled()) return renderNpcRankingView();
+  const tbody = document.getElementById('ranking-table-body');
+  if (!tbody) return;
+  const note = document.querySelector('#view-ranking .npc-note');
+  if (note) note.textContent = 'Ranking de jogadores reais, ordenado por Respeito. Duelos e missões dão Respeito.';
+  if (!rankingCache) tbody.innerHTML = '<tr><td colspan="7" style="padding:14px;">Carregando o ranking...</td></tr>';
+  else paintRealRanking(tbody);
+  if (!rankingCache || Date.now() - rankingCache.at > REAL_CACHE_MS) void loadRanking();
+}
+
+async function loadRanking() {
+  const r = await fetchRanking();
+  rankingCache = { at: Date.now(), rows: r.rows, error: r.error };
+  const tbody = document.getElementById('ranking-table-body');
+  const active = document.querySelector('.game-nav-tab.active')?.getAttribute('data-tab');
+  if (tbody && active === 'ranking') paintRealRanking(tbody);
+}
+
+function paintRealRanking(tbody: HTMLElement) {
+  const cache = rankingCache;
+  if (!cache) return;
+  if (cache.error) {
+    tbody.innerHTML = `<tr><td colspan="7" style="padding:14px;color:#e67e22;">Não deu para carregar o ranking agora. Detalhe: ${escHtml(cache.error)}</td></tr>`;
+    return;
+  }
+  const myLevel = gameState.getPlayer().level;
+  tbody.innerHTML = cache.rows.map((r, i) => {
+    const me = r.id === currentUserId;
+    const fam = MAFIA_FAMILIES_LIST.find(f => f.id === r.family_id);
+    const inRange = !me && Math.abs(r.level - myLevel) <= DUEL.levelRange;
+    const action = me
+      ? '<span style="font-size: 11px; color: #2ecc71;">Seu Personagem</span>'
+      : inRange
+        ? `<button class="arena-btn-primary rank-duel-btn" data-riv-id="${r.id}" style="padding: 3px 10px; font-size: 11px;">⚔️ Duelar</button>`
+        : '<span style="font-size: 11px; color: var(--text-muted);">fora da faixa de nível</span>';
+    return `
+      <tr class="${me ? 'player-rank-row' : ''}">
+        <td><strong${me ? ' style="color: #f1c40f;"' : ''}>#${i + 1}</strong></td>
+        <td>${me ? '<strong>' : ''}${escHtml(r.name)}${me ? ' (Você)</strong>' : ''}</td>
+        <td><span class="gg-style-badge badge-${r.style}">${r.style.toUpperCase()}</span></td>
+        <td>Nv. ${r.level}</td>
+        <td>${fam ? escHtml(fam.name) : 'Sem Família'}</td>
+        <td style="color: #f1c40f; font-weight: 700;">⭐ ${r.respect.toLocaleString()} <span style="font-size: 10px; color: var(--text-muted);">(${r.duels_won}V/${r.duels_lost}D)</span></td>
+        <td>${action}</td>
+      </tr>
+    `;
+  }).join('') || '<tr><td colspan="7" style="padding:14px;">Ninguém no ranking ainda.</td></tr>';
+
+  tbody.querySelectorAll<HTMLButtonElement>('.rank-duel-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-riv-id');
+      if (id) void challengeRealRival(id, btn);
+    });
+  });
+}
+
+function renderNpcRankingView() {
   const tbody = document.getElementById('ranking-table-body');
   if (!tbody) return;
 
@@ -1280,7 +1590,8 @@ function launchArenaCombatModal(
   fighterBInput: FighterInput,
   appearanceA: CharacterAppearance,
   appearanceB: CharacterAppearance,
-  onFinish: (playerWon: boolean) => void
+  onFinish: (playerWon: boolean) => void,
+  fixed?: { events: FightEvent[]; firstAttacker: 'A' | 'B' }
 ) {
   currentCombatFighterA = fighterAInput;
   currentCombatFighterB = fighterBInput;
@@ -1303,7 +1614,7 @@ function launchArenaCombatModal(
 
   // Simulate fight with engine
   const seed = Math.floor(Math.random() * 1000000);
-  const result = simulateFight(fighterAInput, fighterBInput, config, seed, { withEvents: true });
+  const result = fixed ?? simulateFight(fighterAInput, fighterBInput, config, seed, { withEvents: true });
   currentEvents = result.events ?? [];
   eventIdx = 0;
 
@@ -1630,3 +1941,7 @@ window.addEventListener('DOMContentLoaded', () => {
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
   void boot();
 }
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden' && syncEnabled()) void flushSave();
+});

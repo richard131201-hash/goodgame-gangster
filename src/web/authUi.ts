@@ -217,6 +217,24 @@ export function startCharacterCreation(done: (created: CreatedCharacter) => void
   showPanel('create');
 }
 
+/**
+ * Volta ao passo do nome (com o visual e a classe já escolhidos) para o jogador trocar o nome,
+ * por exemplo quando o servidor diz que o nome já está em uso. `done` recebe o novo personagem.
+ */
+export function reopenNameStep(
+  created: CreatedCharacter,
+  message: string,
+  done: (created: CreatedCharacter) => void,
+) {
+  flow = 'character-only';
+  onCharacterDone = done;
+  openScreen();
+  showPanel('account');
+  const input = $<HTMLInputElement>('account-name');
+  if (input) input.value = created.name;
+  setText('account-error', message);
+}
+
 /** Liga os botões. Chamar uma vez, também no modo local. */
 export function initAuthUi(callbacks: { onLoggedIn: (session: Session, created?: CreatedCharacter) => void }) {
   onLoggedIn = callbacks.onLoggedIn;
