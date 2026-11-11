@@ -14,6 +14,8 @@ export interface GameItem {
   levelReq: number;
   description: string;
   weaponRefId?: string; // links to WeaponDef if weapon
+  /** Posição (0, 1, 2...) do item na Mala. Ausente = o jogo coloca no primeiro slot vazio (R-MALA-4). */
+  slot?: number;
   statsBonus?: {
     attack?: number;
     life?: number;

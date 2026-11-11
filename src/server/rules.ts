@@ -184,7 +184,7 @@ const saveSchema = z.object({
     accessoryId: idOrNull,
     consumables: z.array(idOrNull).max(3),
   }),
-  inventory: z.array(z.object({ id: z.string().max(64) })).max(LIMITS.inventoryMax),
+  inventory: z.array(z.object({ id: z.string().max(64), slot: z.number().int().min(0).max(LIMITS.inventoryMax).optional() })).max(LIMITS.inventoryMax),
   familyId: idOrNull,
   statsRecord: z.object({
     missionsCompleted: nonNeg,
@@ -257,7 +257,7 @@ export function validateSave(db: DbPlayerRow, raw: unknown, now: number): SaveRe
   for (const it of n.inventory) {
     const item = SHOP_ITEMS.find(i => i.id === it.id);
     if (!item) return { ok: false, reason: `item desconhecido (${it.id})` };
-    inventory.push({ ...item });
+    inventory.push(it.slot === undefined ? { ...item } : { ...item, slot: it.slot });
   }
   if ((n.bagCapacity ?? LIMITS.bagCapacity) !== LIMITS.bagCapacity) return { ok: false, reason: 'capacidade da mochila inválida' };
 

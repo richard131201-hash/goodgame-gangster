@@ -111,6 +111,40 @@ export function bagHasRoom(inventory: GameItem[], weaponId: string | null | unde
 }
 
 /**
+ * Onde cada item aparece na Mala (R-MALA-4): o item com `slot` válido e livre fica nesse slot; os que não têm
+ * posição (ou cuja posição já está ocupada ou fora da Mala) vão para os primeiros slots vazios, na ordem.
+ * Devolve uma lista com um valor por slot: o item (com a posição real na lista de inventário) ou null (vazio).
+ */
+export function bagLayout(
+  inventory: GameItem[],
+  weaponId: string | null | undefined,
+  totalSlots: number,
+): (BagEntry | null)[] {
+  const cells: (BagEntry | null)[] = Array.from({ length: totalSlots }, () => null);
+  const pending: BagEntry[] = [];
+  for (const entry of bagEntries(inventory, weaponId)) {
+    const s = entry.item.slot;
+    if (typeof s === 'number' && Number.isInteger(s) && s >= 0 && s < totalSlots && cells[s] === null) cells[s] = entry;
+    else pending.push(entry);
+  }
+  for (const entry of pending) {
+    const i = cells.indexOf(null);
+    if (i === -1) break; // não cabe (save com itens demais): o chamador usa bagSlotCount para nunca esconder item
+    cells[i] = entry;
+  }
+  return cells;
+}
+
+/** Primeiro slot vazio da Mala (ou -1 se estiver cheia). */
+export function firstEmptyBagSlot(
+  inventory: GameItem[],
+  weaponId: string | null | undefined,
+  totalSlots: number,
+): number {
+  return bagLayout(inventory, weaponId, totalSlots).indexOf(null);
+}
+
+/**
  * Quantos espaços a mochila mostra: a capacidade (10 no começo), arredondada para linhas de 5.
  * Se um save antigo tiver itens a mais, mostra todos (nada fica invisível).
  */

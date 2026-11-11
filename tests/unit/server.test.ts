@@ -181,6 +181,21 @@ describe('servidor: conferir o save (R-SERVIDOR-3)', () => {
     expect((await send(db, s)).status).toBe(422);
   });
 
+  it('a posição de cada item na Mala (slot) é guardada; posição inválida é recusada (R-MALA-4)', async () => {
+    const db = await setup();
+    const s = saveOf(db);
+    const comPosicao = s.inventory.map((it: { id: string }, i: number) => ({ ...it, slot: 7 - i }));
+    const ok = await send(db, { ...s, inventory: comPosicao });
+    expect(ok.status).toBe(200);
+    const guardado = db.rows.get('u1')!.save.inventory as unknown as { slot?: number }[];
+    expect(guardado.map(i => i.slot)).toEqual(comPosicao.map((i: { slot: number }) => i.slot));
+
+    for (const ruim of [-1, 999, 2.5, 'x']) {
+      const r = await send(db, { ...s, inventory: s.inventory.map((it: object) => ({ ...it, slot: ruim })) });
+      expect(r.status).toBe(422);
+    }
+  });
+
   it('item que não existe e arma equipada fora da mochila são recusados', async () => {
     const db = await setup();
     const s = saveOf(db);

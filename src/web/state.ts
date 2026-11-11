@@ -4,7 +4,7 @@ import { SHOP_ITEMS, MAFIA_FAMILIES_LIST, type GameItem } from './gameData.js';
 import { regenEnergy } from './energy.js';
 import { GOLD } from '../shared/gold.js';
 import { saveKeyFor } from './saveKey.js';
-import { isWeaponItem, equippedInventoryIndex, bagCapacityOf, bagCount, bagHasRoom } from './weaponSlot.js';
+import { isWeaponItem, equippedInventoryIndex, bagCapacityOf, bagCount, bagHasRoom, bagLayout, bagSlotCount } from './weaponSlot.js';
 import {
   applyXp,
   combatPointsOf,
@@ -241,6 +241,43 @@ export class GameStateManager {
     return bagCount(this.player.inventory, this.player.equipped.weaponId);
   }
 
+  /** Quantos slots a Mala mostra agora. */
+  getBagSlotCount(): number {
+    return bagSlotCount(this.getBagCount(), this.getBagCapacity());
+  }
+
+  /** Onde cada item aparece na Mala (R-MALA-4): um valor por slot, o item ou null. */
+  getBagLayout() {
+    return bagLayout(this.player.inventory, this.player.equipped.weaponId, this.getBagSlotCount());
+  }
+
+  /** Primeiro slot vazio (ou undefined se a Mala está cheia). */
+  private firstEmptySlot(): number | undefined {
+    const i = this.getBagLayout().indexOf(null);
+    return i === -1 ? undefined : i;
+  }
+
+  /**
+   * Move um item da Mala para um slot (R-MALA-4): slot vazio = o item vai para lá; slot ocupado = os dois trocam
+   * de lugar. Retorna false se o item ou o slot não existem.
+   */
+  moveBagItem(invIndex: number, targetSlot: number): boolean {
+    const layout = this.getBagLayout();
+    if (!Number.isInteger(targetSlot) || targetSlot < 0 || targetSlot >= layout.length) return false;
+    const from = layout.findIndex(c => c?.index === invIndex);
+    if (from === -1) return false;
+    if (from === targetSlot) return true;
+    // fixa a posição de todos antes de mexer, para ninguém mudar de lugar sozinho
+    layout.forEach((c, i) => {
+      if (c) this.player.inventory[c.index].slot = i;
+    });
+    const other = layout[targetSlot];
+    this.player.inventory[invIndex].slot = targetSlot;
+    if (other) this.player.inventory[other.index].slot = from;
+    this.notify();
+    return true;
+  }
+
   /** Cabe mais um item? */
   bagHasRoom(): boolean {
     return bagHasRoom(this.player.inventory, this.player.equipped.weaponId, this.getBagCapacity());
@@ -265,7 +302,7 @@ export class GameStateManager {
     if (item.priceGold > 0) this.spendGold(item.priceGold);
     if (item.priceCash > 0) this.spendCash(item.priceCash);
 
-    this.player.inventory.push({ ...item });
+    this.player.inventory.push({ ...item, slot: this.firstEmptySlot() });
 
     // Arma nova só é equipada sozinha se o espaço da arma estiver vazio (R-ARMA-5);
     // senão vai para a mochila e o jogador decide arrastando.
@@ -310,7 +347,7 @@ export class GameStateManager {
     if (!weaponId) return;
     if (equippedInventoryIndex(this.player.inventory, weaponId) !== -1) return;
     const shopCopy = SHOP_ITEMS.find(i => isWeaponItem(i) && i.weaponRefId === weaponId);
-    if (shopCopy) this.player.inventory.push({ ...shopCopy });
+    if (shopCopy) this.player.inventory.push({ ...shopCopy, slot: this.firstEmptySlot() });
   }
 
   /**
@@ -328,12 +365,20 @@ export class GameStateManager {
   }
 
   /** Arrastar a arma equipada para a mochila (R-ARMA-3): ela sai do espaço e o jogador fica desarmado. */
-  unequipWeapon(): boolean {
+  unequipWeapon(targetSlot?: number): boolean {
     const current = this.player.equipped.weaponId;
     if (!current) return false;
     if (!this.bagHasRoom()) return false; // mochila cheia: não há onde guardar
     this.ensureWeaponInBag(current);
     this.player.equipped.weaponId = null;
+    // se soltou num slot vazio da Mala, a arma vai exatamente para ele (R-MALA-4)
+    if (typeof targetSlot === 'number') {
+      const idx = equippedInventoryIndex(this.player.inventory, current);
+      const layout = this.getBagLayout();
+      if (idx !== -1 && targetSlot >= 0 && targetSlot < layout.length && layout[targetSlot] === null) {
+        this.player.inventory[idx].slot = targetSlot;
+      }
+    }
     this.notify();
     return true;
   }

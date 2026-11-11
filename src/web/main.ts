@@ -469,12 +469,9 @@ function renderProfileView() {
   document.getElementById('prof-ast-pts')!.textContent = p.points.astucia.toString();
   document.getElementById('prof-ten-pts')!.textContent = p.points.tenacidade.toString();
 
-  // Training costs
-  (['attack', 'life', 'astucia', 'tenacidade'] as const).forEach(stat => {
-    const cost = getStatTrainingCost(stat, p.trainedPoints[stat], p.level);
-    const costEl = document.getElementById(`train-cost-${stat}`);
-    if (costEl) costEl.textContent = `$${cost.toLocaleString()}`;
-  });
+  // O único "+" de cada atributo: verde com pontos livres (gasta um ponto), dourado sem eles (treina com dinheiro).
+  // O preço aparece no balão ao passar o mouse (R-ATRIBUTO-1).
+  document.querySelectorAll<HTMLElement>('.btn-attr-plus').forEach(btn => btn.classList.toggle('has-free', p.freePoints > 0));
 
   // Derived stats summary
   document.getElementById('prof-armor-val')!.textContent = `${(stats.armorReduction * 100).toFixed(0)}%`;
@@ -497,23 +494,20 @@ function renderProfileView() {
 document.addEventListener('click', (e) => {
   const target = e.target as HTMLElement;
 
-  // Free Point Distribute
-  const addStat = target.getAttribute('data-stat') as 'attack' | 'life' | 'astucia' | 'tenacidade' | null;
-  if (addStat) {
-    if (gameState.distributeFreePoint(addStat)) {
-      renderProfileView();
-    } else {
-      alert('Você não possui pontos livres. Suba de nível para obter mais pontos!');
-    }
-    return;
-  }
-
-  // Train with Cash
-  const trainStat = target.getAttribute('data-train') as 'attack' | 'life' | 'astucia' | 'tenacidade' | null;
-  if (trainStat) {
+  // O único "+" do atributo: com pontos livres gasta um; sem eles, treina pagando cash
+  const plusBtn = target.closest?.('[data-plus]') as HTMLElement | null;
+  const stat = plusBtn?.getAttribute('data-plus') as 'attack' | 'life' | 'astucia' | 'tenacidade' | null | undefined;
+  if (stat) {
     const p = gameState.getPlayer();
-    const cost = getStatTrainingCost(trainStat, p.trainedPoints[trainStat], p.level);
-    if (gameState.trainStatWithCash(trainStat)) {
+    if (p.freePoints > 0) {
+      if (gameState.distributeFreePoint(stat)) {
+        sound.playHit();
+        renderProfileView();
+      }
+      return;
+    }
+    const cost = getStatTrainingCost(stat, p.trainedPoints[stat], p.level);
+    if (gameState.trainStatWithCash(stat)) {
       sound.playHit();
       renderProfileView();
     } else {
@@ -587,26 +581,27 @@ function renderInventoryGrid() {
 
   const bag = bagEntries(p.inventory, p.equipped.weaponId);
   const capacity = gameState.getBagCapacity();
-  const totalSlots = bagSlotCount(bag.length, capacity);
+  const layout = gameState.getBagLayout(); // cada item no seu slot (R-MALA-4)
+  const totalSlots = layout.length;
   let html = '';
 
   for (let i = 0; i < totalSlots; i++) {
-    const entry = bag[i];
+    const entry = layout[i];
     if (entry) {
       const { item, index } = entry;
       const weaponDef = isWeaponItem(item) ? getWeaponById(item.weaponRefId) : null;
       const isEquipped = !weaponDef && (item.id === p.equipped.armorId || item.id === p.equipped.accessoryId);
 
       html += `
-        <div class="inv-slot ${isEquipped ? 'equipped' : ''} ${weaponDef ? 'is-weapon' : ''}" data-inv-idx="${index}"
-             ${weaponDef ? `draggable="true" data-weapon-id="${weaponDef.id}"` : `title="${escHtml(item.name)}"`}>
+        <div class="inv-slot ${isEquipped ? 'equipped' : ''} ${weaponDef ? 'is-weapon' : ''}" data-inv-idx="${index}" data-slot="${i}" draggable="true"
+             ${weaponDef ? `data-weapon-id="${weaponDef.id}"` : `title="${escHtml(item.name)}"`}>
           <span>${item.icon}</span>
           ${weaponDef ? `<span class="inv-dmg">${damageShort(weaponDef)}</span>` : ''}
           ${isEquipped ? '<span class="inv-slot-badge">USO</span>' : ''}
         </div>
       `;
     } else {
-      html += `<div class="inv-slot empty" title="Slot vazio"></div>`;
+      html += `<div class="inv-slot empty" data-slot="${i}" title="Slot vazio"></div>`;
     }
   }
 
@@ -728,6 +723,28 @@ let weaponDragActive = false;
 /** Influência de cada atributo, recalculada a cada desenho do perfil (usada pelo balão). */
 let attrInfluence: Record<AttrKey, AttrInfluence> | null = null;
 
+/** Balão do "+" de um atributo: o preço do treino em cash, ou o ponto livre que será gasto. */
+function showPlusTooltip(el: HTMLElement) {
+  const stat = el.getAttribute('data-plus') as 'attack' | 'life' | 'astucia' | 'tenacidade' | null;
+  if (!stat) return;
+  const p = gameState.getPlayer();
+  const label = { attack: 'Ataque', life: 'Vida', astucia: 'Astúcia', tenacidade: 'Tenacidade' }[stat];
+  if (p.freePoints > 0) {
+    weaponTooltip.innerHTML = `
+      <div class="wtip-title">+1 ${label}</div>
+      <div class="wtip-dmg">Custo: <b class="up">1 ponto livre</b></div>
+      <div class="wtip-vs">Você tem <b>${p.freePoints}</b> ponto${p.freePoints > 1 ? 's' : ''} livre${p.freePoints > 1 ? 's' : ''}.</div>`;
+  } else {
+    const cost = getStatTrainingCost(stat, p.trainedPoints[stat], p.level);
+    const enough = p.cash >= cost;
+    weaponTooltip.innerHTML = `
+      <div class="wtip-title">Treinar ${label}</div>
+      <div class="wtip-dmg">Preço: <b class="${enough ? 'up' : 'down'}">$${cost.toLocaleString()}</b></div>
+      <div class="wtip-vs">${enough ? '+1 ponto de ' + label : 'Cash insuficiente'}</div>`;
+  }
+  weaponTooltip.style.display = 'block';
+}
+
 function showAttrTooltip(el: HTMLElement) {
   const key = el.getAttribute('data-attr-tip') as AttrKey | null;
   if (!key || !attrInfluence) return;
@@ -758,9 +775,10 @@ document.addEventListener('mouseover', e => {
   // Durante um arrastar de verdade o navegador não envia eventos de mouse; se chegou um com o botão solto, o arrastar já acabou.
   if (weaponDragActive && (e as MouseEvent).buttons === 0) endWeaponDrag();
   if (weaponDragActive) return;
-  const el = (e.target as HTMLElement).closest?.('[data-weapon-id], [data-attr-tip]') as HTMLElement | null;
+  const el = (e.target as HTMLElement).closest?.('[data-weapon-id], [data-plus], [data-attr-tip]') as HTMLElement | null;
   if (!el) return;
-  if (el.hasAttribute('data-attr-tip')) showAttrTooltip(el);
+  if (el.hasAttribute('data-plus')) showPlusTooltip(el);
+  else if (el.hasAttribute('data-attr-tip')) showAttrTooltip(el);
   else showWeaponTooltip(el);
   moveWeaponTooltip((e as MouseEvent).clientX, (e as MouseEvent).clientY);
 });
@@ -769,7 +787,7 @@ document.addEventListener('mousemove', e => {
   moveWeaponTooltip((e as MouseEvent).clientX, (e as MouseEvent).clientY);
 });
 document.addEventListener('mouseout', e => {
-  const el = (e.target as HTMLElement).closest?.('[data-weapon-id], [data-attr-tip]') as HTMLElement | null;
+  const el = (e.target as HTMLElement).closest?.('[data-weapon-id], [data-plus], [data-attr-tip]') as HTMLElement | null;
   if (!el) return;
   const to = (e as MouseEvent).relatedTarget as Node | null;
   if (to && el.contains(to)) return;
@@ -785,7 +803,7 @@ document.addEventListener('dragstart', e => {
   const el = (e.target as HTMLElement).closest?.('[draggable="true"]') as HTMLElement | null;
   if (!el) return;
   if (el.id === 'equipped-wep-display') weaponDrag = { kind: 'slot' };
-  else if (el.classList.contains('is-weapon') && el.dataset.invIdx !== undefined) weaponDrag = { kind: 'inv', index: parseInt(el.dataset.invIdx, 10) };
+  else if (el.dataset.invIdx !== undefined) weaponDrag = { kind: 'inv', index: parseInt(el.dataset.invIdx, 10) }; // qualquer item da Mala
   else return;
   weaponDragActive = true;
   hideWeaponTooltip();
@@ -798,12 +816,12 @@ document.addEventListener('dragstart', e => {
 document.addEventListener('dragend', endWeaponDrag);
 
 /** Guarda a arma na mochila; se estiver cheia, avisa em vez de falhar calado. */
-function tryUnequipWeapon() {
+function tryUnequipWeapon(targetSlot?: number) {
   if (gameState.getPlayer().equipped.weaponId && !gameState.bagHasRoom()) {
     alert(`Mala cheia (${gameState.getBagCount()}/${gameState.getBagCapacity()}). Venda ou use um item para abrir espaço antes de guardar a arma.`);
     return;
   }
-  gameState.unequipWeapon();
+  gameState.unequipWeapon(targetSlot);
   renderProfileView();
 }
 
@@ -856,7 +874,38 @@ function bindWeaponDropZones() {
     }
   });
 
-  document.getElementById('btn-unequip-weapon')?.addEventListener('click', tryUnequipWeapon);
+  document.getElementById('btn-unequip-weapon')?.addEventListener('click', () => tryUnequipWeapon());
+
+  // Slots da Mala: soltar um item num slot vazio coloca ele ali; soltar num ocupado troca os dois (R-MALA-4)
+  const grid = document.getElementById('inventory-grid');
+  const cellOf = (e: Event) => (e.target as HTMLElement).closest?.('.inv-slot[data-slot]') as HTMLElement | null;
+  grid?.addEventListener('dragover', e => {
+    const cell = cellOf(e);
+    if (!weaponDrag || !cell) return;
+    e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+    grid.querySelectorAll('.drop-target').forEach(n => n !== cell && n.classList.remove('drop-target'));
+    cell.classList.add('drop-target');
+  });
+  grid?.addEventListener('dragleave', e => {
+    if (!grid.contains((e as DragEvent).relatedTarget as Node | null)) grid.querySelectorAll('.drop-target').forEach(n => n.classList.remove('drop-target'));
+  });
+  grid?.addEventListener('drop', e => {
+    const cell = cellOf(e);
+    if (!weaponDrag || !cell) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const target = parseInt(cell.dataset.slot ?? '-1', 10);
+    const drag = weaponDrag;
+    grid.querySelectorAll('.drop-target').forEach(n => n.classList.remove('drop-target'));
+    endWeaponDrag();
+    if (drag.kind === 'inv') {
+      gameState.moveBagItem(drag.index, target);
+      renderProfileView();
+    } else {
+      tryUnequipWeapon(target); // arma do espaço da arma solta direto num slot
+    }
+  });
 }
 bindWeaponDropZones();
 
