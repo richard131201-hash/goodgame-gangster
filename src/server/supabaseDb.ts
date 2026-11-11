@@ -36,26 +36,15 @@ export function createSupabaseDb(sb: SupabaseClient): Db {
       if (error) throw new Error(`updatePlayer: ${error.code ?? error.message}`);
     },
 
-    async lastDuelBetween(attackerId, defenderId) {
+    async lastDuelBy(attackerId) {
       const { data, error } = await sb
         .from('duels')
         .select('created_at')
         .eq('attacker_id', attackerId)
-        .eq('defender_id', defenderId)
         .order('created_at', { ascending: false })
         .limit(1);
-      if (error) throw new Error(`lastDuelBetween: ${error.code ?? error.message}`);
+      if (error) throw new Error(`lastDuelBy: ${error.code ?? error.message}`);
       return data && data.length > 0 ? Date.parse(data[0].created_at as string) : null;
-    },
-
-    async countDuelsSince(attackerId, sinceMs) {
-      const { count, error } = await sb
-        .from('duels')
-        .select('id', { count: 'exact', head: true })
-        .eq('attacker_id', attackerId)
-        .gte('created_at', new Date(sinceMs).toISOString());
-      if (error) throw new Error(`countDuelsSince: ${error.code ?? error.message}`);
-      return count ?? 0;
     },
 
     async insertDuel(row: Omit<DuelLogRow, 'created_at'>) {

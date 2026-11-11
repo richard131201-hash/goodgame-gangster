@@ -3,10 +3,10 @@
  * e os limites). Quem aplica de verdade é o servidor (src/server/rules.ts).
  */
 export const DUEL = {
-  /** Intervalo mínimo para desafiar o MESMO jogador de novo. */
-  pairCooldownMs: 10 * 60 * 1000,
-  /** Duelos por hora de um mesmo jogador. */
-  maxPerHour: 30,
+  /** Um duelo grátis a cada 10 minutos (contra qualquer rival). Sem limite por hora. */
+  cooldownMs: 10 * 60 * 1000,
+  /** Ouro para duelar de novo antes do fim da espera. */
+  skipCooldownGold: 125,
   respectWin: 25,
   respectLoss: 10,
   xpWin: 60,

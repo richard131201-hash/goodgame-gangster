@@ -119,7 +119,7 @@ export class GameStateManager {
       gold: 25,
       energy: 100,
       maxEnergy: 100,
-      respect: 100,
+      respect: 0,
       points: { attack: 12, life: 8, astucia: 10, tenacidade: 10 },
       trainedPoints: { attack: 0, life: 0, astucia: 0, tenacidade: 0 },
       freePoints: 0,

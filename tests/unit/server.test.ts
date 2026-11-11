@@ -41,12 +41,9 @@ class FakeDb implements Db {
     const r = this.rows.get(id)!;
     Object.assign(r, structuredClone(fields));
   }
-  async lastDuelBetween(a: string, d: string) {
-    const l = this.duels.filter(x => x.attacker_id === a && x.defender_id === d).map(x => x.ms);
+  async lastDuelBy(a: string) {
+    const l = this.duels.filter(x => x.attacker_id === a).map(x => x.ms);
     return l.length ? Math.max(...l) : null;
-  }
-  async countDuelsSince(a: string, since: number) {
-    return this.duels.filter(x => x.attacker_id === a && x.ms >= since).length;
   }
   async insertDuel(row: Omit<DuelLogRow, 'created_at'>) {
     this.duels.push({ ...row, created_at: new Date(this.clock).toISOString(), ms: this.clock });
@@ -87,7 +84,7 @@ describe('servidor: criar personagem (R-SERVIDOR-1, R-SERVIDOR-2)', () => {
     const me = await handleOp(ctxFor(db, 'u1'), { op: 'me' });
     expect(me.body.exists).toBe(true);
     const save = me.body.save as { level: number; name: string; cash: number; respect: number };
-    expect(save).toMatchObject({ level: 1, name: 'Don Rocco', cash: 500, respect: 120 });
+    expect(save).toMatchObject({ level: 1, name: 'Don Rocco', cash: 500, respect: 0 });
     expect(db.rows.get('u1')?.name).toBe('Don Rocco');
   });
 
@@ -223,10 +220,14 @@ describe('servidor: conferir o save (R-SERVIDOR-3)', () => {
 
   it('o navegador não consegue diminuir o respeito nem inflá-lo além das missões', async () => {
     const db = await setup();
+    const row = db.rows.get('u1')!;
+    row.respect = 50;
+    row.save.respect = 50;
+    row.respect_duels = 50; // veio de duelo
     const low = saveOf(db);
     low.respect = 0;
     await send(db, low);
-    expect(db.rows.get('u1')!.respect).toBe(120);
+    expect(db.rows.get('u1')!.respect).toBe(50);
 
     const high = saveOf(db);
     high.respect = 50_000;
@@ -302,11 +303,13 @@ describe('servidor: duelo entre jogadores (R-DUELO-1 a R-DUELO-5)', () => {
   it('atacante fraco perde 10 de respeito, sem ganhar nada', async () => {
     const db = await setup();
     strengthen(db, 'def', 400);
+    db.rows.get('atk')!.respect = 50;
+    db.rows.get('atk')!.save.respect = 50;
     const r = await duel(db);
     expect(r.body.won).toBe(false);
     expect(r.body.rewards).toMatchObject({ cash: 0, respect: -DUEL.respectLoss, xp: 0 });
     const a = db.rows.get('atk')!;
-    expect(a.respect).toBe(120 - DUEL.respectLoss);
+    expect(a.respect).toBe(50 - DUEL.respectLoss);
     expect(a.duels_lost).toBe(1);
     expect(db.rows.get('def')!.duels_won).toBe(1);
   });
@@ -356,29 +359,74 @@ describe('servidor: duelo entre jogadores (R-DUELO-1 a R-DUELO-5)', () => {
     expect(db.duels).toHaveLength(1);
   });
 
-  it('espera entre duelos contra o mesmo rival, e depois libera', async () => {
+  it('um duelo grátis a cada 10 min, contra qualquer rival; depois da espera libera (R-DUELO-4)', async () => {
     const db = await setup();
+    await createPlayer(db, 'def2', 'Outro Rival', 'malandro');
     strengthen(db, 'atk', 400);
     expect((await duel(db)).status).toBe(200);
     const early = await duel(db, db.clock + 5 * MIN);
     expect(early.status).toBe(429);
     expect(early.body.error).toBe('espera');
-    const later = await duel(db, db.clock + DUEL.pairCooldownMs + 1);
+    expect(early.body.costGold).toBe(DUEL.skipCooldownGold);
+    expect(early.body.remainingMs).toBe(5 * MIN);
+    // a espera vale para QUALQUER rival, não só o mesmo
+    const other = await handleOp(ctxFor(db, 'atk', db.clock + 5 * MIN), { op: 'duel', opponentId: 'def2' });
+    expect(other.status).toBe(429);
+    expect(db.duels).toHaveLength(1);
+    const later = await duel(db, db.clock + DUEL.cooldownMs + 1);
     expect(later.status).toBe(200);
   });
 
-  it('limite de duelos por hora', async () => {
+  it('125 de ouro liberam duelar antes da espera; sem ouro recusa e não cobra nada (R-DUELO-4)', async () => {
     const db = await setup();
     strengthen(db, 'atk', 400);
-    for (let i = 0; i < DUEL.maxPerHour; i++) {
+    expect((await duel(db)).status).toBe(200);
+    const t = db.clock + 5 * MIN;
+    const pay = (now: number) => handleOp(ctxFor(db, 'atk', now), { op: 'duel', opponentId: 'def', payGold: true });
+
+    // só tem 25 de ouro (inicial): recusa
+    const poor = await pay(t);
+    expect(poor.status).toBe(422);
+    expect(poor.body.error).toBe('sem_ouro');
+    expect(db.rows.get('atk')!.save.gold).toBe(25);
+    expect(db.duels).toHaveLength(1);
+
+    // com 200 de ouro: paga 125 e duela
+    db.rows.get('atk')!.save.gold = 200;
+    const ok = await pay(t);
+    expect(ok.status).toBe(200);
+    expect(ok.body.goldSpent).toBe(DUEL.skipCooldownGold);
+    expect(db.rows.get('atk')!.save.gold).toBe(200 - DUEL.skipCooldownGold);
+    expect((ok.body.save as { gold: number }).gold).toBe(75);
+    expect(db.duels).toHaveLength(2);
+  });
+
+  it('com a espera acabada, payGold não cobra nada', async () => {
+    const db = await setup();
+    strengthen(db, 'atk', 400);
+    db.rows.get('atk')!.save.gold = 200;
+    const r = await handleOp(ctxFor(db, 'atk'), { op: 'duel', opponentId: 'def', payGold: true });
+    expect(r.status).toBe(200);
+    expect(r.body.goldSpent).toBe(0);
+    expect(db.rows.get('atk')!.save.gold).toBe(200);
+  });
+
+  it('não há limite de duelos por hora: muitos duelos antigos não bloqueiam', async () => {
+    const db = await setup();
+    strengthen(db, 'atk', 400);
+    for (let i = 0; i < 100; i++) {
       db.duels.push({
         attacker_id: 'atk', defender_id: `outro${i}`, winner_id: 'atk', seed: 1, rounds: 1,
-        cash_won: 0, respect_delta: 0, created_at: '', ms: db.clock - 5 * MIN,
+        cash_won: 0, respect_delta: 0, created_at: '', ms: db.clock - 11 * MIN,
       });
     }
-    const r = await duel(db);
-    expect(r.status).toBe(429);
-    expect(r.body.error).toBe('limite_hora');
+    expect((await duel(db)).status).toBe(200);
+  });
+
+  it('todo jogador começa com 0 de Respeito (R-RANKING-2)', async () => {
+    const db = await setup();
+    expect(db.rows.get('atk')!.respect).toBe(0);
+    expect(db.rows.get('atk')!.save.respect).toBe(0);
   });
 
   it('o respeito de duelo não conta como respeito de missão na conferência do save', async () => {

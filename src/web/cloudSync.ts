@@ -169,9 +169,15 @@ export interface DuelReply {
     appearance: CharacterAppearance;
   };
   rewards: { cash: number; respect: number; xp: number; leveledUp: boolean };
+  goldSpent: number;
   save: PlayerState;
+  /** Só nas recusas por espera/ouro. */
+  error?: string;
+  remainingMs?: number;
+  costGold?: number;
 }
 
-export const duelOnServer = (opponentId: string) => callApi<Partial<DuelReply>>('duel', { opponentId });
+export const duelOnServer = (opponentId: string, payGold = false) =>
+  callApi<Partial<DuelReply>>('duel', { opponentId, payGold });
 export const fetchMe = () => callApi<{ exists?: boolean; save?: PlayerState }>('me');
 export const createOnServer = (character: unknown) => callApi<{ save?: PlayerState }>('create', { character });

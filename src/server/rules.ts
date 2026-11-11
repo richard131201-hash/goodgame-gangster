@@ -43,8 +43,8 @@ export const LIMITS = {
   /** Missões cumpridas máximas = folga + este valor por minuto de vida do personagem. */
   missionsPerMin: 1,
   missionsSlack: 5,
-  /** Respeito vindo de missões: base 120 + isto por missão cumprida + folga (evento de raide etc.). */
-  respectBase: 120,
+  /** Respeito vindo de missões: base 0 (todo jogador começa com 0) + isto por missão cumprida + folga (evento de raide etc.). */
+  respectBase: 0,
   respectPerMission: 50,
   respectSlack: 200,
   /** Cash: folga + por missão + bônus de nível + o que o servidor pagou em duelos. */
@@ -317,22 +317,15 @@ export function combatInputOf(p: PlayerState): FighterInput {
   return { style: p.style, level: p.level, points: combatPointsOf(p), weapon };
 }
 
-export interface DuelContext {
-  now: number;
-  /** Quando o atacante desafiou este mesmo rival pela última vez (ms), se já desafiou. */
-  lastPairDuelAt: number | null;
-  /** Quantos duelos o atacante fez na última hora. */
-  duelsLastHour: number;
+/** Por que o duelo não pode acontecer, qualquer que seja a espera (ou null se pode). */
+export function duelBlockReason(attacker: DbPlayerRow, defender: DbPlayerRow): 'si_mesmo' | null {
+  return attacker.id === defender.id ? 'si_mesmo' : null;
 }
 
-export type DuelBlock = 'si_mesmo' | 'espera' | 'limite_hora';
-
-/** Por que o duelo não pode acontecer (ou null se pode). */
-export function duelBlockReason(attacker: DbPlayerRow, defender: DbPlayerRow, ctx: DuelContext): DuelBlock | null {
-  if (attacker.id === defender.id) return 'si_mesmo';
-  if (ctx.lastPairDuelAt !== null && ctx.now - ctx.lastPairDuelAt < DUEL.pairCooldownMs) return 'espera';
-  if (ctx.duelsLastHour >= DUEL.maxPerHour) return 'limite_hora';
-  return null;
+/** Quanto falta (ms) para o próximo duelo grátis do atacante; 0 se já pode. Vale para qualquer rival. */
+export function duelCooldownLeftMs(lastDuelAt: number | null, now: number): number {
+  if (lastDuelAt === null) return 0;
+  return Math.max(0, DUEL.cooldownMs - (now - lastDuelAt));
 }
 
 export interface DuelOutcome {

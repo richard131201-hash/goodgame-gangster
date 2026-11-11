@@ -102,7 +102,7 @@ export function createNewPlayer(
     gold: 25,
     energy: 100,
     maxEnergy: 100,
-    respect: 120,
+    respect: 0,
     points: initialPoints,
     trainedPoints: { attack: 0, life: 0, astucia: 0, tenacidade: 0 },
     freePoints: 0,

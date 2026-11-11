@@ -1045,11 +1045,20 @@ function paintRealRivals(container: HTMLElement) {
 }
 
 /** Duelo de verdade: o servidor luta e paga; aqui só se reproduz o replay e se mostra o resultado. */
-async function challengeRealRival(opponentId: string, btn?: HTMLButtonElement) {
+async function challengeRealRival(opponentId: string, btn?: HTMLButtonElement, payGold = false) {
   if (btn) btn.disabled = true;
   await flushSave(); // o servidor usa o seu personagem salvo: manda o que estiver pendente
-  const r = await duelOnServer(opponentId);
+  const r = await duelOnServer(opponentId, payGold);
   const d = r.body;
+  if (!d.ok && d.error === 'espera' && d.costGold && !payGold) {
+    // Espera de 10 min: oferece pagar ouro para duelar agora (o servidor cobra só se aceitar).
+    const min = Math.ceil((d.remainingMs ?? 0) / 60000);
+    if (confirm(`Seu próximo duelo grátis é em ${min} min.\n\nGastar ${d.costGold} de ouro para duelar agora?`)) {
+      return challengeRealRival(opponentId, btn, true);
+    }
+    if (btn) btn.disabled = false;
+    return;
+  }
   if (!d.ok || !d.events || !d.attacker || !d.defender || !d.save || !d.rewards || d.firstAttacker === undefined) {
     alert(d.message ?? 'Não foi possível duelar agora. Tente de novo.');
     realRivalsCache = null;
@@ -1073,6 +1082,7 @@ async function challengeRealRival(opponentId: string, btn?: HTMLButtonElement) {
             <div style="font-size: 14px; font-weight: 700; color: #f1c40f;">+$${rw.cash} Cash Saqueado</div>
             <div style="font-size: 14px; font-weight: 700; color: #e67e22;">+${rw.respect} Respeito ⭐</div>
             <div style="font-size: 13px; font-weight: 700; color: #2ecc71;">+${rw.xp} XP de Duelo</div>
+            ${reply.goldSpent ? `<div style="font-size: 13px; color: var(--text-muted);">−${reply.goldSpent} de ouro (duelo antes da espera)</div>` : ''}
             ${rw.leveledUp ? '<div style="margin-top: 10px; font-size: 16px; color: #d4af37; font-weight: 900;">⭐ VOCÊ SUBIU DE NÍVEL!</div>' : ''}
           `,
         );

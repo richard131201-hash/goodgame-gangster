@@ -2,6 +2,7 @@ import type { BalanceConfig } from '../engine/schema.js';
 import {
   buildNewPlayer,
   duelBlockReason,
+  duelCooldownLeftMs,
   resolveDuel,
   rowColumns,
   validateSave,
@@ -33,8 +34,8 @@ export interface Db {
     { ok: true; row: DbPlayerRow } | { ok: false; error: 'nome_em_uso' | 'ja_existe' }
   >;
   updatePlayer(id: string, fields: Partial<DbPlayerRow>): Promise<void>;
-  lastDuelBetween(attackerId: string, defenderId: string): Promise<number | null>;
-  countDuelsSince(attackerId: string, sinceMs: number): Promise<number>;
+  /** Quando este jogador fez o último duelo como atacante (contra qualquer rival), se fez. */
+  lastDuelBy(attackerId: string): Promise<number | null>;
   insertDuel(row: Omit<DuelLogRow, 'created_at'>): Promise<void>;
 }
 
@@ -102,19 +103,38 @@ export async function opDuel(ctx: Ctx, body: ApiBody): Promise<ApiResponse> {
   const defender = await ctx.db.getPlayer(defenderId);
   if (!defender) return fail(404, 'rival_nao_existe', 'Esse rival não existe mais.');
 
-  const lastPair = await ctx.db.lastDuelBetween(attacker.id, defender.id);
-  const lastHour = await ctx.db.countDuelsSince(attacker.id, ctx.now - 60 * 60 * 1000);
-  const block = duelBlockReason(attacker, defender, { now: ctx.now, lastPairDuelAt: lastPair, duelsLastHour: lastHour });
-  if (block) {
-    const msg: Record<string, string> = {
-      si_mesmo: 'Você não pode duelar contra você mesmo.',
-      espera: `Você já desafiou esse rival há pouco. Espere ${Math.round(DUEL.pairCooldownMs / 60000)} minutos ou escolha outro.`,
-      limite_hora: `Limite de ${DUEL.maxPerHour} duelos por hora atingido. Tente mais tarde.`,
-    };
-    return fail(429, block, msg[block]);
+  if (duelBlockReason(attacker, defender)) return fail(429, 'si_mesmo', 'Você não pode duelar contra você mesmo.');
+
+  // Um duelo grátis a cada 10 minutos; antes disso, só pagando ouro (e o jogador precisa aceitar).
+  const left = duelCooldownLeftMs(await ctx.db.lastDuelBy(attacker.id), ctx.now);
+  let attackerForFight = attacker;
+  let goldSpent = 0;
+  if (left > 0) {
+    const costGold = DUEL.skipCooldownGold;
+    const minutes = Math.ceil(left / 60000);
+    if (body.payGold !== true) {
+      return reply(429, {
+        ok: false,
+        error: 'espera',
+        message: `Seu próximo duelo grátis é em ${minutes} min. Você pode duelar agora por ${costGold} de ouro.`,
+        remainingMs: left,
+        costGold,
+      });
+    }
+    if (attacker.save.gold < costGold) {
+      return reply(422, {
+        ok: false,
+        error: 'sem_ouro',
+        message: `Você precisa de ${costGold} de ouro para duelar antes do fim da espera (faltam ${minutes} min).`,
+        remainingMs: left,
+        costGold,
+      });
+    }
+    goldSpent = costGold;
+    attackerForFight = { ...attacker, save: { ...attacker.save, gold: attacker.save.gold - costGold } };
   }
 
-  const out: DuelOutcome = resolveDuel(attacker, defender, ctx.randomSeed(), ctx.config);
+  const out: DuelOutcome = resolveDuel(attackerForFight, defender, ctx.randomSeed(), ctx.config);
 
   const nowIso = new Date(ctx.now).toISOString();
   await ctx.db.updatePlayer(attacker.id, {
@@ -157,6 +177,7 @@ export async function opDuel(ctx: Ctx, body: ApiBody): Promise<ApiResponse> {
       appearance: defender.appearance,
     },
     rewards: out.rewards,
+    goldSpent,
     save: out.attackerSave,
     duelsWon: out.attackerSave.statsRecord.duelsWon,
     duelsLost: out.attackerSave.statsRecord.duelsLost,

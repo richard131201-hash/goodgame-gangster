@@ -131,11 +131,18 @@ async function main() {
   const depois = (await rest(`/rest/v1/public_players?select=respect,duels_won,duels_lost&id=in.(${A.id},${B.id})`, { token: A.token })).json || [];
   const byId = Object.fromEntries((await rest(`/rest/v1/public_players?select=id,respect,duels_won,duels_lost&id=in.(${A.id},${B.id})`, { token: A.token })).json.map(r => [r.id, r]));
   check('placar do ranking atualizado (A 1V, B 1D)', byId[A.id]?.duels_won === 1 && byId[B.id]?.duels_lost === 1 && depois.length === 2);
-  check('respeito de A subiu e o de B não mudou', byId[A.id]?.respect === 145 && byId[B.id]?.respect === 120, `A=${byId[A.id]?.respect} B=${byId[B.id]?.respect}`);
+  check('todos começam com 0; respeito de A subiu para 25 e o de B segue 0', byId[A.id]?.respect === 25 && byId[B.id]?.respect === 0, `A=${byId[A.id]?.respect} B=${byId[B.id]?.respect}`);
   const d2 = await api(A.token, { op: 'duel', opponentId: B.id });
-  check('segundo duelo seguido contra o mesmo rival é recusado (espera)', d2.status === 429 && d2.body.error === 'espera', `status ${d2.status}`);
+  check('segundo duelo antes de 10 min é recusado e oferece pagar 125 de ouro', d2.status === 429 && d2.body.error === 'espera' && d2.body.costGold === 125, `status ${d2.status}`);
+  const d3 = await api(A.token, { op: 'duel', opponentId: B.id, payGold: true });
+  check('pagando sem ter 125 de ouro: recusado, sem cobrar', d3.status === 422 && d3.body.error === 'sem_ouro', `status ${d3.status}`);
+  const rowA2 = (await rest(`/rest/v1/players?select=save&id=eq.${A.id}`, { key: SRV })).json[0].save;
+  rowA2.gold = 200;
+  await rest(`/rest/v1/players?id=eq.${A.id}`, { method: 'PATCH', key: SRV, body: { save: rowA2 } });
+  const d4 = await api(A.token, { op: 'duel', opponentId: B.id, payGold: true });
+  check('com ouro: paga 125 e duela antes da espera', d4.status === 200 && d4.body.goldSpent === 125 && d4.body.save?.gold === 75, `status ${d4.status}`);
   const meD = await rest('/rest/v1/duels?select=id', { token: B.token });
-  check('B (desafiado) vê o duelo no próprio histórico', Array.isArray(meD.json) && meD.json.length === 1);
+  check('B (desafiado) vê os duelos no próprio histórico', Array.isArray(meD.json) && meD.json.length === 2);
   const self = await api(A.token, { op: 'duel', opponentId: A.id });
   check('não duela contra si mesmo', self.status === 429 && self.body.error === 'si_mesmo');
 }
