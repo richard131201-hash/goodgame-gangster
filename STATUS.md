@@ -62,6 +62,7 @@ Provado no localhost contra o Supabase real (nível 1 no site até a conferênci
 
 ## Armas (2026-11-11)
 - Provado no localhost (conta real, depois apagada): o espaço da arma fica **abaixo do personagem** com "Dano: 12 mín – 22 máx"; a mochila mostra o dano de cada arma (8–16, 18–32, 22–42); a loja também. O balão compara com a equipada (Tommy Gun contra a Colt: mín +6, máx +10, média +8). **Arrastar de verdade** funcionou nos dois sentidos: da mochila para o espaço (troca, e a antiga volta à mochila) e do espaço para a mochila (fica desarmado). Luta desarmado funciona (missão cumprida, sem erro). Os botões "Equipar" e "Guardar na mochila" funcionam como alternativa. O estado fica salvo.
+- **Site no ar (Vercel), verificado (nível 2):** criei conta de teste, o espaço da arma aparece abaixo do personagem com o dano, comprei um Revólver (a Colt continuou equipada) e arrastei o Revólver até o espaço: ele equipou e a Colt voltou à mochila. Conta apagada.
 - 25 testes novos (`weaponSlot.test.ts`), total 130.
 - **Pendências:** armadura e acessório ainda não têm arrastar; no celular só funciona pelos botões (arrastar com o dedo não existe); a arma só aparece na mão do personagem quando está equipada.
 

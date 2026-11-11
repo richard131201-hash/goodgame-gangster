@@ -5,7 +5,7 @@
 ## Onde estamos
 
 - Tarefas: **38** em **6** etapas
-- Feitas: **18** (com nível 2 ou mais registrado: **5**)
+- Feitas: **18** (com nível 2 ou mais registrado: **6**)
 - Em andamento: **0**
 - Liberadas para começar: **8**
 - Bloqueadas por outra tarefa ou etapa: **12**
@@ -54,7 +54,7 @@
 | C10 | Layout do jogo no celular: a página transborda na horizontal (413 px numa tela de 390). Pronto = sem rolagem lateral em 360 a 430 px | CLAUDE | ⏳ A FAZER | Antes de divulgar; achado em 2026-11-11 (já existia antes do login) |
 | C13 | Botão "Personalizar Visual do Gangster" do perfil não faz nada: reaproveitar o criador novo para mudar o visual depois (decidir se custa algo) | CLAUDE | ⏳ A FAZER | Achado em 2026-11-11; depois de C10 |
 | C15 | Novo estilo de personagem (rosto com volume, menos "boneco") e mais personalização: olhos, sobrancelhas, nariz, boca, orelhas, cabelo, óculos, cicatriz, charuto etc. Prévia interativa mostrada em 2026-11-11; aguarda aprovação do estilo antes de implementar. Inclui redesenhar trajes, mulheres e as poses de combate (atacar, tomar dano, esquivar) (nível 0) | FUNDADOR + CLAUDE | ❌ BLOQUEADA | EM ESPERA (decisão do fundador em 2026-11-11: mexer depois). Protótipo guardado em prototipos/rosto-v1. Falta decidir a fonte da arte: A artista, B kit licenciado |
-| C16 | Armas: dano mínimo e máximo sempre à vista, comparação ao passar o mouse, espaço da arma abaixo do personagem e arrastar e soltar (trocar e guardar) (nível 1) | CLAUDE | ✅ FEITO | Feito em 2026-11-11; provado no localhost com arrastar de verdade. Falta conferir no site da Vercel |
+| C16 | Armas: dano mínimo e máximo sempre à vista, comparação ao passar o mouse, espaço da arma abaixo do personagem e arrastar e soltar (trocar e guardar) (nível 2) | CLAUDE | ✅ FEITO | Feito em 2026-11-11; provado no localhost e no site da Vercel (comprar, arrastar para trocar), com a conta de teste apagada |
 
 ### Etapa D: Servidor e banco (Supabase)
 
