@@ -568,7 +568,7 @@ export const CURRENT_RAID_EVENT: RaidBossEvent = {
   bossWeaponId: 'bar_1918',
   rewardCash: 15000,
   rewardGold: 100,
-  rewardRespect: 2500,
+  rewardRespect: 0, // Respeito só vem de duelos contra jogadores (R-RESPEITO-1)
   exclusiveItemDropId: 'acc_amuleto_corleone',
   timeRemainingHours: 48,
 };

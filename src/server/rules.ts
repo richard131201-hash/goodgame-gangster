@@ -45,9 +45,6 @@ export const LIMITS = {
   missionsPerMin: 1,
   missionsSlack: 5,
   /** Respeito vindo de missões: base 0 (todo jogador começa com 0) + isto por missão cumprida + folga (evento de raide etc.). */
-  respectBase: 0,
-  respectPerMission: 50,
-  respectSlack: 200,
   /** Cash: folga + por missão + bônus de nível + o que o servidor pagou em duelos. */
   cashSlack: 20000,
   cashPerMission: 2500,
@@ -241,8 +238,9 @@ export function validateSave(db: DbPlayerRow, raw: unknown, now: number): SaveRe
   if (missions > LIMITS.missionsSlack + LIMITS.missionsPerMin * age) return { ok: false, reason: 'missões acima do ritmo possível' };
   const respect = Math.max(n.respect, db.respect); // o navegador nunca diminui o respeito
   const missionRespect = respect - db.respect_duels;
-  if (missionRespect > LIMITS.respectBase + LIMITS.respectPerMission * missions + LIMITS.respectSlack) {
-    return { ok: false, reason: 'respeito acima do que as missões dão' };
+  if (missionRespect > 0) {
+    // Respeito só vem de duelos (e o servidor soma esses). Qualquer Respeito fora dos duelos é inventado.
+    return { ok: false, reason: 'respeito que não veio de duelo' };
   }
 
   // Dinheiro

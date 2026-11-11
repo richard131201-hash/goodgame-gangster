@@ -957,7 +957,6 @@ function startMissionCombat(mission: MissionDef) {
 
         const leveledUp = gameState.addXp(mission.xpReward);
         gameState.addCash(mission.cashReward);
-        gameState.addRespect(15);
         gameState.recordMissionCompleted();
 
         showOutcomePopup(
@@ -966,7 +965,6 @@ function startMissionCombat(mission: MissionDef) {
           `
             <div style="font-size: 14px; font-weight: 700; color: #2ecc71;">+${mission.xpReward} XP Ganho</div>
             <div style="font-size: 14px; font-weight: 700; color: #f1c40f;">+$${mission.cashReward} Cash Saqueado</div>
-            <div style="font-size: 13px; font-weight: 700; color: #e67e22;">+15 Respeito para a Família</div>
             ${dropMsg}
             ${leveledUp ? '<div style="margin-top: 10px; font-size: 16px; color: #d4af37; font-weight: 900;">⭐ VOCÊ SUBIU DE NÍVEL! (+4 Pontos Livres, +' + GOLD.perLevel + ' de ouro)</div>' : ''}
           `
@@ -1190,7 +1188,6 @@ function startDuelCombat(rival: DuelRival) {
     (won) => {
       if (won) {
         gameState.addCash(rival.bountyCash);
-        gameState.addRespect(25);
         const leveledUp = gameState.addXp(60);
         gameState.recordDuelResult(true, 500);
 
@@ -1199,7 +1196,6 @@ function startDuelCombat(rival: DuelRival) {
           `Você derrotou ${rival.name} na Arena Clandestina e humilhou a facção rival!`,
           `
             <div style="font-size: 14px; font-weight: 700; color: #f1c40f;">+$${rival.bountyCash} Cash Roubado do Rival</div>
-            <div style="font-size: 14px; font-weight: 700; color: #e67e22;">+25 Respeito Conquistado ⭐</div>
             <div style="font-size: 13px; font-weight: 700; color: #2ecc71;">+60 XP de Duelo</div>
             ${leveledUp ? '<div style="margin-top: 10px; font-size: 16px; color: #d4af37; font-weight: 900;">⭐ VOCÊ SUBIU DE NÍVEL!</div>' : ''}
           `
@@ -1208,8 +1204,8 @@ function startDuelCombat(rival: DuelRival) {
         gameState.recordDuelResult(false, 200);
         showOutcomePopup(
           '💀 DERROTA NO DUELO',
-          `${rival.name} superou seus reflexos nesta luta. Você perdeu 10 pontos de Respeito no submundo.`,
-          `<span style="color: #e74c3c;">-10 Respeito. Treine seus atributos e melhore sua arma!</span>`
+          `${rival.name} superou seus reflexos nesta luta.`,
+          `<span style="color: #e74c3c;">Treine seus atributos e melhore sua arma! (Respeito só se ganha duelando contra jogadores de verdade.)</span>`
         );
       }
     }
@@ -1306,7 +1302,7 @@ function renderRankingView() {
   const tbody = document.getElementById('ranking-table-body');
   if (!tbody) return;
   const note = document.querySelector('#view-ranking .npc-note');
-  if (note) note.textContent = 'Ranking de jogadores reais, ordenado por Respeito. Duelos e missões dão Respeito.';
+  if (note) note.textContent = 'Ranking de jogadores reais, ordenado por Respeito. O Respeito só vem de duelos contra outros jogadores.';
   if (!rankingCache) tbody.innerHTML = '<tr><td colspan="7" style="padding:14px;">Carregando o ranking...</td></tr>';
   else paintRealRanking(tbody);
   if (!rankingCache || Date.now() - rankingCache.at > REAL_CACHE_MS) void loadRanking();
@@ -1450,8 +1446,7 @@ function renderFamilyView() {
     document.getElementById('donate-clan-cash-btn')?.addEventListener('click', () => {
       if (gameState.spendCash(500)) {
         currentFam.treasuryCash += 500;
-        gameState.addRespect(20);
-        alert('Você doou $500 para o cofre da Família e ganhou +20 de Respeito!');
+        alert('Você doou $500 para o cofre da Família.');
         renderFamilyView();
       } else {
         alert('Cash insuficiente para doar!');
@@ -1579,7 +1574,6 @@ function startRaidBossCombat(event: typeof CURRENT_RAID_EVENT) {
 
       gameState.addXp(180);
       gameState.addCash(1200);
-      gameState.addRespect(50);
 
       showOutcomePopup(
         '💥 ATAQUE DE RAID EXECUTADO!',
@@ -1587,7 +1581,6 @@ function startRaidBossCombat(event: typeof CURRENT_RAID_EVENT) {
         `
           <div style="font-size: 14px; font-weight: 700; color: #2ecc71;">+180 XP Coletivo</div>
           <div style="font-size: 14px; font-weight: 700; color: #f1c40f;">+$1.200 Cash de Saque</div>
-          <div style="font-size: 14px; font-weight: 700; color: #e67e22;">+50 Respeito Mundial ⭐</div>
         `
       );
     }

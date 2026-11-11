@@ -235,6 +235,15 @@ describe('servidor: conferir o save (R-SERVIDOR-3)', () => {
     expect((await send(db, high)).status).toBe(422);
   });
 
+  it('Respeito só vem de duelo: nem 1 ponto de missão é aceito (R-RESPEITO-1)', async () => {
+    const db = await setup();
+    const s = saveOf(db);
+    s.respect = 1;
+    const r = await send(db, s);
+    expect(r.status).toBe(422);
+    expect(db.rows.get('u1')!.respect).toBe(0);
+  });
+
   it('save recusado devolve o save do servidor para o navegador voltar ao válido', async () => {
     const db = await setup();
     const s = saveOf(db);
