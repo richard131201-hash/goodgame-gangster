@@ -35,6 +35,9 @@ alter table public.players force row level security;
 -- Fecha tudo e abre só o necessário
 revoke all on public.players from anon, authenticated;
 grant select on public.players to authenticated;
+-- O servidor (service_role) precisa de acesso explícito, pois o projeto foi criado com
+-- "Automatically expose new tables" desligado.
+grant all on public.players to service_role;
 
 drop policy if exists players_select_own on public.players;
 create policy players_select_own
