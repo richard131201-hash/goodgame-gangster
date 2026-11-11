@@ -3115,8 +3115,8 @@ body.dragging-weapon .weapon-slot { box-shadow: 0 0 0.625rem rgba(212, 175, 55, 
 /* Atributos como tabela (R-ATRIBUTO-1): nome à esquerda, valor à direita, seta e um botão "+" em forma de pílula.
    Todas as linhas iguais, separadas por um fio dourado. As 4 barras são UMA peça: passar o mouse em qualquer uma troca as 4
    ao mesmo tempo (nome e pontos viram o efeito: dano, HP, crítico e redução). */
-.attr-compact-list { display: flex; flex-direction: column; border-top: 0.0625rem solid rgba(212, 175, 55, 0.25); cursor: help; }
-.attr-compact-list:hover { background: rgba(241, 196, 15, 0.05); }
+.attr-compact-list { display: flex; flex-direction: column; border-top: 0.0625rem solid rgba(212, 175, 55, 0.25); }
+.attr-compact-list.show-eff { background: rgba(241, 196, 15, 0.05); }
 .attr-c-row {
   display: grid;
   grid-template-columns: 1fr 3.5rem 0.875rem 2.75rem;
@@ -3130,10 +3130,10 @@ body.dragging-weapon .weapon-slot { box-shadow: 0 0 0.625rem rgba(212, 175, 55, 
 .attr-c-pts { text-align: right; font-size: 0.9375rem; font-weight: 800; color: #f1c40f; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .attr-c-arrow { text-align: center; font-size: 0.625rem; color: rgba(212, 175, 55, 0.7); }
 .attr-compact-list .eff { display: none; }
-.attr-compact-list:hover .nrm { display: none; }
-.attr-compact-list:hover .eff { display: inline; }
-.attr-compact-list:hover .attr-c-name { color: #f1c40f; }
-.attr-compact-list:hover .attr-c-pts { color: #fff; }
+.attr-compact-list.show-eff .nrm { display: none; }
+.attr-compact-list.show-eff .eff { display: inline; }
+.attr-compact-list.show-eff .attr-c-name { color: #f1c40f; }
+.attr-compact-list.show-eff .attr-c-pts { color: #fff; }
 /* O único "+" do atributo: pílula brilhante dourada (treino pago) ou verde (há pontos livres) */
 .btn-attr-plus {
   width: 2.75rem;

@@ -601,14 +601,14 @@ function renderInventoryGrid() {
 
       html += `
         <div class="inv-slot ${isEquipped ? 'equipped' : ''} ${weaponDef ? 'is-weapon' : ''}" data-inv-idx="${index}" data-slot="${i}" draggable="true"
-             ${weaponDef ? `data-weapon-id="${weaponDef.id}"` : `title="${escHtml(item.name)}"`}>
+             data-bag-tip="${index}" ${weaponDef ? `data-weapon-id="${weaponDef.id}"` : ''}>
           <span>${item.icon}</span>
           ${weaponDef ? `<span class="inv-dmg">${damageShort(weaponDef)}</span>` : ''}
           ${isEquipped ? '<span class="inv-slot-badge">USO</span>' : ''}
         </div>
       `;
     } else {
-      html += `<div class="inv-slot empty" data-slot="${i}" title="Slot vazio"></div>`;
+      html += `<div class="inv-slot empty" data-slot="${i}"></div>`;
     }
   }
 
@@ -716,6 +716,43 @@ function showWeaponTooltip(el: HTMLElement) {
   weaponTooltip.style.display = 'block';
 }
 
+const ITEM_TYPE_LABEL: Record<string, string> = { weapon: 'Arma', armor: 'Armadura', accessory: 'Acessório', consumable: 'Consumível' };
+
+/** Balão de qualquer item da Mala (R-MALA-6): tipo, nome, atributos e preço. */
+function showBagItemTooltip(el: HTMLElement) {
+  const idx = parseInt(el.getAttribute('data-bag-tip') || '-1', 10);
+  const item = gameState.getPlayer().inventory[idx];
+  if (!item) return;
+  const weaponDef = isWeaponItem(item) ? getWeaponById(item.weaponRefId) : null;
+  const lines: string[] = [];
+  if (weaponDef) lines.push(`Dano: <b>${weaponDef.min}</b> mín – <b>${weaponDef.max}</b> máx`);
+  const b = item.statsBonus;
+  if (b) {
+    if (b.attack) lines.push(`Ataque: <b class="up">+${b.attack}</b>`);
+    if (b.life) lines.push(`Vida: <b class="up">+${b.life}</b>`);
+    if (b.astucia) lines.push(`Astúcia: <b class="up">+${b.astucia}</b>`);
+    if (b.tenacidade) lines.push(`Tenacidade: <b class="up">+${b.tenacidade}</b>`);
+    if (b.armorReduction) lines.push(`Redução de dano: <b class="up">+${Math.round(b.armorReduction * 100)}%</b>`);
+    if (b.dodgeChance) lines.push(`Esquiva: <b class="up">+${Math.round(b.dodgeChance * 100)}%</b>`);
+  }
+  const c = item.consumableEffect;
+  if (c) {
+    const label = { energy: 'Energia', buff_attack: 'Ataque', buff_life: 'Vida', cash: 'Dinheiro' }[c.type];
+    lines.push(`${label}: <b class="up">+${c.value}</b>${c.durationBattles ? ` por ${c.durationBattles} batalha(s)` : ''}`);
+  }
+  if (!lines.length) lines.push(escHtml(item.description));
+  const price = item.priceCash > 0 ? `$${item.priceCash.toLocaleString()}` : 'sem preço';
+  const refund = Math.round(item.priceCash * 0.5);
+  const cat = weaponDef ? `Arma · ${escHtml(weaponDef.categoryName)}` : ITEM_TYPE_LABEL[item.type] ?? item.type;
+  weaponTooltip.innerHTML = `
+    <div class="wtip-title">${item.icon} ${escHtml(item.name)}</div>
+    <div class="wtip-cat">${cat}</div>
+    ${lines.map(l => `<div class="wtip-dmg">${l}</div>`).join('')}
+    <div class="wtip-vs">Preço: <b>${price}</b> · vende por <b>$${refund.toLocaleString()}</b></div>
+    ${weaponDef ? comparisonHtml(weaponDef.id) : ''}`;
+  weaponTooltip.style.display = 'block';
+}
+
 function moveWeaponTooltip(x: number, y: number) {
   const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
   const pad = 0.875 * rem;
@@ -786,19 +823,32 @@ document.addEventListener('mouseover', e => {
   // Durante um arrastar de verdade o navegador não envia eventos de mouse; se chegou um com o botão solto, o arrastar já acabou.
   if (weaponDragActive && (e as MouseEvent).buttons === 0) endWeaponDrag();
   if (weaponDragActive) return;
-  const el = (e.target as HTMLElement).closest?.('[data-weapon-id], [data-plus], [data-attr-tip]') as HTMLElement | null;
+  const el = (e.target as HTMLElement).closest?.('[data-bag-tip], [data-weapon-id], [data-plus], [data-attr-tip]') as HTMLElement | null;
   if (!el) return;
-  if (el.hasAttribute('data-plus')) showPlusTooltip(el);
+  if (el.hasAttribute('data-bag-tip')) showBagItemTooltip(el);
+  else if (el.hasAttribute('data-plus')) showPlusTooltip(el);
   else if (el.hasAttribute('data-attr-tip')) showAttrTooltip(el);
   else showWeaponTooltip(el);
   moveWeaponTooltip((e as MouseEvent).clientX, (e as MouseEvent).clientY);
 });
+// As 4 barras trocam para o efeito só com o mouse à ESQUERDA da seta (linha vermelha do fundador); à direita, e no +, nada muda (R-ATRIBUTO-3)
+document.addEventListener('mousemove', e => {
+  const list = document.querySelector('.attr-compact-list');
+  if (!list) return;
+  const arrow = list.querySelector('.attr-c-arrow') as HTMLElement | null;
+  const box = list.getBoundingClientRect();
+  const m = e as MouseEvent;
+  const inside = m.clientX >= box.left && m.clientX <= box.right && m.clientY >= box.top && m.clientY <= box.bottom;
+  const limit = arrow ? arrow.getBoundingClientRect().left + arrow.getBoundingClientRect().width / 2 : box.right;
+  list.classList.toggle('show-eff', inside && m.clientX < limit);
+});
+document.addEventListener('mouseleave', () => document.querySelector('.attr-compact-list')?.classList.remove('show-eff'));
 document.addEventListener('mousemove', e => {
   if (weaponTooltip.style.display === 'none') return;
   moveWeaponTooltip((e as MouseEvent).clientX, (e as MouseEvent).clientY);
 });
 document.addEventListener('mouseout', e => {
-  const el = (e.target as HTMLElement).closest?.('[data-weapon-id], [data-plus], [data-attr-tip]') as HTMLElement | null;
+  const el = (e.target as HTMLElement).closest?.('[data-bag-tip], [data-weapon-id], [data-plus], [data-attr-tip]') as HTMLElement | null;
   if (!el) return;
   const to = (e as MouseEvent).relatedTarget as Node | null;
   if (to && el.contains(to)) return;

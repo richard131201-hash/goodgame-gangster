@@ -157,3 +157,20 @@ describe('atributos: um único "+" simétrico (R-ATRIBUTO-1)', () => {
     expect((html.match(/class="attr-c-arrow"/g) ?? []).length).toBe(4);
   });
 });
+
+describe('balões e troca das barras (R-ATRIBUTO-3, R-MALA-6)', () => {
+  const css = readFileSync(join(process.cwd(), 'src', 'web', 'style.css'), 'utf8').replace(/\r\n/g, '\n');
+  const main = readFileSync(join(process.cwd(), 'src', 'web', 'main.ts'), 'utf8').replace(/\r\n/g, '\n');
+
+  it('a troca das 4 barras só vale à esquerda da seta: depende da classe show-eff, não de :hover', () => {
+    expect(css).toMatch(/\.attr-compact-list\.show-eff \.eff\s*\{[^}]*display:\s*inline/);
+    expect(css).not.toMatch(/\.attr-compact-list:hover/);
+    expect(main).toContain("list.classList.toggle('show-eff'");
+  });
+
+  it('todo item da Mala tem balão ao passar o mouse (tipo, nome, atributos e preço), sem precisar clicar', () => {
+    expect(main).toContain('data-bag-tip="${index}"');
+    expect(main).toContain('function showBagItemTooltip');
+    expect(main).toContain('Preço: <b>');
+  });
+});
