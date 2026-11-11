@@ -72,10 +72,10 @@ Observação: com 7 minutos por ponto, uma missão de 15 energia custa 1h45 de e
 |---|---|---|---|---|---|
 | R-LAYOUT-1 | ~~Margem preta do jogo no desktop (6% de cada lado)~~ **REVOGADA** | O fundador viu e disse que a tela inteira "estava melhor". Substituída pela R-LAYOUT-5 | Fundador, 2026-11-11 | (removida do `style.css`) | `layout.test.ts` garante que não volta |
 | R-LAYOUT-1b | ~~Margem também na tela de login~~ **REVOGADA** | O login voltou a ocupar a tela de ponta a ponta, sem moldura | Fundador, 2026-11-11 | `style.css` | `layout.test.ts` |
-| R-LAYOUT-2 | ~~Sem limite fixo de largura no desktop~~ **REVOGADA** | O #app voltou ao original: centralizado, com largura máxima de 1440 px | Fundador, 2026-11-11 | `style.css` (#app) | `layout.test.ts` |
+| R-LAYOUT-2 | ~~Limite de 1440 px no desktop~~ **SUBSTITUÍDA** pela R-LAYOUT-5 (palco de 1672 px) | O #app agora tem no máximo 1672 px | Fundador, 2026-11-11 | `style.css` (#app) | `layout.test.ts` |
 | R-LAYOUT-3 | Abas em 2 linhas quando faltar espaço | No desktop as 8 abas quebram em 2 linhas, nunca somem atrás de rolagem (mantida; o Perfil em 1 coluna foi removido junto com a margem) | Claude, 2026-11-11 (a confirmar) | `style.css` | `layout.test.ts` |
 | R-LAYOUT-4 | Abaixo de 1024 px (tablet e celular) | Sem margem preta; o layout continua como antes | Claude, 2026-11-11 | `style.css` | medido em 768 px |
-| R-LAYOUT-5 | **Tela cheia, sem margem preta nem moldura** | O jogo e o login ocupam a tela inteira, como antes da margem. O jogo mantém a largura máxima original de 1440 px, centralizada. Para ele ocupar monitores muito largos também, é só pedir | Fundador, 2026-11-11 | `src/web/style.css` | `tests/unit/layout.test.ts` |
+| R-LAYOUT-5 | **Palco do tamanho da imagem do login, preto em volta** | O jogo e o login têm no máximo o tamanho da imagem do login (**1672 x 941 px**). Em telas menores ocupam a tela toda. Em telas maiores o palco fica centralizado e o resto é **preto puro, sem borda, moldura nem sombra**. O fundo da página é preto. Substitui a margem de 6% (R-LAYOUT-1) e o limite de 1440 px (R-LAYOUT-2) | Fundador, 2026-11-11 | `src/web/style.css` (`body`, `#app`, `.auth-screen`, `.auth-frame`) | `tests/unit/layout.test.ts` (inclui conferir que a imagem mede 1672 x 941) |
 
 ## Produto
 

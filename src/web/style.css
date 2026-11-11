@@ -30,22 +30,26 @@
   box-sizing: border-box;
 }
 
+/* PALCO (R-LAYOUT-5): o jogo e o login têm no máximo o tamanho da imagem do login (1672 x 941 px).
+   Em telas menores ocupam a tela toda; em telas maiores o palco fica centralizado e o resto é PRETO, sem borda. */
 body {
   font-family: var(--font-sans);
-  background-color: var(--bg-primary);
+  background-color: #000;
   color: var(--text-main);
   min-height: 100vh;
-  background-image:
-    radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.08) 0%, transparent 60%),
-    radial-gradient(circle at 10% 90%, rgba(231, 76, 60, 0.06) 0%, transparent 40%),
-    radial-gradient(circle at 90% 90%, rgba(52, 152, 219, 0.06) 0%, transparent 40%);
   overflow-x: hidden;
 }
 
 #app {
-  max-width: 1440px;
+  max-width: 1672px;
+  min-height: 100vh;
   margin: 0 auto;
   padding: 16px 24px 60px;
+  background-color: var(--bg-primary);
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.08) 0%, transparent 60%),
+    radial-gradient(circle at 10% 90%, rgba(231, 76, 60, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 90% 90%, rgba(52, 152, 219, 0.06) 0%, transparent 40%);
 }
 
 /* HEADER */
@@ -2815,7 +2819,7 @@ body {
 /* display:none (e não só visibility) para o jogo não alargar a página atrás da tela de conta */
 body.auth-open #app { display: none; }
 
-/* Tela cheia, sem margem (R-LAYOUT-5): a imagem do login ocupa a tela de ponta a ponta. */
+/* Palco (R-LAYOUT-5): a imagem do login tem no máximo 1672 x 941 px, centralizada; acima disso, preto em volta, sem borda. */
 .auth-screen {
   position: fixed;
   inset: 0;
@@ -2826,11 +2830,12 @@ body.auth-open #app { display: none; }
 }
 
 .auth-frame {
-  flex: 1;
+  width: min(100%, 1672px);
+  min-height: min(100%, 941px);
+  margin: auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100%;
   padding: 16px;
   background:
     linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0%, rgba(0, 0, 0, 0.55) 100%),
