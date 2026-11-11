@@ -91,7 +91,29 @@ export function bagEntries(inventory: GameItem[], weaponId: string | null | unde
   return out;
 }
 
-/** Quantos espaços a mochila mostra: no mínimo 12, crescendo de 4 em 4 se houver mais itens. */
-export function bagSlotCount(itemCount: number): number {
-  return Math.max(12, Math.ceil(itemCount / 4) * 4);
+/** Capacidade inicial da mochila (R-MOCHILA-1): 10 itens, em 2 linhas de 5. */
+export const BAG_CAPACITY_INITIAL = 10;
+export const BAG_COLUMNS = 5;
+
+/** Capacidade do jogador: saves antigos não têm o campo e valem a capacidade inicial. */
+export function bagCapacityOf(player: { bagCapacity?: number }): number {
+  return Math.max(BAG_CAPACITY_INITIAL, player.bagCapacity ?? BAG_CAPACITY_INITIAL);
+}
+
+/** Quantos itens estão na mochila (a arma do espaço da arma não conta). */
+export function bagCount(inventory: GameItem[], weaponId: string | null | undefined): number {
+  return bagEntries(inventory, weaponId).length;
+}
+
+/** Ainda cabe mais um item na mochila? */
+export function bagHasRoom(inventory: GameItem[], weaponId: string | null | undefined, capacity: number): boolean {
+  return bagCount(inventory, weaponId) < capacity;
+}
+
+/**
+ * Quantos espaços a mochila mostra: a capacidade (10 no começo), arredondada para linhas de 5.
+ * Se um save antigo tiver itens a mais, mostra todos (nada fica invisível).
+ */
+export function bagSlotCount(itemCount: number, capacity: number = BAG_CAPACITY_INITIAL): number {
+  return Math.max(capacity, Math.ceil(itemCount / BAG_COLUMNS) * BAG_COLUMNS);
 }

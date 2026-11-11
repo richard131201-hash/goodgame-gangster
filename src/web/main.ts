@@ -29,6 +29,14 @@ import {
   type WeaponComparison,
 } from './weaponSlot.js';
 import {
+  attributeInfluence,
+  formatInfluenceValue,
+  formatPerPoint,
+  influenceTitle,
+  type AttrKey,
+  type AttrInfluence,
+} from './attributeInfluence.js';
+import {
   gameState,
   createNewPlayer,
   getStatTrainingCost,
@@ -313,18 +321,12 @@ function renderProfileView() {
   const freeBadge = document.getElementById('free-points-indicator')!;
   freeBadge.style.display = p.freePoints > 0 ? 'inline-block' : 'none';
 
-  // Points values
+  // Pontos de cada atributo (o que cada um influencia aparece no balão ao passar o mouse)
+  attrInfluence = attributeInfluence(input, config);
   document.getElementById('prof-atk-pts')!.textContent = p.points.attack.toString();
-  document.getElementById('prof-atk-effective')!.textContent = `${Math.round(stats.attackPower)} Dano Base`;
-
   document.getElementById('prof-life-pts')!.textContent = p.points.life.toString();
-  document.getElementById('prof-life-effective')!.textContent = `${stats.maxHp} HP Máximo`;
-
   document.getElementById('prof-ast-pts')!.textContent = p.points.astucia.toString();
-  document.getElementById('prof-ast-effective')!.textContent = `${(stats.critChance * 100).toFixed(1)}% Crítico`;
-
   document.getElementById('prof-ten-pts')!.textContent = p.points.tenacidade.toString();
-  document.getElementById('prof-ten-effective')!.textContent = `${(stats.critReduction * 100).toFixed(1)}% Redução`;
 
   // Training costs
   (['attack', 'life', 'astucia', 'tenacidade'] as const).forEach(stat => {
@@ -341,9 +343,9 @@ function renderProfileView() {
   document.getElementById('prof-critbonus-val')!.textContent = `+${Math.round(cMin * 100)}% a +${Math.round(cMax * 100)}%`;
 
   let passivesStr = '';
-  if (p.style === 'carrasco') passivesStr = '⚡ Golpe de Abertura (+10-100%), 🗡️ Execução (-25% Arm.)';
-  else if (p.style === 'muralha') passivesStr = '🛡️ Intimidação (-25%), 🧱 Casca Grossa (x1.4 Ten.)';
-  else passivesStr = '🔄 Adaptação (+0.2%/1% HP), ⚡ Instinto (x1.2 Ast.)';
+  if (p.style === 'carrasco') passivesStr = 'Golpe de Abertura (+10-100%), Execução (-25% Arm.)';
+  else if (p.style === 'muralha') passivesStr = 'Intimidação (-25%), Casca Grossa (x1.4 Ten.)';
+  else passivesStr = 'Adaptação (+0.2%/1% HP), Instinto (x1.2 Ast.)';
   document.getElementById('prof-passives-summary')!.textContent = passivesStr;
 
   // 4. Inventory Slots (12 slots)
@@ -443,7 +445,8 @@ function renderInventoryGrid() {
   if (!grid) return;
 
   const bag = bagEntries(p.inventory, p.equipped.weaponId);
-  const totalSlots = bagSlotCount(bag.length);
+  const capacity = gameState.getBagCapacity();
+  const totalSlots = bagSlotCount(bag.length, capacity);
   let html = '';
 
   for (let i = 0; i < totalSlots; i++) {
@@ -467,7 +470,7 @@ function renderInventoryGrid() {
   }
 
   grid.innerHTML = html;
-  document.getElementById('inv-capacity-count')!.textContent = `${bag.length} / ${totalSlots} slots`;
+  document.getElementById('inv-capacity-count')!.textContent = `${bag.length} / ${capacity} slots${bag.length >= capacity ? ' (cheia)' : ''}`;
 
   grid.querySelectorAll('.inv-slot[data-inv-idx]').forEach(slot => {
     slot.addEventListener('click', () => {
@@ -579,11 +582,43 @@ function moveWeaponTooltip(x: number, y: number) {
 
 let weaponDragActive = false;
 
+/** Influência de cada atributo, recalculada a cada desenho do perfil (usada pelo balão). */
+let attrInfluence: Record<AttrKey, AttrInfluence> | null = null;
+
+function showAttrTooltip(el: HTMLElement) {
+  const key = el.getAttribute('data-attr-tip') as AttrKey | null;
+  if (!key || !attrInfluence) return;
+  const i = attrInfluence[key];
+  const cappedNote = i.capped ? '<div class="wtip-verdict misto">Teto de 50% atingido</div>' : '';
+  const weaponNote =
+    key === 'attack'
+      ? `<div class="wtip-vs">O dano da arma equipada (${damageText(equippedWeaponDef(gameState.getPlayer().equipped.weaponId))}) é somado a este valor.</div>`
+      : '';
+  weaponTooltip.innerHTML = `
+    <div class="wtip-title">${i.label}: ${i.points} pontos</div>
+    <div class="wtip-cat">${i.effect}</div>
+    <div class="wtip-dmg">${influenceTitle(i)}: <b>${formatInfluenceValue(i)}</b></div>
+    <div class="wtip-vs">Cada ponto a mais: <b class="up">${formatPerPoint(i)}</b></div>
+    ${weaponNote}${cappedNote}`;
+  weaponTooltip.style.display = 'block';
+}
+
+/** Encerra o modo "arrastando". O item arrastado some da tela na troca, e o dragend nunca chega: por isso é chamado também no soltar e no mouse. */
+function endWeaponDrag() {
+  weaponDrag = null;
+  weaponDragActive = false;
+  document.body.classList.remove('dragging-weapon');
+  document.querySelectorAll('.dragging, .drop-ok, .drop-bad').forEach(n => n.classList.remove('dragging', 'drop-ok', 'drop-bad'));
+}
+
 document.addEventListener('mouseover', e => {
+  // Durante um arrastar de verdade o navegador não envia eventos de mouse; se chegou um com o botão solto, o arrastar já acabou.
+  if (weaponDragActive && (e as MouseEvent).buttons === 0) endWeaponDrag();
   if (weaponDragActive) return;
-  const el = (e.target as HTMLElement).closest?.('[data-weapon-id]') as HTMLElement | null;
+  const el = (e.target as HTMLElement).closest?.('[data-weapon-id], [data-attr-tip]') as HTMLElement | null;
   if (!el) return;
-  showWeaponTooltip(el);
+  if (el.hasAttribute('data-attr-tip')) showAttrTooltip(el);
+  else showWeaponTooltip(el);
   moveWeaponTooltip((e as MouseEvent).clientX, (e as MouseEvent).clientY);
 });
 document.addEventListener('mousemove', e => {
@@ -591,7 +626,7 @@ document.addEventListener('mousemove', e => {
   moveWeaponTooltip((e as MouseEvent).clientX, (e as MouseEvent).clientY);
 });
 document.addEventListener('mouseout', e => {
-  const el = (e.target as HTMLElement).closest?.('[data-weapon-id]') as HTMLElement | null;
+  const el = (e.target as HTMLElement).closest?.('[data-weapon-id], [data-attr-tip]') as HTMLElement | null;
   if (!el) return;
   const to = (e as MouseEvent).relatedTarget as Node | null;
   if (to && el.contains(to)) return;
@@ -617,12 +652,17 @@ document.addEventListener('dragstart', e => {
   document.body.classList.add('dragging-weapon');
 });
 
-document.addEventListener('dragend', () => {
-  weaponDrag = null;
-  weaponDragActive = false;
-  document.body.classList.remove('dragging-weapon');
-  document.querySelectorAll('.dragging, .drop-ok, .drop-bad').forEach(n => n.classList.remove('dragging', 'drop-ok', 'drop-bad'));
-});
+document.addEventListener('dragend', endWeaponDrag);
+
+/** Guarda a arma na mochila; se estiver cheia, avisa em vez de falhar calado. */
+function tryUnequipWeapon() {
+  if (gameState.getPlayer().equipped.weaponId && !gameState.bagHasRoom()) {
+    alert(`Mochila cheia (${gameState.getBagCount()}/${gameState.getBagCapacity()}). Venda ou use um item para abrir espaço antes de guardar a arma.`);
+    return;
+  }
+  gameState.unequipWeapon();
+  renderProfileView();
+}
 
 function bindWeaponDropZones() {
   const slot = document.getElementById('slot-equipped-weapon');
@@ -648,7 +688,7 @@ function bindWeaponDropZones() {
     slot.classList.remove('drop-ok', 'drop-bad');
     if (weaponDrag && weaponDrag.kind === 'inv') {
       const index = weaponDrag.index;
-      weaponDrag = null;
+      endWeaponDrag();
       gameState.equipWeaponFromBag(index);
       renderProfileView();
     }
@@ -668,16 +708,12 @@ function bindWeaponDropZones() {
     e.preventDefault();
     bagPanel.classList.remove('drop-ok');
     if (weaponDrag && weaponDrag.kind === 'slot') {
-      weaponDrag = null;
-      gameState.unequipWeapon();
-      renderProfileView();
+      endWeaponDrag();
+      tryUnequipWeapon();
     }
   });
 
-  document.getElementById('btn-unequip-weapon')?.addEventListener('click', () => {
-    gameState.unequipWeapon();
-    renderProfileView();
-  });
+  document.getElementById('btn-unequip-weapon')?.addEventListener('click', tryUnequipWeapon);
 }
 bindWeaponDropZones();
 
@@ -765,8 +801,10 @@ function startMissionCombat(mission: MissionDef) {
         if (Math.random() < mission.itemDropChance && mission.possibleDropId) {
           const dropItem = SHOP_ITEMS.find(i => i.id === mission.possibleDropId);
           if (dropItem) {
-            gameState.buyItem({ ...dropItem, priceCash: 0, priceGold: 0 });
-            dropMsg = `<div style="margin-top: 8px; color: #f1c40f;">🎁 Drop de Item Raro: <strong>${dropItem.icon} ${dropItem.name}</strong> adicionado à mochila!</div>`;
+            const coube = gameState.buyItem({ ...dropItem, priceCash: 0, priceGold: 0 });
+            dropMsg = coube
+              ? `<div style="margin-top: 8px; color: #f1c40f;">🎁 Drop de Item Raro: <strong>${dropItem.icon} ${dropItem.name}</strong> adicionado à mochila!</div>`
+              : `<div style="margin-top: 8px; color: #e67e22;">🎁 Caiu <strong>${dropItem.icon} ${dropItem.name}</strong>, mas a mochila está cheia (${gameState.getBagCount()}/${gameState.getBagCapacity()}) e o item foi perdido. Abra espaço antes da próxima missão.</div>`;
           }
         }
 
@@ -963,12 +1001,19 @@ function renderShopView() {
       const item = SHOP_ITEMS.find(i => i.id === id);
       if (!item) return;
 
-      if (gameState.buyItem(item)) {
+      const reason = gameState.buyBlockReason(item);
+      if (reason === null && gameState.buyItem(item)) {
         sound.playCrit();
-        alert(`Você adquiriu ${item.name} com sucesso!`);
+        alert(`Você adquiriu ${item.name}.`);
         renderShopView();
       } else {
-        alert('Você não atende aos requisitos de nível ou fundos para esta compra!');
+        const msg: Record<string, string> = {
+          nivel: `Você precisa do nível ${item.levelReq} para comprar este item.`,
+          ouro: 'Ouro insuficiente para esta compra.',
+          cash: 'Cash insuficiente para esta compra.',
+          mochila: `Mochila cheia (${gameState.getBagCount()}/${gameState.getBagCapacity()}). Venda ou use um item para abrir espaço.`,
+        };
+        alert(msg[reason ?? 'cash']);
       }
     });
   });

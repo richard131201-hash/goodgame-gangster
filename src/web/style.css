@@ -3145,3 +3145,48 @@ body.dragging-weapon .weapon-slot { box-shadow: 0 0 10px rgba(212, 175, 55, 0.35
 .inv-detail-vs .wtip-verdict.melhor { color: #2ecc71; }
 .inv-detail-vs .wtip-verdict.pior { color: #e74c3c; }
 .inv-detail-vs .wtip-verdict.misto { color: #f39c12; }
+
+/* ===================================================== */
+/* PERFIL: ATRIBUTOS COMPACTOS AO LADO DO PERSONAGEM     */
+/* + MOCHILA DE 10 ESPAÇOS (5 POR LINHA)                 */
+/* (R-ATRIB-1, R-ATRIB-2, R-MOCHILA-1)                   */
+/* ===================================================== */
+@media (min-width: 1101px) {
+  .profile-layout-grid {
+    grid-template-columns: 300px 300px minmax(0, 440px);
+    justify-content: start;
+    align-items: start;
+  }
+}
+
+.profile-stats-panel.compact { padding: 14px; }
+.profile-stats-panel.compact .panel-header-banner { padding-bottom: 8px; margin-bottom: 10px; }
+.profile-stats-panel.compact .panel-header-banner h3 { font-size: 15px; }
+
+.attr-compact-list { display: flex; flex-direction: column; gap: 6px; }
+.attr-c-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  cursor: help;
+  transition: border-color 0.15s, background 0.15s;
+}
+.attr-c-row:hover { border-color: #f1c40f; background: rgba(241, 196, 15, 0.06); }
+.attr-c-name { font-size: 13px; font-weight: 700; color: #fff; }
+.attr-c-pts { min-width: 30px; text-align: right; font-size: 16px; font-weight: 800; color: #f1c40f; }
+.attr-c-row .btn-attr-add { padding: 3px 8px; font-size: 12px; }
+.attr-c-row .btn-attr-train { padding: 3px 8px; font-size: 11px; white-space: nowrap; }
+.attr-hint { margin: 8px 0 0; font-size: 11px; line-height: 1.35; color: var(--text-muted); }
+
+.profile-stats-panel.compact .derived-stats-box { grid-template-columns: 1fr; gap: 4px; margin-top: 12px; padding: 10px 12px; }
+.profile-stats-panel.compact .derived-col { font-size: 11px; gap: 8px; }
+.profile-stats-panel.compact .derived-col .d-val { text-align: right; }
+.profile-stats-panel.compact .derived-col-wide { flex-direction: column; gap: 2px; }
+.profile-stats-panel.compact .derived-col-wide .d-val { text-align: left; }
+
+.inventory-slots-grid { grid-template-columns: repeat(5, 1fr); }

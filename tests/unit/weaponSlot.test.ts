@@ -16,6 +16,11 @@ import {
   equippedWeaponDef,
   bagEntries,
   bagSlotCount,
+  bagCapacityOf,
+  bagCount,
+  bagHasRoom,
+  BAG_CAPACITY_INITIAL,
+  BAG_COLUMNS,
   isWeaponItem,
 } from '../../src/web/weaponSlot.js';
 
@@ -103,11 +108,27 @@ describe('a arma equipada fica no espaço da arma, não na mochila (R-ARMA-3)', 
     expect(bagEntries(inv, 'colt_1911').length).toBe(1);
   });
 
-  it('a mochila mostra no mínimo 12 espaços e cresce de 4 em 4 (antes, itens além de 12 ficavam invisíveis)', () => {
-    expect(bagSlotCount(0)).toBe(12);
-    expect(bagSlotCount(12)).toBe(12);
-    expect(bagSlotCount(13)).toBe(16);
-    expect(bagSlotCount(17)).toBe(20);
+  it('a mochila começa com 10 espaços, em linhas de 5; save antigo com itens a mais mostra todos (R-MOCHILA-1)', () => {
+    expect(BAG_CAPACITY_INITIAL).toBe(10);
+    expect(BAG_COLUMNS).toBe(5);
+    expect(bagSlotCount(0)).toBe(10);
+    expect(bagSlotCount(10)).toBe(10);
+    expect(bagSlotCount(11)).toBe(15);
+    expect(bagSlotCount(16)).toBe(20);
+    expect(bagSlotCount(3, 15)).toBe(15);
+  });
+
+  it('capacidade do jogador: 10 por padrão (save antigo sem o campo) e nunca abaixo disso', () => {
+    expect(bagCapacityOf({})).toBe(10);
+    expect(bagCapacityOf({ bagCapacity: 15 })).toBe(15);
+    expect(bagCapacityOf({ bagCapacity: 3 })).toBe(10);
+  });
+
+  it('conta e espaço livre ignoram a arma do espaço da arma', () => {
+    const inv = [item('colt_1911'), item('revolver_38')];
+    expect(bagCount(inv, 'colt_1911')).toBe(1);
+    expect(bagHasRoom(inv, 'colt_1911', 2)).toBe(true);
+    expect(bagHasRoom(inv, null, 2)).toBe(false);
   });
 
   it('só arma é arma', () => {
@@ -252,5 +273,103 @@ describe('trocar e guardar a arma (R-ARMA-3, R-ARMA-5)', () => {
     expect(p.equipped.weaponId).toBe('colt_1911');
     gm.sellItem(equippedInventoryIndex(p.inventory, 'colt_1911'));
     expect(p.equipped.weaponId).toBeNull();
+  });
+});
+
+// ---- mochila de 10 espaços (R-MOCHILA-1) ----
+describe('mochila de 10 espaços (R-MOCHILA-1)', () => {
+  beforeEach(() => {
+    const store = new Map<string, string>();
+    vi.stubGlobal('localStorage', {
+      getItem: (k: string) => store.get(k) ?? null,
+      setItem: (k: string, v: string) => void store.set(k, v),
+      removeItem: (k: string) => void store.delete(k),
+    });
+  });
+
+  async function jogadorRico() {
+    const { GameStateManager, createNewPlayer } = await import('../../src/web/state.js');
+    const { defaultAppearance } = await import('../../src/web/characterOptions.js');
+    const gm = new GameStateManager();
+    Object.assign(gm.getPlayer(), createNewPlayer('Teste', 'carrasco', defaultAppearance(), 'colt_1911'));
+    gm.getPlayer().cash = 10_000_000;
+    gm.getPlayer().gold = 1000;
+    gm.getPlayer().level = 100;
+    return gm;
+  }
+
+  const cons = () => ({ ...SHOP_ITEMS.find(i => i.type === 'consumable')!, priceCash: 0, priceGold: 0 });
+
+  it('começa com capacidade 10', async () => {
+    const gm = await jogadorRico();
+    expect(gm.getBagCapacity()).toBe(10);
+  });
+
+  it('com a mochila cheia, comprar outro item é recusado e nada é cobrado', async () => {
+    const gm = await jogadorRico();
+    while (gm.getBagCount() < 10) expect(gm.buyItem(cons())).toBe(true);
+    expect(gm.getBagCount()).toBe(10);
+    const cashAntes = gm.getPlayer().cash;
+    const potion = SHOP_ITEMS.find(i => i.type === 'consumable' && i.priceCash > 0)!;
+    expect(gm.buyBlockReason(potion)).toBe('mochila');
+    expect(gm.buyItem(potion)).toBe(false);
+    expect(gm.getPlayer().cash).toBe(cashAntes);
+    expect(gm.getBagCount()).toBe(10);
+  });
+
+  it('com a mochila cheia, comprar arma é recusado se já há arma equipada', async () => {
+    const gm = await jogadorRico();
+    while (gm.getBagCount() < 10) gm.buyItem(cons());
+    expect(gm.buyBlockReason(item('tommy_gun'))).toBe('mochila');
+  });
+
+  it('desarmado, a arma comprada vai direto para o espaço da arma, mesmo com a mochila cheia', async () => {
+    const gm = await jogadorRico();
+    gm.unequipWeapon();
+    gm.getPlayer().inventory = gm.getPlayer().inventory.filter(i => i.weaponRefId !== 'colt_1911');
+    while (gm.getBagCount() < 10) gm.buyItem(cons());
+    expect(gm.buyBlockReason(item('tommy_gun'))).toBeNull();
+    expect(gm.buyItem(item('tommy_gun'))).toBe(true);
+    expect(gm.getPlayer().equipped.weaponId).toBe('tommy_gun');
+    expect(gm.getBagCount()).toBe(10);
+  });
+
+  it('com a mochila cheia não dá para guardar a arma (não há onde); liberando um espaço, dá', async () => {
+    const gm = await jogadorRico();
+    while (gm.getBagCount() < 10) gm.buyItem(cons());
+    expect(gm.unequipWeapon()).toBe(false);
+    expect(gm.getPlayer().equipped.weaponId).toBe('colt_1911'); // continua equipada
+    const idx = gm.getPlayer().inventory.findIndex(i => i.type === 'consumable');
+    gm.sellItem(idx);
+    expect(gm.unequipWeapon()).toBe(true);
+    expect(gm.getPlayer().equipped.weaponId).toBeNull();
+  });
+
+  it('trocar a arma arrastando funciona com a mochila cheia (uma sai, outra entra)', async () => {
+    const gm = await jogadorRico();
+    gm.buyItem(item('tommy_gun'));
+    while (gm.getBagCount() < 10) gm.buyItem(cons());
+    const idx = gm.getPlayer().inventory.findIndex(i => i.weaponRefId === 'tommy_gun');
+    expect(gm.equipWeaponFromBag(idx)).toBe(true);
+    expect(gm.getPlayer().equipped.weaponId).toBe('tommy_gun');
+    expect(gm.getBagCount()).toBe(10);
+  });
+
+  it('item que falta dinheiro não gasta ouro (antes cobrava o ouro e falhava no cash)', async () => {
+    const gm = await jogadorRico();
+    const caro = { ...item('revolver_38'), priceGold: 5, priceCash: 99_000_000 };
+    const ouroAntes = gm.getPlayer().gold;
+    expect(gm.buyBlockReason(caro)).toBe('cash');
+    expect(gm.buyItem(caro)).toBe(false);
+    expect(gm.getPlayer().gold).toBe(ouroAntes);
+  });
+
+  it('nível baixo e ouro insuficiente têm motivo próprio', async () => {
+    const gm = await jogadorRico();
+    gm.getPlayer().level = 1;
+    expect(gm.buyBlockReason({ ...item('tommy_gun'), levelReq: 50 })).toBe('nivel');
+    gm.getPlayer().level = 100;
+    gm.getPlayer().gold = 0;
+    expect(gm.buyBlockReason({ ...item('revolver_38'), priceGold: 10 })).toBe('ouro');
   });
 });

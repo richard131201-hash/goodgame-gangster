@@ -66,6 +66,14 @@ Provado no localhost contra o Supabase real (nível 1 no site até a conferênci
 - 25 testes novos (`weaponSlot.test.ts`), total 130.
 - **Pendências:** armadura e acessório ainda não têm arrastar; no celular só funciona pelos botões (arrastar com o dedo não existe); a arma só aparece na mão do personagem quando está equipada.
 
+## Comparação, atributos e mochila (2026-11-11)
+- **Defeito reproduzido e corrigido:** depois de trocar a arma arrastando, o balão de comparação não aparecia mais (o item arrastado some da tela na troca e o aviso de fim do arrastar nunca chegava). Prova: com o código antigo o balão ficou escondido com o mouse sobre uma arma da mochila; com o novo aparece comparando com a nova equipada. Também vale com a mochila cheia.
+- **Painel de atributos compacto** ao lado do personagem, sem emojis (pontos + botões). Balão: Ataque mostra "Dano base: 1.822, cada ponto a mais: +152" e lembra que o dano da arma é somado; Astúcia mostra "chance de crítico 1,2%, +0,12% por ponto". Layout medido em 1.280, 1.101, 1.024 e 390 px, sem rolagem lateral.
+- **Mochila de 10 espaços, 5 por linha:** "4 / 10 slots"; cheia mostra "10 / 10 slots (cheia)"; comprar com a mochila cheia, guardar a arma e o drop de missão têm aviso claro. A troca de arma arrastando funciona com a mochila cheia (mantém 10/10).
+- **Defeito de loja corrigido:** antes, faltando cash, o ouro já era cobrado e perdido. Agora tudo é conferido antes de cobrar.
+- 18 testes novos (8 de atributos, 10 de mochila e compra): total 148.
+- **Não testado:** o defeito do balão só aparece num navegador, então não tem teste automático (a regra de contas tem); celular real (sem arrastar com o dedo); leitor de tela.
+
 ## Layout (2026-11-11)
 - **Atualização final (R-LAYOUT-5):** palco do tamanho da imagem do login (1672 x 941). Medido no navegador: em 1366 px tudo ocupa a tela toda; em 1920 e 2560 px o palco fica centralizado (preto de 124 px e 444 px de cada lado, e 70 px e 250 px em cima e embaixo no login), sem borda, arredondamento nem sombra. 2 testes novos conferem isso, inclusive o tamanho da imagem.
 - **Histórico:** a margem preta descrita abaixo foi **removida a pedido do fundador** (R-LAYOUT-5). O jogo e o login voltaram à tela cheia, sem moldura; o jogo mantém a largura máxima original de 1440 px, centralizada. As medições de 6% abaixo valiam só enquanto a margem existiu.

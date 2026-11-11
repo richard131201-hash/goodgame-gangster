@@ -161,117 +161,71 @@
             </button>
           </div>
 
-          <!-- CENTER: STATS SHEET, EVOLUTION & CASH TRAINING -->
-          <div class="profile-stats-panel">
+          <!-- CENTRO: ATRIBUTOS (compacto, ao lado do personagem). O balão de cada linha mostra o que ele influencia. -->
+          <div class="profile-stats-panel compact">
             <div class="panel-header-banner">
-              <h3>Evolução & Treinamento de Atributos</h3>
+              <h3>Atributos</h3>
               <div class="free-points-badge" id="free-points-indicator">
-                Pontos Livres para Distribuir: <strong id="free-points-val">0</strong>
+                Pontos livres: <strong id="free-points-val">0</strong>
               </div>
             </div>
 
-            <div class="attributes-evolution-table">
-              <!-- ATAQUE -->
-              <div class="attr-row">
-                <div class="attr-meta">
-                  <span class="attr-icon">⚔️</span>
-                  <div class="attr-text-col">
-                    <strong class="attr-title">Ataque Base</strong>
-                    <span class="attr-sub">Dano direto dos golpes</span>
-                  </div>
-                </div>
-                <div class="attr-pts-display">
-                  <span class="attr-pts-total" id="prof-atk-pts">12</span> pts
-                  <span class="attr-calc-val" id="prof-atk-effective">264 Dano</span>
-                </div>
-                <div class="attr-actions">
-                  <button class="btn-attr-add" data-stat="attack" title="Distribuir Ponto Livre">+1</button>
-                  <button class="btn-attr-train" data-train="attack" id="train-btn-attack">
-                    Treinar (<span id="train-cost-attack">$100</span>)
-                  </button>
-                </div>
+            <div class="attr-compact-list">
+              <div class="attr-c-row" data-attr-tip="attack">
+                <span class="attr-c-name">Ataque</span>
+                <span class="attr-c-pts" id="prof-atk-pts">12</span>
+                <button class="btn-attr-add" data-stat="attack" title="Distribuir um ponto livre">+1</button>
+                <button class="btn-attr-train" data-train="attack" id="train-btn-attack" title="Treinar com dinheiro">
+                  Treinar <span id="train-cost-attack">$100</span>
+                </button>
               </div>
 
-              <!-- VIDA -->
-              <div class="attr-row">
-                <div class="attr-meta">
-                  <span class="attr-icon">❤️</span>
-                  <div class="attr-text-col">
-                    <strong class="attr-title">Vida Total</strong>
-                    <span class="attr-sub">Pontos de vida do personagem</span>
-                  </div>
-                </div>
-                <div class="attr-pts-display">
-                  <span class="attr-pts-total" id="prof-life-pts">8</span> pts
-                  <span class="attr-calc-val" id="prof-life-effective">400 HP</span>
-                </div>
-                <div class="attr-actions">
-                  <button class="btn-attr-add" data-stat="life" title="Distribuir Ponto Livre">+1</button>
-                  <button class="btn-attr-train" data-train="life" id="train-btn-life">
-                    Treinar (<span id="train-cost-life">$100</span>)
-                  </button>
-                </div>
+              <div class="attr-c-row" data-attr-tip="life">
+                <span class="attr-c-name">Vida</span>
+                <span class="attr-c-pts" id="prof-life-pts">8</span>
+                <button class="btn-attr-add" data-stat="life" title="Distribuir um ponto livre">+1</button>
+                <button class="btn-attr-train" data-train="life" id="train-btn-life" title="Treinar com dinheiro">
+                  Treinar <span id="train-cost-life">$100</span>
+                </button>
               </div>
 
-              <!-- ASTÚCIA -->
-              <div class="attr-row">
-                <div class="attr-meta">
-                  <span class="attr-icon">🎯</span>
-                  <div class="attr-text-col">
-                    <strong class="attr-title">Astúcia</strong>
-                    <span class="attr-sub">Chance de crítico & iniciativa</span>
-                  </div>
-                </div>
-                <div class="attr-pts-display">
-                  <span class="attr-pts-total" id="prof-ast-pts">10</span> pts
-                  <span class="attr-calc-val" id="prof-ast-effective">33.3% Crítico</span>
-                </div>
-                <div class="attr-actions">
-                  <button class="btn-attr-add" data-stat="astucia" title="Distribuir Ponto Livre">+1</button>
-                  <button class="btn-attr-train" data-train="astucia" id="train-btn-astucia">
-                    Treinar (<span id="train-cost-astucia">$20</span>)
-                  </button>
-                </div>
+              <div class="attr-c-row" data-attr-tip="astucia">
+                <span class="attr-c-name">Astúcia</span>
+                <span class="attr-c-pts" id="prof-ast-pts">10</span>
+                <button class="btn-attr-add" data-stat="astucia" title="Distribuir um ponto livre">+1</button>
+                <button class="btn-attr-train" data-train="astucia" id="train-btn-astucia" title="Treinar com dinheiro">
+                  Treinar <span id="train-cost-astucia">$20</span>
+                </button>
               </div>
 
-              <!-- TENACIDADE -->
-              <div class="attr-row">
-                <div class="attr-meta">
-                  <span class="attr-icon">🛡️</span>
-                  <div class="attr-text-col">
-                    <strong class="attr-title">Tenacidade</strong>
-                    <span class="attr-sub">Mitiga o bônus de crítico sofrido</span>
-                  </div>
-                </div>
-                <div class="attr-pts-display">
-                  <span class="attr-pts-total" id="prof-ten-pts">10</span> pts
-                  <span class="attr-calc-val" id="prof-ten-effective">33.3% Redução</span>
-                </div>
-                <div class="attr-actions">
-                  <button class="btn-attr-add" data-stat="tenacidade" title="Distribuir Ponto Livre">+1</button>
-                  <button class="btn-attr-train" data-train="tenacidade" id="train-btn-tenacidade">
-                    Treinar (<span id="train-cost-tenacidade">$20</span>)
-                  </button>
-                </div>
+              <div class="attr-c-row" data-attr-tip="tenacidade">
+                <span class="attr-c-name">Tenacidade</span>
+                <span class="attr-c-pts" id="prof-ten-pts">10</span>
+                <button class="btn-attr-add" data-stat="tenacidade" title="Distribuir um ponto livre">+1</button>
+                <button class="btn-attr-train" data-train="tenacidade" id="train-btn-tenacidade" title="Treinar com dinheiro">
+                  Treinar <span id="train-cost-tenacidade">$20</span>
+                </button>
               </div>
             </div>
 
-            <!-- DERIVED RATINGS SUMMARY -->
+            <p class="attr-hint">Passe o mouse sobre um atributo para ver o que ele influencia.</p>
+
+            <!-- RESUMO DERIVADO -->
             <div class="derived-stats-box">
               <div class="derived-col">
-                <span class="d-label">Armadura Fixa:</span>
+                <span class="d-label">Armadura fixa</span>
                 <strong class="d-val" id="prof-armor-val">15%</strong>
               </div>
               <div class="derived-col">
-                <span class="d-label">Esquiva Fixa:</span>
+                <span class="d-label">Esquiva fixa</span>
                 <strong class="d-val" id="prof-dodge-val">5%</strong>
               </div>
               <div class="derived-col">
-                <span class="d-label">Bônus de Crítico:</span>
+                <span class="d-label">Bônus de crítico</span>
                 <strong class="d-val" id="prof-critbonus-val">+80% a +120%</strong>
               </div>
-              <div class="derived-col">
-                <span class="d-label">Passivas Ativas:</span>
+              <div class="derived-col derived-col-wide">
+                <span class="d-label">Passivas</span>
                 <strong class="d-val" id="prof-passives-summary">Golpe de Abertura, Execução</strong>
               </div>
             </div>

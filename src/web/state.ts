@@ -4,7 +4,7 @@ import { DEFAULT_CARRASCO, DEFAULT_MURALHA, DEFAULT_MALANDRO } from './paperdoll
 import { SHOP_ITEMS, MAFIA_FAMILIES_LIST, type GameItem } from './gameData.js';
 import { regenEnergy } from './energy.js';
 import { saveKeyFor } from './saveKey.js';
-import { isWeaponItem, equippedInventoryIndex } from './weaponSlot.js';
+import { isWeaponItem, equippedInventoryIndex, bagCapacityOf, bagCount, bagHasRoom } from './weaponSlot.js';
 
 export interface PlayerStatsRecord {
   duelsWon: number;
@@ -27,6 +27,8 @@ export interface PlayerState {
   maxEnergy: number;
   /** Marca de tempo (ms) da última regeneração de energia. Ausente em saves antigos. */
   lastEnergyAt?: number;
+  /** Capacidade da mochila. Ausente em saves antigos = 10 (R-MOCHILA-1). */
+  bagCapacity?: number;
   respect: number;
 
   points: Points; // Total base + level points
@@ -325,14 +327,39 @@ export class GameStateManager {
   // ==========================================
   // INVENTORY & EQUIPMENT
   // ==========================================
+  /** Capacidade da mochila deste jogador (10 no começo, R-MOCHILA-1). */
+  getBagCapacity(): number {
+    return bagCapacityOf(this.player);
+  }
+
+  /** Itens na mochila agora (a arma do espaço da arma não conta). */
+  getBagCount(): number {
+    return bagCount(this.player.inventory, this.player.equipped.weaponId);
+  }
+
+  /** Cabe mais um item? */
+  bagHasRoom(): boolean {
+    return bagHasRoom(this.player.inventory, this.player.equipped.weaponId, this.getBagCapacity());
+  }
+
+  /**
+   * Por que a compra não pode ser feita agora (ou null se pode). A arma que vai direto para o
+   * espaço da arma (espaço vazio) não ocupa lugar na mochila.
+   */
+  buyBlockReason(item: GameItem): 'nivel' | 'ouro' | 'cash' | 'mochila' | null {
+    if (this.player.level < item.levelReq) return 'nivel';
+    if (this.player.gold < item.priceGold) return 'ouro';
+    if (this.player.cash < item.priceCash) return 'cash';
+    const goesToWeaponSlot = isWeaponItem(item) && !this.player.equipped.weaponId;
+    if (!goesToWeaponSlot && !this.bagHasRoom()) return 'mochila';
+    return null;
+  }
+
   buyItem(item: GameItem): boolean {
-    if (this.player.level < item.levelReq) return false;
-    if (item.priceGold > 0) {
-      if (!this.spendGold(item.priceGold)) return false;
-    }
-    if (item.priceCash > 0) {
-      if (!this.spendCash(item.priceCash)) return false;
-    }
+    // Tudo é conferido ANTES de cobrar: nunca gasta ouro e falha depois por falta de cash ou de espaço.
+    if (this.buyBlockReason(item) !== null) return false;
+    if (item.priceGold > 0) this.spendGold(item.priceGold);
+    if (item.priceCash > 0) this.spendCash(item.priceCash);
 
     this.player.inventory.push({ ...item });
 
@@ -400,6 +427,7 @@ export class GameStateManager {
   unequipWeapon(): boolean {
     const current = this.player.equipped.weaponId;
     if (!current) return false;
+    if (!this.bagHasRoom()) return false; // mochila cheia: não há onde guardar
     this.ensureWeaponInBag(current);
     this.player.equipped.weaponId = null;
     this.notify();
