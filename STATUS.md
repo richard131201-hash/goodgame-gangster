@@ -71,6 +71,7 @@ Provado no localhost contra o Supabase real (nível 1 no site até a conferênci
 - **Painel de atributos compacto** ao lado do personagem, sem emojis (pontos + botões). Balão: Ataque mostra "Dano base: 1.822, cada ponto a mais: +152" e lembra que o dano da arma é somado; Astúcia mostra "chance de crítico 1,2%, +0,12% por ponto". Layout medido em 1.280, 1.101, 1.024 e 390 px, sem rolagem lateral.
 - **Mochila de 10 espaços, 5 por linha:** "4 / 10 slots"; cheia mostra "10 / 10 slots (cheia)"; comprar com a mochila cheia, guardar a arma e o drop de missão têm aviso claro. A troca de arma arrastando funciona com a mochila cheia (mantém 10/10).
 - **Defeito de loja corrigido:** antes, faltando cash, o ouro já era cobrado e perdido. Agora tudo é conferido antes de cobrar.
+- **Site no ar (Vercel), verificado (nível 2):** painel compacto sem emojis, mochila "1 / 10 slots" em 5 colunas; troquei a arma arrastando e o balão de comparação apareceu (Colt contra o Revólver equipado). Conta apagada.
 - 18 testes novos (8 de atributos, 10 de mochila e compra): total 148.
 - **Não testado:** o defeito do balão só aparece num navegador, então não tem teste automático (a regra de contas tem); celular real (sem arrastar com o dedo); leitor de tela.
 
