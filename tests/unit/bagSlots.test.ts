@@ -152,8 +152,8 @@ describe('atributos: um único "+" simétrico (R-ATRIBUTO-1)', () => {
   });
 
   it('as linhas são simétricas: mesma altura e colunas fixas (nome | valor | seta | +), como uma tabela', () => {
-    expect(css).toMatch(/\.attr-c-row\s*\{[^}]*grid-template-columns:\s*1fr 3\.5rem 1rem 3\.5rem/);
-    expect(css).toMatch(/\.attr-c-row\s*\{[^}]*height:\s*2\.75rem/);
+    expect(css).toMatch(/\.attr-c-row\s*\{[^}]*grid-template-columns:\s*1fr 3\.5rem 0\.875rem 2\.75rem/);
+    expect(css).toMatch(/\.attr-c-row\s*\{[^}]*height:\s*2\.25rem/);
     expect((html.match(/class="attr-c-arrow"/g) ?? []).length).toBe(4);
   });
 });

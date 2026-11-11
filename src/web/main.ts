@@ -464,6 +464,13 @@ function renderProfileView() {
 
   // Pontos de cada atributo (o que cada um influencia aparece no balão ao passar o mouse)
   attrInfluence = attributeInfluence(input, config);
+  // Texto que aparece NA BARRA quando o mouse passa em qualquer uma das 4 (R-ATRIBUTO-1): dano, HP, crítico e redução
+  const effectLabel = { dano: 'Dano base', hp: 'HP máximo', critico: 'Crítico', reducao: 'Redução' } as const;
+  for (const key of ['attack', 'life', 'astucia', 'tenacidade'] as const) {
+    const inf = attrInfluence[key];
+    document.getElementById(`eff-label-${key}`)!.textContent = effectLabel[inf.kind];
+    document.getElementById(`eff-val-${key}`)!.textContent = formatInfluenceValue(inf);
+  }
   document.getElementById('prof-atk-pts')!.textContent = p.points.attack.toString();
   document.getElementById('prof-life-pts')!.textContent = p.points.life.toString();
   document.getElementById('prof-ast-pts')!.textContent = p.points.astucia.toString();
@@ -621,9 +628,12 @@ function showInventoryItemDetails(index: number) {
   const item = p.inventory[index];
   const detailsBox = document.getElementById('inv-details-card')!;
   if (!item) {
-    detailsBox.innerHTML = '<span class="text-muted" style="font-size: 0.75rem;">Selecione um item da Mala para ver detalhes, equipar ou vender.</span>';
+    // sem item escolhido, a caixa de detalhes some (R-MALA-5)
+    detailsBox.style.display = 'none';
+    detailsBox.innerHTML = '';
     return;
   }
+  detailsBox.style.display = '';
 
   const weaponDef = isWeaponItem(item) ? getWeaponById(item.weaponRefId) : null;
   const isEquipped = !weaponDef && (item.id === p.equipped.armorId || item.id === p.equipped.accessoryId);
@@ -677,7 +687,8 @@ function showInventoryItemDetails(index: number) {
   document.getElementById('btn-sell-inv')?.addEventListener('click', () => {
     gameState.sellItem(index);
     renderProfileView();
-    detailsBox.innerHTML = '<span class="text-muted" style="font-size: 0.75rem;">Item vendido com sucesso!</span>';
+    detailsBox.style.display = 'none';
+    detailsBox.innerHTML = '';
   });
 }
 

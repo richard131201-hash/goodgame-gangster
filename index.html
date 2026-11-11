@@ -171,36 +171,36 @@
             </div>
 
             <div class="attr-compact-list">
-              <div class="attr-c-row" data-attr-tip="attack">
-                <span class="attr-c-name">Ataque</span>
-                <span class="attr-c-pts" id="prof-atk-pts">12</span>
+              <div class="attr-c-row">
+                <span class="attr-c-name"><span class="nrm">Ataque</span><span class="eff" id="eff-label-attack">Ataque</span></span>
+                <span class="attr-c-pts"><span class="nrm" id="prof-atk-pts">0</span><span class="eff" id="eff-val-attack">0</span></span>
                 <span class="attr-c-arrow" aria-hidden="true">▸</span>
                 <button type="button" class="btn-attr-plus" data-plus="attack" aria-label="Aumentar Ataque">+</button>
               </div>
 
-              <div class="attr-c-row" data-attr-tip="life">
-                <span class="attr-c-name">Vida</span>
-                <span class="attr-c-pts" id="prof-life-pts">8</span>
+              <div class="attr-c-row">
+                <span class="attr-c-name"><span class="nrm">Vida</span><span class="eff" id="eff-label-life">Vida</span></span>
+                <span class="attr-c-pts"><span class="nrm" id="prof-life-pts">0</span><span class="eff" id="eff-val-life">0</span></span>
                 <span class="attr-c-arrow" aria-hidden="true">▸</span>
                 <button type="button" class="btn-attr-plus" data-plus="life" aria-label="Aumentar Vida">+</button>
               </div>
 
-              <div class="attr-c-row" data-attr-tip="astucia">
-                <span class="attr-c-name">Astúcia</span>
-                <span class="attr-c-pts" id="prof-ast-pts">10</span>
+              <div class="attr-c-row">
+                <span class="attr-c-name"><span class="nrm">Astúcia</span><span class="eff" id="eff-label-astucia">Astúcia</span></span>
+                <span class="attr-c-pts"><span class="nrm" id="prof-ast-pts">0</span><span class="eff" id="eff-val-astucia">0</span></span>
                 <span class="attr-c-arrow" aria-hidden="true">▸</span>
                 <button type="button" class="btn-attr-plus" data-plus="astucia" aria-label="Aumentar Astúcia">+</button>
               </div>
 
-              <div class="attr-c-row" data-attr-tip="tenacidade">
-                <span class="attr-c-name">Tenacidade</span>
-                <span class="attr-c-pts" id="prof-ten-pts">10</span>
+              <div class="attr-c-row">
+                <span class="attr-c-name"><span class="nrm">Tenacidade</span><span class="eff" id="eff-label-tenacidade">Tenacidade</span></span>
+                <span class="attr-c-pts"><span class="nrm" id="prof-ten-pts">0</span><span class="eff" id="eff-val-tenacidade">0</span></span>
                 <span class="attr-c-arrow" aria-hidden="true">▸</span>
                 <button type="button" class="btn-attr-plus" data-plus="tenacidade" aria-label="Aumentar Tenacidade">+</button>
               </div>
             </div>
 
-            <p class="attr-hint">Passe o mouse sobre um atributo para ver o que ele influencia, e sobre o + para ver o preço.</p>
+            <p class="attr-hint">Passe o mouse nas barras para ver o efeito de cada atributo (dano, HP, crítico e redução) e sobre o + para ver o preço.</p>
 
             <!-- RESUMO DERIVADO -->
             <div class="derived-stats-box">
@@ -234,11 +234,7 @@
               <!-- 12 slots dynamically rendered -->
             </div>
 
-            <p class="inv-hint">Passe o mouse sobre uma arma para comparar com a equipada. Arraste uma arma até o espaço da arma, abaixo do personagem, para equipá-la.</p>
-
-            <div class="inv-item-details-box" id="inv-details-card">
-              <span class="text-muted" style="font-size: 0.75rem;">Selecione um item da Mala para ver detalhes, equipar ou vender.</span>
-            </div>
+            <div class="inv-item-details-box" id="inv-details-card" style="display: none;"></div>
           </div>
 
         </div>
