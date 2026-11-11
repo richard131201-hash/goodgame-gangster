@@ -140,7 +140,7 @@ async function main() {
   rowA2.gold = 200;
   await rest(`/rest/v1/players?id=eq.${A.id}`, { method: 'PATCH', key: SRV, body: { save: rowA2 } });
   const d4 = await api(A.token, { op: 'duel', opponentId: B.id, payGold: true });
-  check('com ouro: paga 125 e duela antes da espera', d4.status === 200 && d4.body.goldSpent === 125 && d4.body.save?.gold === 75, `status ${d4.status}`);
+  check('com ouro: paga 125 e duela antes da espera (200 se o duelo fez subir de nível: +125)', d4.status === 200 && d4.body.goldSpent === 125 && (d4.body.save?.gold === 75 || d4.body.save?.gold === 200), `status ${d4.status}`);
   const meD = await rest('/rest/v1/duels?select=id', { token: B.token });
   check('B (desafiado) vê os duelos no próprio histórico', Array.isArray(meD.json) && meD.json.length === 2);
   const self = await api(A.token, { op: 'duel', opponentId: A.id });

@@ -3,6 +3,7 @@ import balanceJson from '../../config/balance.config.json' with { type: 'json' }
 import { validateConfig } from '../../src/engine/schema.js';
 import { handleOp, type Db, type Ctx, type DuelLogRow } from '../../src/server/handlers.js';
 import { DUEL, LIMITS, maxLevelForAge, STARTER_WEAPON_IDS, type DbPlayerRow } from '../../src/server/rules.js';
+import { goldCap } from '../../src/shared/gold.js';
 import { defaultAppearance } from '../../src/web/characterOptions.js';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -176,7 +177,7 @@ describe('servidor: conferir o save (R-SERVIDOR-3)', () => {
   it('ouro acima do inicial é recusado', async () => {
     const db = await setup();
     const s = saveOf(db);
-    s.gold = LIMITS.goldMax + 1;
+    s.gold = goldCap(1, 0) + 1;
     expect((await send(db, s)).status).toBe(422);
   });
 
@@ -396,8 +397,10 @@ describe('servidor: duelo entre jogadores (R-DUELO-1 a R-DUELO-5)', () => {
     const ok = await pay(t);
     expect(ok.status).toBe(200);
     expect(ok.body.goldSpent).toBe(DUEL.skipCooldownGold);
-    expect(db.rows.get('atk')!.save.gold).toBe(200 - DUEL.skipCooldownGold);
-    expect((ok.body.save as { gold: number }).gold).toBe(75);
+    // o duelo pago pode render XP e subir de nível (+125 de ouro, R-OURO-1)
+    const subiu = (ok.body.rewards as { leveledUp: boolean }).leveledUp ? 125 : 0;
+    expect(db.rows.get('atk')!.save.gold).toBe(200 - DUEL.skipCooldownGold + subiu);
+    expect((ok.body.save as { gold: number }).gold).toBe(75 + subiu);
     expect(db.duels).toHaveLength(2);
   });
 

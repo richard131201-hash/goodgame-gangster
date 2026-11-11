@@ -2,6 +2,7 @@ import type { Points } from '../engine/types.js';
 import { DEFAULT_CARRASCO } from './paperdoll.js';
 import { SHOP_ITEMS, MAFIA_FAMILIES_LIST, type GameItem } from './gameData.js';
 import { regenEnergy } from './energy.js';
+import { GOLD } from '../shared/gold.js';
 import { saveKeyFor } from './saveKey.js';
 import { isWeaponItem, equippedInventoryIndex, bagCapacityOf, bagCount, bagHasRoom } from './weaponSlot.js';
 import {
@@ -116,7 +117,7 @@ export class GameStateManager {
       xp: 0,
       xpToNextLevel: 100,
       cash: 500,
-      gold: 25,
+      gold: GOLD.start,
       energy: 100,
       maxEnergy: 100,
       respect: 0,

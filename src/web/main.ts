@@ -30,6 +30,7 @@ import {
   type DuelReply,
 } from './cloudSync.js';
 import { DUEL, duelBounty } from '../shared/duel.js';
+import { GOLD, rollGoldDrop } from '../shared/gold.js';
 import { playWeaponAttackVisual, clearAllImpacts } from './animations.js';
 import { getWeaponSprite } from './weaponSprites.js';
 import {
@@ -948,6 +949,12 @@ function startMissionCombat(mission: MissionDef) {
           }
         }
 
+        const goldDrop = rollGoldDrop(Math.random);
+        if (goldDrop > 0) {
+          gameState.addGold(goldDrop);
+          dropMsg += `<div style="margin-top: 8px; color: #f1c40f;">🪙 Drop raro: <strong>+${goldDrop} de ouro</strong>!</div>`;
+        }
+
         const leveledUp = gameState.addXp(mission.xpReward);
         gameState.addCash(mission.cashReward);
         gameState.addRespect(15);
@@ -961,7 +968,7 @@ function startMissionCombat(mission: MissionDef) {
             <div style="font-size: 14px; font-weight: 700; color: #f1c40f;">+$${mission.cashReward} Cash Saqueado</div>
             <div style="font-size: 13px; font-weight: 700; color: #e67e22;">+15 Respeito para a Família</div>
             ${dropMsg}
-            ${leveledUp ? '<div style="margin-top: 10px; font-size: 16px; color: #d4af37; font-weight: 900;">⭐ VOCÊ SUBIU DE NÍVEL! (+4 Pontos Livres)</div>' : ''}
+            ${leveledUp ? '<div style="margin-top: 10px; font-size: 16px; color: #d4af37; font-weight: 900;">⭐ VOCÊ SUBIU DE NÍVEL! (+4 Pontos Livres, +' + GOLD.perLevel + ' de ouro)</div>' : ''}
           `
         );
       } else {

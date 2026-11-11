@@ -1,6 +1,7 @@
 import type { StyleId, Points } from '../engine/types.js';
 import type { CharacterAppearance } from '../web/paperdoll.js';
 import { SHOP_ITEMS, type GameItem } from '../web/gameData.js';
+import { GOLD } from './gold.js';
 
 /**
  * Modelo do jogador e contas puras (sem tela, sem navegador).
@@ -99,7 +100,7 @@ export function createNewPlayer(
     xp: 0,
     xpToNextLevel: calculateXpForLevel(1),
     cash: 500,
-    gold: 25,
+    gold: GOLD.start,
     energy: 100,
     maxEnergy: 100,
     respect: 0,
@@ -129,8 +130,8 @@ export function createNewPlayer(
 }
 
 /**
- * Soma XP ao jogador e sobe de nível quantas vezes couber (4 pontos livres, energia cheia e
- * bônus de cash por nível). Retorna true se subiu de nível. Não salva nem avisa ninguém.
+ * Soma XP ao jogador e sobe de nível quantas vezes couber (4 pontos livres, energia cheia,
+ * bônus de cash e 125 de ouro por nível). Retorna true se subiu de nível. Não salva nem avisa ninguém.
  */
 export function applyXp(p: PlayerState, amount: number): boolean {
   p.xp += amount;
@@ -141,6 +142,7 @@ export function applyXp(p: PlayerState, amount: number): boolean {
     p.freePoints += POINTS_PER_LEVEL;
     p.energy = p.maxEnergy; // Refill energy on level up
     p.cash += p.level * 150; // Level up cash bonus
+    p.gold += GOLD.perLevel; // 125 de ouro por nível (R-OURO-1)
     p.xpToNextLevel = calculateXpForLevel(p.level);
     leveledUp = true;
   }

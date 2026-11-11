@@ -6,6 +6,7 @@ import { getWeaponById, WEAPONS_CATALOG, FISTS } from '../engine/weapons.js';
 import { SHOP_ITEMS, MAFIA_FAMILIES_LIST } from '../web/gameData.js';
 import type { CharacterAppearance } from '../web/paperdoll.js';
 import { DUEL, duelBounty } from '../shared/duel.js';
+import { goldCap } from '../shared/gold.js';
 import { validateCharacterName, cleanCharacterName } from '../web/authRules.js';
 import {
   applyXp,
@@ -51,7 +52,6 @@ export const LIMITS = {
   cashSlack: 20000,
   cashPerMission: 2500,
   /** Ouro não tem fonte no jogo ainda: nunca passa do inicial. */
-  goldMax: 25,
   /** Itens na mochila (inclui a arma equipada). */
   inventoryMax: 40,
   bagCapacity: 10,
@@ -246,7 +246,7 @@ export function validateSave(db: DbPlayerRow, raw: unknown, now: number): SaveRe
   }
 
   // Dinheiro
-  if (n.gold > LIMITS.goldMax) return { ok: false, reason: 'ouro acima do possível' };
+  if (n.gold > goldCap(n.level, missions)) return { ok: false, reason: 'ouro acima do possível' };
   const cashCap =
     LIMITS.cashSlack +
     LIMITS.cashPerMission * (missions + 1) +
