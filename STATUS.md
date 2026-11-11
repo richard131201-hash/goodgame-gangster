@@ -49,6 +49,7 @@ Provado no localhost contra o Supabase real (nível 1 no site; as contas de test
 
 ## Layout (2026-11-11)
 - Margem preta de **6% de cada lado** e 2% em cima e embaixo no desktop (a partir de 1024 px); medida no navegador em 1024, 1280, 1366, 1440, 1920 e 2560 px: sempre 6,00%, sem rolagem lateral, sem aba cortada (2 linhas até 1440 px, 1 linha em 1920 px ou mais). Em 768 px nada mudou. 4 testes automáticos em `layout.test.ts`.
+- **Tela de login com a mesma margem (2026-11-11):** moldura medida em 1024, 1366, 1920 e 2560 px: 6,00% de cada lado e 2% em cima, com o cartão de login dentro da moldura e sem rolagem lateral. Em 390 px (celular) a imagem continua de ponta a ponta, sem rolagem. Observação do teste: uma primeira medição deu zero porque havia uma sessão antiga no navegador (a tela de login estava fechada); refeita com o armazenamento limpo.
 - Antes, a barra de 8 abas já ficava cortada atrás de rolagem em telas médias (ela precisa de 1472 px); agora quebra em 2 linhas.
 - **Não verificado:** celular real, monitores com zoom do sistema acima de 100%, Safari e Firefox (testei só no navegador do app).
 

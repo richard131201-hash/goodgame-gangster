@@ -22,6 +22,17 @@ describe('margem preta do desktop (R-LAYOUT-1)', () => {
     expect(bloco).toMatch(/body\s*\{[^}]*background-color:\s*#000/);
   });
 
+  it('a tela de login também usa a mesma margem (moldura da imagem)', () => {
+    const idx = css.indexOf('.auth-frame {');
+    expect(idx).toBeGreaterThan(-1);
+    const bloco = css.slice(css.indexOf('@media (min-width: 1024px)', idx));
+    expect(bloco).toContain('padding: var(--game-margin-v) var(--game-margin)');
+    // a imagem fica na moldura, não na tela inteira
+    const tela = css.slice(css.indexOf('.auth-screen {'), css.indexOf('.auth-frame {'));
+    expect(tela).not.toContain('login-bg.webp');
+    expect(css.slice(css.indexOf('.auth-frame {'))).toContain("login-bg.webp");
+  });
+
   it('não há limite fixo de largura no #app do desktop (a margem é sempre em %)', () => {
     const bloco = css.slice(css.indexOf('@media (min-width: 1024px)'));
     expect(bloco).toMatch(/max-width:\s*none/);

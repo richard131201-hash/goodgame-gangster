@@ -2815,19 +2815,41 @@ body {
 /* display:none (e não só visibility) para o jogo não alargar a página atrás da tela de conta */
 body.auth-open #app { display: none; }
 
+/* A tela cobre tudo com preto; a imagem fica dentro da moldura (.auth-frame),
+   para a margem preta do desktop (R-LAYOUT-1) valer também no login. */
 .auth-screen {
   position: fixed;
   inset: 0;
   z-index: 10000;
   display: flex;
+  overflow-y: auto;
+  background: #000;
+}
+
+.auth-frame {
+  flex: 1;
+  display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 100%;
   padding: 16px;
-  overflow-y: auto;
   background:
     linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0%, rgba(0, 0, 0, 0.55) 100%),
     url('/assets/login-bg.webp') center / cover no-repeat,
     var(--bg-primary);
+}
+
+@media (min-width: 1024px) {
+  .auth-screen {
+    padding: var(--game-margin-v) var(--game-margin);
+  }
+
+  .auth-frame {
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
+    overflow: hidden;
+  }
 }
 
 .auth-card {
