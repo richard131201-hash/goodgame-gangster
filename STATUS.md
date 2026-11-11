@@ -57,7 +57,8 @@ Provado no localhost contra o Supabase real (nível 1 no site até a conferênci
 - **Layout:** celular (390 px) sem rolagem lateral e cartão dentro da tela; 1024 px com margem de 6% e cartão dentro da moldura.
 - **Variedade:** 270.950.400 combinações de visual (masc.) e 28.672.000 (fem.). Teste automático prova que **nenhuma opção cai no desenho de outra** (antes só 3 trajes eram distintos e "ondas" saía igual a "desgrenhado").
 - **Pendências achadas:** o botão "Personalizar Visual do Gangster" do perfil não faz nada (sem função no código) → tarefa C13. "Esqueci a senha" não existe → E5. Nome único só com o banco (D2c). A pasta `C:\RODRIG~1` foi criada por mim por engano (arquivo de teste de 2 bytes) e a remoção foi bloqueada por segurança: o fundador precisa apagar.
-- **Não verificado:** celular real, Safari/Firefox, leitor de tela, e o fluxo no site da Vercel (a verificar após publicar).
+- **Site no ar (Vercel), verificado em 2026-11-11 (nível 2):** repeti o fluxo inteiro em https://mobster-rise.vercel.app/ (Novo por aqui → personagem com cacheado, van dyke, jaqueta de couro, chapéu coco, monóculo, fundo Porto, Muralha → conta → jogo; depois sair e entrar). Save da conta bateu com as escolhas, margem do jogo 6%, nenhum erro de console. Conta de teste apagada (0 contas).
+- **Não verificado:** celular real, Safari/Firefox, leitor de tela.
 
 ## Layout (2026-11-11)
 - Margem preta de **6% de cada lado** e 2% em cima e embaixo no desktop (a partir de 1024 px); medida no navegador em 1024, 1280, 1366, 1440, 1920 e 2560 px: sempre 6,00%, sem rolagem lateral, sem aba cortada (2 linhas até 1440 px, 1 linha em 1920 px ou mais). Em 768 px nada mudou. 4 testes automáticos em `layout.test.ts`.

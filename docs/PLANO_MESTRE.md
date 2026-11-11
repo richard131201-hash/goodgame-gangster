@@ -5,7 +5,7 @@
 ## Onde estamos
 
 - Tarefas: **36** em **6** etapas
-- Feitas: **17** (com nível 2 ou mais registrado: **4**)
+- Feitas: **17** (com nível 2 ou mais registrado: **5**)
 - Em andamento: **0**
 - Liberadas para começar: **8**
 - Bloqueadas por outra tarefa ou etapa: **11**
@@ -58,7 +58,7 @@
 
 | ID | Tarefa | Dono | Estado | Quando |
 |---|---|---|---|---|
-| D2e | Fluxo de entrada em 3 telas (Entrar / Crie seu personagem / Sua conta) com criador de variedade real: o jogador monta o personagem, nada é sorteado (nível 1) | CLAUDE | ✅ FEITO | Feito em 2026-11-11; provado no localhost com o Supabase real. Falta conferir no site da Vercel |
+| D2e | Fluxo de entrada em 3 telas (Entrar / Crie seu personagem / Sua conta) com criador de variedade real: o jogador monta o personagem, nada é sorteado (nível 2) | CLAUDE | ✅ FEITO | Feito em 2026-11-11: provado no localhost e também no site da Vercel (conta criada pelo fluxo, personagem escolhido no save, sair e entrar), com a conta de teste apagada |
 | D0a | Criar conta e projeto no Supabase (2FA), rodar a migração 001 no SQL Editor e colocar as chaves em .env.local e na Vercel. Nunca no chat (passo a passo no chat) (nível 2) | FUNDADOR | ✅ FEITO | Feito em 2026-11-11: variáveis VITE_ na Vercel confirmadas no site no ar. A chave secreta fica fora da Vercel até a etapa D2c |
 | D1 | Arquitetura Supabase (docs/arquitetura/BANCO_DE_DADOS.md) com cenários de custo e recomendação (nível 0) | CLAUDE + FUNDADOR | ✅ FEITO | Aprovado em 2026-11-11 com as recomendações (login e-mail e senha primeiro; Google depois; saves locais descartados; lógica nas funções da Vercel) |
 | D2a | Migração 001 (tabela de jogadores, RLS, visão pública) em supabase/migrations. Pronto = rodou no projeto real e o teste de RLS prova que um jogador não lê nem grava dado de outro (nível 2) | CLAUDE | ✅ FEITO | Feito em 2026-11-11: 15 de 15 verificações de segurança passaram no banco real (npm run test:rls) |
