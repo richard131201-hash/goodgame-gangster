@@ -4,13 +4,15 @@ import { join } from 'node:path';
 import { WEAPONS_CATALOG } from '../../src/engine/weapons.js';
 import { SHOP_ITEMS } from '../../src/web/gameData.js';
 import { getWeaponSprite } from '../../src/web/weaponSprites.js';
-import { FICHA_ICON_URL, MISSIONS_ICON_URL, WEAPON_ART, weaponArtImg, weaponArtUrl } from '../../src/web/weaponArt.js';
+import { FICHA_ICON_URL, MISSIONS_ICON_URL, WEAPON_ART_IDS, WEAPON_FRAME, weaponArtImg, weaponArtUrl, weaponFrame } from '../../src/web/weaponArt.js';
 
 const pub = (url: string) => join(process.cwd(), 'public', url.replace(/^\//, ''));
 
 describe('arte das armas (R-ARTE-1)', () => {
   it('cada imagem existe, é WebP com transparência e é leve', () => {
-    for (const [id, url] of Object.entries(WEAPON_ART).concat([['chapeu', MISSIONS_ICON_URL], ['ficha', FICHA_ICON_URL]])) {
+    const todas: [string, string][] = [['chapeu', MISSIONS_ICON_URL], ['ficha', FICHA_ICON_URL]];
+    for (const id of WEAPON_ART_IDS) for (const f of ['comum', 'epico'] as const) todas.push([`${id}.${f}`, weaponArtUrl(id, f)!]);
+    for (const [id, url] of todas) {
       const caminho = pub(url);
       expect(existsSync(caminho), `${id}: ${url}`).toBe(true);
       const b = readFileSync(caminho);
@@ -23,8 +25,9 @@ describe('arte das armas (R-ARTE-1)', () => {
   });
 
   it('só há imagem para armas que existem no catálogo, e as 5 do fundador estão ligadas', () => {
-    for (const id of Object.keys(WEAPON_ART)) expect(WEAPONS_CATALOG.some(w => w.id === id), id).toBe(true);
-    expect(Object.keys(WEAPON_ART).sort()).toEqual(['bar_1918', 'colt_1911', 'pump_trench', 'springfield_1903', 'tommy_gun']);
+    for (const id of WEAPON_ART_IDS) expect(WEAPONS_CATALOG.some(w => w.id === id), id).toBe(true);
+    expect([...WEAPON_ART_IDS].sort()).toEqual(['bar_1918', 'colt_1911', 'pump_trench', 'springfield_1903', 'tommy_gun']);
+    for (const id of Object.keys(WEAPON_FRAME)) expect(WEAPON_ART_IDS.includes(id), id).toBe(true);
   });
 
   it('arma sem imagem devolve vazio (cai no desenho vetorial); com imagem devolve <img> que não atrapalha o arrastar', () => {
@@ -32,9 +35,29 @@ describe('arte das armas (R-ARTE-1)', () => {
     expect(weaponArtImg('revolver_38')).toBe('');
     expect(weaponArtUrl(null)).toBeNull();
     const html = weaponArtImg('colt_1911', 'inv-art');
-    expect(html).toContain('src="/assets/weapons/colt_1911.webp"');
+    expect(html).toContain('src="/assets/weapons/colt_1911.comum.webp"');
     expect(html).toContain('draggable="false"');
     expect(html).toContain('inv-art');
+  });
+});
+
+describe('molduras das armas no estilo do Goodgame antigo (R-ARTE-2)', () => {
+  it('cada arma tem a versão comum (borda preta) e a épica (borda branca e brilho vermelho); a épica não é menor que a comum', async () => {
+    for (const id of WEAPON_ART_IDS) {
+      const c = readFileSync(pub(weaponArtUrl(id, 'comum')!));
+      const e = readFileSync(pub(weaponArtUrl(id, 'epico')!));
+      expect(e.length, id).toBeGreaterThan(c.length); // o brilho acrescenta pixels
+    }
+  });
+
+  it('a moldura padrão é a comum; só as armas marcadas usam a épica', () => {
+    expect(weaponFrame('colt_1911')).toBe('comum');
+    expect(weaponFrame('arma_que_nao_existe')).toBe('comum');
+    for (const [id, f] of Object.entries(WEAPON_FRAME)) {
+      expect(f).toBe('epico');
+      expect(weaponArtUrl(id)).toBe(`/assets/weapons/${id}.epico.webp`);
+    }
+    expect(weaponArtUrl('bar_1918', 'comum')).toBe('/assets/weapons/bar_1918.comum.webp');
   });
 });
 

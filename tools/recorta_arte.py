@@ -1,3 +1,4 @@
+# ATENCAO: as ARMAS agora sao geradas por tools/recorta_armas.py (2 versoes por arma). Este script ficou so para icones (chapeu).
 # Recorta imagens de arma/ícone enviadas com o "xadrez de transparente" gravado no JPG e salva em WebP com transparência.
 # Uso: python -I tools/recorta_arte.py (os arquivos de origem ficam em Downloads; veja FILES). Ver R-ARTE-1.
 import glob, os, sys
