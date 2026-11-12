@@ -153,3 +153,16 @@ describe('tela da Mala e da loja (R-MALA-7, R-MALA-8, R-ARMA-7, R-SLOT-1)', () =
     expect(main).toContain('tryUnequipGear(slotName)');
   });
 });
+
+describe('slot vazio da Mala: carimbo VAZIO (R-MALA-9)', () => {
+  it('o slot vazio mostra o carimbo "VAZIO" torto, sem px, e sem texto no HTML', () => {
+    const css = readFileSync(join(process.cwd(), 'src/web/style.css'), 'utf8');
+    const i = css.indexOf('.inv-slot.empty::after');
+    expect(i).toBeGreaterThan(0);
+    const bloco = css.slice(i, css.indexOf('}', i));
+    expect(bloco).toContain("content: 'VAZIO'");
+    expect(bloco).toContain('rotate(-8deg)');
+    expect(bloco).toContain('dashed');
+    expect(bloco).not.toMatch(/\dpx/);
+  });
+});
