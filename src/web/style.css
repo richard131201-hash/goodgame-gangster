@@ -4063,3 +4063,18 @@ html[data-skin="bege"] .game-nav-tab .ico-img.ico-ficha, html[data-skin="bege"] 
 .profile-stats-panel.compact .panel-header-banner h3 { display: none; }
 .profile-stats-panel.compact .panel-header-banner { border-bottom: 0; padding-bottom: 0; margin-bottom: 0.45rem; justify-content: center; }
 .profile-stats-panel.compact .attr-compact-list { border-top: 0; }
+
+/* Ficha compacta (R-LAYOUT-12): os 3 cards da esquerda encolhem ~12% e o Equipamento mantém o tamanho dos slots (8,5 x 6,37 rem,
+   largura fixa de 37,8 rem); só o respiro em volta do Equipamento e da pasta diminui. A pasta fica uns 2 rem mais baixa. */
+.profile-layout-grid { grid-template-columns: 14.96rem 13.64rem 14.96rem 37.8rem; }
+#app[data-tab="perfil"] .stack > .folder { padding: 0.6rem 1.2rem 0.7rem; }
+.profile-gear-panel { padding: 0.5rem 0.9rem; }
+.profile-gear-panel .panel-header-banner { padding-bottom: 0.3rem; margin-bottom: 0.4rem; }
+.profile-doll-panel { padding: 0.8rem; }
+.doll-caption { font-size: 0.7rem; }
+.profile-stats-panel.compact { padding: 0.8rem; }
+.profile-weapon-panel { padding: 0.8rem; }
+.attr-c-row { grid-template-columns: 1fr 3.5rem 0.7rem 2.3rem; height: 2.07rem; }
+.attr-c-name { font-size: 0.86rem; }
+.attr-c-pts { font-size: 1.4rem; }
+.btn-attr-plus { width: 2.3rem; height: 1.28rem; font-size: 1.05rem; }
