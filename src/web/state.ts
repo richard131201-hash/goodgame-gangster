@@ -239,9 +239,14 @@ export class GameStateManager {
     return bagCapacityOf(this.player);
   }
 
-  /** Itens na mochila agora (a arma do espaço da arma não conta). */
+  /** Ids dos itens do Equipamento que estão equipados (eles não ocupam lugar na Mala, R-MALA-7). */
+  equippedGearIds(): string[] {
+    return Object.values(this.player.equipped.gear ?? {}).filter((id): id is string => !!id);
+  }
+
+  /** Itens na Mala agora (a arma do espaço da arma e os itens equipados não contam). */
   getBagCount(): number {
-    return bagCount(this.player.inventory, this.player.equipped.weaponId);
+    return bagCount(this.player.inventory, this.player.equipped.weaponId, this.equippedGearIds());
   }
 
   /** Quantos slots a Mala mostra agora. */
@@ -251,7 +256,7 @@ export class GameStateManager {
 
   /** Onde cada item aparece na Mala (R-MALA-4): um valor por slot, o item ou null. */
   getBagLayout() {
-    return bagLayout(this.player.inventory, this.player.equipped.weaponId, this.getBagSlotCount());
+    return bagLayout(this.player.inventory, this.player.equipped.weaponId, this.getBagSlotCount(), this.equippedGearIds());
   }
 
   /** Primeiro slot vazio (ou undefined se a Mala está cheia). */
@@ -283,29 +288,27 @@ export class GameStateManager {
 
   /** Cabe mais um item? */
   bagHasRoom(): boolean {
-    return bagHasRoom(this.player.inventory, this.player.equipped.weaponId, this.getBagCapacity());
+    return bagHasRoom(this.player.inventory, this.player.equipped.weaponId, this.getBagCapacity(), this.equippedGearIds());
   }
 
   /**
-   * Por que a compra não pode ser feita agora (ou null se pode). A arma que vai direto para o
-   * espaço da arma (espaço vazio) não ocupa lugar na mochila.
+   * Por que a compra não pode ser feita agora (ou null se pode). Todo item comprado vai primeiro para a Mala,
+   * então precisa haver espaço (R-MALA-7).
    */
   buyBlockReason(item: GameItem): 'nivel' | 'ouro' | 'cash' | 'mochila' | null {
     if (this.player.level < item.levelReq) return 'nivel';
     if (this.player.gold < item.priceGold) return 'ouro';
     if (this.player.cash < item.priceCash) return 'cash';
-    const goesToWeaponSlot = isWeaponItem(item) && !this.player.equipped.weaponId;
-    if (!goesToWeaponSlot && !this.bagHasRoom()) return 'mochila';
+    if (!this.bagHasRoom()) return 'mochila';
     return null;
   }
 
   /**
    * Item que o jogador GANHA (drop de missão, chefão): sem preço e sem exigir nível, só precisa de espaço na Mala (R-DROP-1).
-   * O nível mínimo vale para usar o item, não para recebê-lo.
+   * O nível mínimo vale para usar o item, não para recebê-lo. Vai sempre para a Mala (R-MALA-7).
    */
   grantItem(item: GameItem): boolean {
-    const goesToWeaponSlot = isWeaponItem(item) && !this.player.equipped.weaponId;
-    if (!goesToWeaponSlot && !this.bagHasRoom()) return false;
+    if (!this.bagHasRoom()) return false;
     this.placeItem(item);
     return true;
   }
@@ -319,18 +322,9 @@ export class GameStateManager {
     return true;
   }
 
-  /** Coloca o item na Mala (primeiro slot vazio) e equipa sozinho o que couber em espaço vazio. */
+  /** Coloca o item na Mala, no primeiro slot vazio. NUNCA equipa sozinho: tudo vai primeiro para a Mala (R-MALA-7). */
   private placeItem(item: GameItem): void {
     this.player.inventory.push({ ...item, slot: this.firstEmptySlot() });
-
-    // Arma nova só é equipada sozinha se o espaço da arma estiver vazio (R-ARMA-5);
-    // senão vai para a mochila e o jogador decide arrastando.
-    if (item.type === 'weapon' && item.weaponRefId) {
-      if (!this.player.equipped.weaponId) this.player.equipped.weaponId = item.weaponRefId;
-    } else if (isGearItem(item) && !this.player.equipped.gear[item.gear.slot]) {
-      this.player.equipped.gear[item.gear.slot] = item.id;
-    }
-
     this.notify();
   }
 
@@ -409,9 +403,22 @@ export class GameStateManager {
     return true;
   }
 
-  unequipGear(slot: ItemSlot) {
+  /**
+   * Guarda na Mala o item equipado do slot (volta a ocupar lugar). Devolve 'sem_espaco' se a Mala está cheia,
+   * 'vazio' se o slot não tem item, ou 'ok'. `targetSlot` = posição da Mala onde ele deve ficar (opcional).
+   */
+  unequipGear(slot: ItemSlot, targetSlot?: number): 'ok' | 'sem_espaco' | 'vazio' {
+    const id = this.player.equipped.gear[slot];
+    if (!id) return 'vazio';
+    if (!this.bagHasRoom()) return 'sem_espaco';
     delete this.player.equipped.gear[slot];
+    const idx = this.player.inventory.findIndex(i => i.id === id);
+    if (idx >= 0) {
+      delete this.player.inventory[idx].slot; // posição antiga pode estar ocupada: acha o primeiro vazio
+      if (targetSlot !== undefined) this.moveBagItem(idx, targetSlot);
+    }
     this.notify();
+    return 'ok';
   }
 
   /** Item de loja de um dos 8 slots que está equipado agora (ou undefined). */

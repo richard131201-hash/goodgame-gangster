@@ -81,12 +81,18 @@ export interface BagEntry {
   index: number;
 }
 
-/** O que aparece na mochila: tudo, menos a cópia da arma que está no espaço da arma. */
-export function bagEntries(inventory: GameItem[], weaponId: string | null | undefined): BagEntry[] {
+/**
+ * O que aparece na Mala: tudo, menos a cópia da arma que está no espaço da arma e os itens do Equipamento que estão
+ * equipados (R-MALA-7: o que está equipado não ocupa lugar na Mala). `gearIds` = ids dos itens equipados nos 8 slots.
+ */
+export function bagEntries(inventory: GameItem[], weaponId: string | null | undefined, gearIds: readonly string[] = []): BagEntry[] {
   const hidden = equippedInventoryIndex(inventory, weaponId);
+  const equippedGear = new Set(gearIds);
   const out: BagEntry[] = [];
   inventory.forEach((item, index) => {
-    if (index !== hidden) out.push({ item, index });
+    if (index === hidden) return;
+    if (item.type === 'gear' && equippedGear.has(item.id)) return;
+    out.push({ item, index });
   });
   return out;
 }
@@ -101,13 +107,13 @@ export function bagCapacityOf(player: { bagCapacity?: number }): number {
 }
 
 /** Quantos itens estão na mochila (a arma do espaço da arma não conta). */
-export function bagCount(inventory: GameItem[], weaponId: string | null | undefined): number {
-  return bagEntries(inventory, weaponId).length;
+export function bagCount(inventory: GameItem[], weaponId: string | null | undefined, gearIds: readonly string[] = []): number {
+  return bagEntries(inventory, weaponId, gearIds).length;
 }
 
 /** Ainda cabe mais um item na mochila? */
-export function bagHasRoom(inventory: GameItem[], weaponId: string | null | undefined, capacity: number): boolean {
-  return bagCount(inventory, weaponId) < capacity;
+export function bagHasRoom(inventory: GameItem[], weaponId: string | null | undefined, capacity: number, gearIds: readonly string[] = []): boolean {
+  return bagCount(inventory, weaponId, gearIds) < capacity;
 }
 
 /**
@@ -119,10 +125,11 @@ export function bagLayout(
   inventory: GameItem[],
   weaponId: string | null | undefined,
   totalSlots: number,
+  gearIds: readonly string[] = [],
 ): (BagEntry | null)[] {
   const cells: (BagEntry | null)[] = Array.from({ length: totalSlots }, () => null);
   const pending: BagEntry[] = [];
-  for (const entry of bagEntries(inventory, weaponId)) {
+  for (const entry of bagEntries(inventory, weaponId, gearIds)) {
     const s = entry.item.slot;
     if (typeof s === 'number' && Number.isInteger(s) && s >= 0 && s < totalSlots && cells[s] === null) cells[s] = entry;
     else pending.push(entry);
@@ -140,8 +147,9 @@ export function firstEmptyBagSlot(
   inventory: GameItem[],
   weaponId: string | null | undefined,
   totalSlots: number,
+  gearIds: readonly string[] = [],
 ): number {
-  return bagLayout(inventory, weaponId, totalSlots).indexOf(null);
+  return bagLayout(inventory, weaponId, totalSlots, gearIds).indexOf(null);
 }
 
 /**

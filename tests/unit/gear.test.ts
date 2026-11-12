@@ -147,7 +147,7 @@ describe('comprar e equipar no jogo (R-ITEM-2)', () => {
     return gm;
   }
 
-  it('compra cobra o preço, põe na Mala, equipa sozinho se o slot está vazio e muda o estoque', async () => {
+  it('compra cobra o preço, põe na Mala (NÃO equipa sozinho) e muda o estoque', async () => {
     const gm = await jogador();
     const antes = gm.getShopStock();
     const alvo = antes.find(i => i.gear!.slot === 'chapeu')!;
@@ -155,7 +155,8 @@ describe('comprar e equipar no jogo (R-ITEM-2)', () => {
     expect(gm.buyGearFromStock(alvo.id)).toBeNull();
     expect(gm.getPlayer().cash).toBe(cash - alvo.priceCash);
     expect(gm.getPlayer().inventory.some(i => i.id === alvo.id)).toBe(true);
-    expect(gm.getPlayer().equipped.gear.chapeu).toBe(alvo.id);
+    expect(gm.getPlayer().equipped.gear.chapeu).toBeUndefined(); // vai primeiro para a Mala (R-MALA-7)
+    expect(gm.getBagCount()).toBe(2); // uísque + o item novo (o Colt equipado não conta)
     expect(gm.getShopStock()).not.toEqual(antes);
     expect(gm.buyGearFromStock(alvo.id)).toBe('sem_item'); // não dá para comprar o mesmo de novo
   });

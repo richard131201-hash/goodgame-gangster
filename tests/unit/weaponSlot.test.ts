@@ -237,11 +237,16 @@ describe('trocar e guardar a arma (R-ARMA-3, R-ARMA-5)', () => {
     expect(p.equipped.weaponId).toBe('colt_1911');
   });
 
-  it('comprar arma com o espaço vazio equipa sozinha', async () => {
+  it('comprar arma NUNCA equipa sozinha: ela vai primeiro para a Mala, mesmo desarmado (R-MALA-7)', async () => {
     const gm = await novoJogador();
     gm.unequipWeapon();
     gm.getPlayer().cash = 100000; gm.getPlayer().level = 100;
     gm.buyItem(item('revolver_38'));
+    expect(gm.getPlayer().equipped.weaponId).toBeNull();
+    expect(gm.getBagCount()).toBeGreaterThan(0);
+    // e dali se equipa
+    const idx = gm.getPlayer().inventory.findIndex(i => i.weaponRefId === 'revolver_38');
+    expect(gm.equipWeaponFromBag(idx)).toBe(true);
     expect(gm.getPlayer().equipped.weaponId).toBe('revolver_38');
   });
 
@@ -323,14 +328,14 @@ describe('mochila de 10 espaços (R-MOCHILA-1)', () => {
     expect(gm.buyBlockReason(item('tommy_gun'))).toBe('mochila');
   });
 
-  it('desarmado, a arma comprada vai direto para o espaço da arma, mesmo com a mochila cheia', async () => {
+  it('desarmado e com a Mala cheia, a arma comprada NÃO cabe: tudo vai primeiro para a Mala (R-MALA-7)', async () => {
     const gm = await jogadorRico();
     gm.unequipWeapon();
     gm.getPlayer().inventory = gm.getPlayer().inventory.filter(i => i.weaponRefId !== 'colt_1911');
     while (gm.getBagCount() < 10) gm.buyItem(cons());
-    expect(gm.buyBlockReason(item('tommy_gun'))).toBeNull();
-    expect(gm.buyItem(item('tommy_gun'))).toBe(true);
-    expect(gm.getPlayer().equipped.weaponId).toBe('tommy_gun');
+    expect(gm.buyBlockReason(item('tommy_gun'))).toBe('mochila');
+    expect(gm.buyItem(item('tommy_gun'))).toBe(false);
+    expect(gm.getPlayer().equipped.weaponId).toBeNull();
     expect(gm.getBagCount()).toBe(10);
   });
 

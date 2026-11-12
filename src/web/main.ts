@@ -348,15 +348,17 @@ function renderSubPanes() {
   }
 }
 
-document.querySelectorAll<HTMLElement>('.sub-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    const pane = tab.dataset.pane;
-    document.querySelectorAll<HTMLElement>('.sub-tab').forEach(o => {
-      o.classList.toggle('active', o === tab);
-      o.setAttribute('aria-selected', String(o === tab));
-    });
-    document.querySelectorAll<HTMLElement>('.sub-pane').forEach(pn => pn.classList.toggle('active', pn.dataset.pane === pane));
+function activateSubPane(pane: string) {
+  document.querySelectorAll<HTMLElement>('.sub-tab').forEach(o => {
+    const on = o.dataset.pane === pane;
+    o.classList.toggle('active', on);
+    o.setAttribute('aria-selected', String(on));
   });
+  document.querySelectorAll<HTMLElement>('.sub-pane').forEach(pn => pn.classList.toggle('active', pn.dataset.pane === pane));
+}
+
+document.querySelectorAll<HTMLElement>('.sub-tab').forEach(tab => {
+  tab.addEventListener('click', () => activateSubPane(tab.dataset.pane ?? 'mala'));
 });
 
 /** Orelha e carimbo da pasta da aba aberta (R-LAYOUT-9). */
@@ -506,6 +508,8 @@ function renderActiveTab(tabName: string) {
       break;
     case 'loja':
       renderShopView();
+      activateSubPane('mala'); // a Mala aparece embaixo da loja, para vender arrastando (R-MALA-8)
+      renderInventoryGrid();
       break;
     case 'ranking':
       renderRankingView();
@@ -618,11 +622,12 @@ document.addEventListener('click', (e) => {
 const escHtml = (s: string) => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string));
 
 /** Desenha o espaço da arma, abaixo do personagem: arma equipada (ou "desarmado") com dano mínimo e máximo. */
+const weaponGhost = '<svg class="ico" aria-hidden="true"><use href="#i-swords"/></svg>';
+
 function renderWeaponSlot() {
   const p = gameState.getPlayer();
   const slot = document.getElementById('slot-equipped-weapon');
   const body = document.getElementById('equipped-wep-display');
-  const unequipBtn = document.getElementById('btn-unequip-weapon');
   if (!slot || !body) return;
 
   const armed = !!p.equipped.weaponId;
@@ -631,15 +636,11 @@ function renderWeaponSlot() {
   body.setAttribute('draggable', armed ? 'true' : 'false');
   if (armed) body.setAttribute('data-weapon-id', w.id);
   else body.removeAttribute('data-weapon-id');
-  if (unequipBtn) unequipBtn.style.display = armed ? '' : 'none';
 
-  body.innerHTML = `
-    <div class="weapon-slot-art">${weaponArtImg(w.id) || getWeaponSprite(w.id, 'preview').svg}</div>
-    <div class="weapon-slot-info">
-      <strong>${w.icon} ${escHtml(armed ? w.name : 'Desarmado')}</strong>
-      <span class="wdmg">Dano: ${damageText(w)}</span>
-      <span class="wmeta">${armed ? escHtml(w.categoryName) : 'Só o seu Ataque base causa dano.'}</span>
-    </div>`;
+  // Só a foto da arma; nome, dano e o resto aparecem no balão ao passar o mouse (R-ARMA-7)
+  body.innerHTML = armed
+    ? `<div class="weapon-slot-art">${weaponArtImg(w.id) || getWeaponSprite(w.id, 'preview').svg}</div>`
+    : `<div class="weapon-slot-art empty-weapon" title="Desarmado: só o seu Ataque base causa dano. Arraste uma arma da Mala até aqui.">${weaponGhost}</div>`;
 }
 
 /** Texto e cores da comparação entre uma arma e a equipada (usado no balão e nos detalhes). */
@@ -678,7 +679,7 @@ function renderGearSlots() {
       return `<div class="gear-slot" data-gear-slot="${slot}" title="${ITEM_SLOT_LABELS[slot]}: vazio"><span class="slot-badge">${ITEM_SLOT_LABELS[slot]}</span><svg class="gear-ico ghost" aria-hidden="true"><use href="#g-${slot}"/></svg></div>`;
     }
     const idx = p.inventory.indexOf(item);
-    return `<div class="gear-slot filled" data-gear-slot="${slot}" data-bag-tip="${idx}"><span class="slot-badge">${ITEM_SLOT_LABELS[slot]}</span><svg class="gear-ico" aria-hidden="true"><use href="#g-${slot}"/></svg></div>`;
+    return `<div class="gear-slot filled" data-gear-slot="${slot}" data-bag-tip="${idx}" draggable="true"><span class="slot-badge">${ITEM_SLOT_LABELS[slot]}</span><svg class="gear-ico" aria-hidden="true"><use href="#g-${slot}"/></svg></div>`;
   }).join('');
 }
 
@@ -688,8 +689,6 @@ function renderInventoryGrid() {
   const grid = document.getElementById('inventory-grid');
   if (!grid) return;
 
-  const bag = bagEntries(p.inventory, p.equipped.weaponId);
-  const capacity = gameState.getBagCapacity();
   const layout = gameState.getBagLayout(); // cada item no seu slot (R-MALA-4)
   const totalSlots = layout.length;
   let html = '';
@@ -699,14 +698,10 @@ function renderInventoryGrid() {
     if (entry) {
       const { item, index } = entry;
       const weaponDef = isWeaponItem(item) ? getWeaponById(item.weaponRefId) : null;
-      const isEquipped = !weaponDef && isGearEquipped(item);
-
       html += `
-        <div class="inv-slot ${isEquipped ? 'equipped' : ''} ${weaponDef ? 'is-weapon' : ''}" data-inv-idx="${index}" data-slot="${i}" draggable="true"
+        <div class="inv-slot ${weaponDef ? 'is-weapon' : ''}" data-inv-idx="${index}" data-slot="${i}" draggable="true"
              data-bag-tip="${index}" ${weaponDef ? `data-weapon-id="${weaponDef.id}"` : ''}>
           ${weaponDef && weaponArtImg(weaponDef.id) ? weaponArtImg(weaponDef.id, 'inv-art') : `<span>${item.icon}</span>`}
-          ${weaponDef ? `<span class="inv-dmg">${damageShort(weaponDef)}</span>` : ''}
-          ${isEquipped ? '<span class="inv-slot-badge">USO</span>' : ''}
         </div>
       `;
     } else {
@@ -742,8 +737,6 @@ function showInventoryItemDetails(index: number) {
   detailsBox.style.display = '';
 
   const weaponDef = isWeaponItem(item) ? getWeaponById(item.weaponRefId) : null;
-  const isEquipped = !weaponDef && isGearEquipped(item);
-  const refund = Math.round(item.priceCash * 0.5);
 
   detailsBox.innerHTML = `
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.375rem;">
@@ -756,16 +749,13 @@ function showInventoryItemDetails(index: number) {
     <div style="display: flex; gap: 0.5rem;">
       ${item.type !== 'consumable' ? `
         <button id="btn-equip-inv" class="arena-btn-primary" style="flex: 1; padding: 0.375rem; font-size: 0.6875rem;">
-          ${isEquipped ? '✓ Equipado' : weaponDef ? 'Equipar (troca a arma atual)' : 'Equipar'}
+          ${weaponDef ? 'Equipar (troca a arma atual)' : 'Equipar'}
         </button>
       ` : `
         <button id="btn-use-inv" class="arena-btn-primary" style="flex: 1; padding: 0.375rem; font-size: 0.6875rem;">
           Usar Agora
         </button>
       `}
-      <button id="btn-sell-inv" class="arena-btn-secondary" style="padding: 0.375rem 0.75rem; font-size: 0.6875rem; color: #e74c3c;">
-        Vender (+$${refund})
-      </button>
     </div>
   `;
 
@@ -777,6 +767,9 @@ function showInventoryItemDetails(index: number) {
       return;
     } else if (isGearItem(item)) {
       gameState.equipGear(item.id);
+      renderProfileView();
+      showInventoryItemDetails(-1); // o item equipado sai da Mala
+      return;
     }
     renderProfileView();
   });
@@ -788,20 +781,13 @@ function showInventoryItemDetails(index: number) {
     }
   });
 
-  document.getElementById('btn-sell-inv')?.addEventListener('click', () => {
-    gameState.sellItem(index);
-    renderProfileView();
-    detailsBox.style.display = 'none';
-    detailsBox.innerHTML = '';
-  });
 }
 
 // clicar num slot cheio do perfil desequipa o item (ele continua na Mala)
 document.addEventListener('click', e => {
   const cell = (e.target as HTMLElement).closest?.('.gear-slot.filled[data-gear-slot]') as HTMLElement | null;
   if (!cell) return;
-  gameState.unequipGear(cell.getAttribute('data-gear-slot') as ItemSlot);
-  renderProfileView();
+  tryUnequipGear(cell.getAttribute('data-gear-slot') as ItemSlot);
 });
 
 // ---------- balão ao passar o mouse (qualquer arma: mochila, loja ou espaço da arma) ----------
@@ -825,7 +811,7 @@ function showWeaponTooltip(el: HTMLElement) {
     <div class="wtip-title">${w.icon} ${escHtml(w.name)}</div>
     <div class="wtip-cat">${escHtml(w.categoryName)}${isEquippedSlot ? ' · equipada' : ''}</div>
     <div class="wtip-dmg">Dano: <b>${w.min}</b> mín – <b>${w.max}</b> máx</div>
-    ${isEquippedSlot ? '' : comparisonHtml(id)}`;
+    ${isEquippedSlot ? '<div class="wtip-vs">Clique ou arraste para a Mala para guardar.</div>' : comparisonHtml(id)}`;
   weaponTooltip.style.display = 'block';
 }
 
@@ -975,13 +961,14 @@ document.addEventListener('mouseout', e => {
 window.addEventListener('blur', hideWeaponTooltip);
 
 // ---------- arrastar e soltar ----------
-type WeaponDrag = { kind: 'inv'; index: number } | { kind: 'slot' };
+type WeaponDrag = { kind: 'inv'; index: number } | { kind: 'slot' } | { kind: 'gear'; slot: ItemSlot };
 let weaponDrag: WeaponDrag | null = null;
 
 document.addEventListener('dragstart', e => {
   const el = (e.target as HTMLElement).closest?.('[draggable="true"]') as HTMLElement | null;
   if (!el) return;
   if (el.id === 'equipped-wep-display') weaponDrag = { kind: 'slot' };
+  else if (el.dataset.gearSlot) weaponDrag = { kind: 'gear', slot: el.dataset.gearSlot as ItemSlot };
   else if (el.dataset.invIdx !== undefined) weaponDrag = { kind: 'inv', index: parseInt(el.dataset.invIdx, 10) }; // qualquer item da Mala
   else return;
   weaponDragActive = true;
@@ -993,6 +980,16 @@ document.addEventListener('dragstart', e => {
 });
 
 document.addEventListener('dragend', endWeaponDrag);
+
+/** Guarda o item equipado de um slot na Mala; se estiver cheia, avisa em vez de falhar calado (R-MALA-7). */
+function tryUnequipGear(slot: ItemSlot, targetSlot?: number) {
+  const r = gameState.unequipGear(slot, targetSlot);
+  if (r === 'sem_espaco') {
+    void notify({ kind: 'mala', message: `Sua Mala está cheia (${gameState.getBagCount()} de ${gameState.getBagCapacity()}). Venda ou use um item para abrir espaço antes de guardar este equipamento.` });
+    return;
+  }
+  renderProfileView();
+}
 
 /** Guarda a arma na mochila; se estiver cheia, avisa em vez de falhar calado. */
 function tryUnequipWeapon(targetSlot?: number) {
@@ -1036,7 +1033,7 @@ function bindWeaponDropZones() {
 
   // Mochila: aceita a arma equipada (guardar)
   bagPanel.addEventListener('dragover', e => {
-    if (!weaponDrag || weaponDrag.kind !== 'slot') return;
+    if (!weaponDrag || weaponDrag.kind === 'inv') return;
     e.preventDefault();
     if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
     bagPanel.classList.add('drop-ok');
@@ -1050,10 +1047,87 @@ function bindWeaponDropZones() {
     if (weaponDrag && weaponDrag.kind === 'slot') {
       endWeaponDrag();
       tryUnequipWeapon();
+    } else if (weaponDrag && weaponDrag.kind === 'gear') {
+      const slotName = weaponDrag.slot;
+      endWeaponDrag();
+      tryUnequipGear(slotName);
     }
   });
 
-  document.getElementById('btn-unequip-weapon')?.addEventListener('click', () => tryUnequipWeapon());
+  // Equipamento: soltar um item da Mala no slot certo equipa (R-MALA-7); slot errado não aceita
+  const gearGrid = document.getElementById('gear-slots-grid');
+  const gearCellOf = (e: Event) => (e.target as HTMLElement).closest?.('.gear-slot[data-gear-slot]') as HTMLElement | null;
+  const gearOk = (cell: HTMLElement) => {
+    if (!weaponDrag || weaponDrag.kind !== 'inv') return false;
+    const it = gameState.getPlayer().inventory[weaponDrag.index];
+    return isGearItem(it) && it.gear.slot === cell.dataset.gearSlot;
+  };
+  gearGrid?.addEventListener('dragover', e => {
+    const cell = gearCellOf(e);
+    if (!weaponDrag || !cell) return;
+    const ok = gearOk(cell);
+    gearGrid.querySelectorAll('.drop-ok, .drop-bad').forEach(n => n !== cell && n.classList.remove('drop-ok', 'drop-bad'));
+    cell.classList.toggle('drop-ok', ok);
+    cell.classList.toggle('drop-bad', !ok && weaponDrag.kind === 'inv');
+    if (ok) {
+      e.preventDefault();
+      if ((e as DragEvent).dataTransfer) (e as DragEvent).dataTransfer!.dropEffect = 'move';
+    }
+  });
+  gearGrid?.addEventListener('dragleave', e => {
+    if (!gearGrid.contains((e as DragEvent).relatedTarget as Node | null)) gearGrid.querySelectorAll('.drop-ok, .drop-bad').forEach(n => n.classList.remove('drop-ok', 'drop-bad'));
+  });
+  gearGrid?.addEventListener('drop', e => {
+    const cell = gearCellOf(e);
+    if (!weaponDrag || !cell) return;
+    e.preventDefault();
+    const ok = gearOk(cell);
+    const index = weaponDrag.kind === 'inv' ? weaponDrag.index : -1;
+    gearGrid.querySelectorAll('.drop-ok, .drop-bad').forEach(n => n.classList.remove('drop-ok', 'drop-bad'));
+    endWeaponDrag();
+    if (ok) {
+      gameState.equipGear(gameState.getPlayer().inventory[index].id);
+      renderProfileView();
+    }
+  });
+
+  // Zona de venda da loja (R-MALA-8): só ela vende, e só item que está na Mala
+  const sellZone = document.getElementById('sell-zone');
+  sellZone?.addEventListener('dragover', e => {
+    if (!weaponDrag) return;
+    const ok = weaponDrag.kind === 'inv';
+    sellZone.classList.toggle('drop-ok', ok);
+    sellZone.classList.toggle('drop-bad', !ok);
+    if (ok) {
+      e.preventDefault();
+      if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+    }
+  });
+  sellZone?.addEventListener('dragleave', e => {
+    if (!sellZone.contains(e.relatedTarget as Node | null)) sellZone.classList.remove('drop-ok', 'drop-bad');
+  });
+  sellZone?.addEventListener('drop', e => {
+    e.preventDefault();
+    sellZone.classList.remove('drop-ok', 'drop-bad');
+    if (!weaponDrag || weaponDrag.kind !== 'inv') return;
+    const idx = weaponDrag.index;
+    endWeaponDrag();
+    const item = gameState.getPlayer().inventory[idx];
+    if (!item) return;
+    const valor = Math.round(item.priceCash * 0.5);
+    void ask({ kind: 'cash', title: 'Vender item', message: `Vender ${item.name} por $${valor.toLocaleString()}? Não dá para desfazer.`, okLabel: 'Vender', cancelLabel: 'Ficar' }).then(ok => {
+      if (!ok) return;
+      gameState.sellItem(idx);
+      showInventoryItemDetails(-1);
+      renderShopView();
+      void notify({ kind: 'sucesso', title: 'Vendido', message: `Você vendeu ${item.name} por $${valor.toLocaleString()}.`, autoCloseMs: 2200 });
+    });
+  });
+
+  // clicar na arma equipada também a guarda na Mala
+  document.getElementById('equipped-wep-display')?.addEventListener('click', () => {
+    if (gameState.getPlayer().equipped.weaponId) tryUnequipWeapon();
+  });
 
   // Slots da Mala: soltar um item num slot vazio coloca ele ali; soltar num ocupado troca os dois (R-MALA-4)
   const grid = document.getElementById('inventory-grid');
@@ -1503,6 +1577,7 @@ function renderShopView() {
         if (why === null) {
           sound.playCrit();
           renderShopView();
+          void notify({ kind: 'sucesso', title: 'Compra feita', message: 'O item está na sua Mala. Equipe pela aba Ficha.', autoCloseMs: 2400 });
         } else {
           const pl = gameState.getPlayer();
           const alvo = gameState.getShopStock().find(i => i.id === id);
@@ -1518,7 +1593,7 @@ function renderShopView() {
       const reason = gameState.buyBlockReason(item);
       if (reason === null && gameState.buyItem(item)) {
         sound.playCrit();
-        void notify({ kind: 'sucesso', title: 'Compra feita', message: `Você adquiriu ${item.name}.`, autoCloseMs: 2200 });
+        void notify({ kind: 'sucesso', title: 'Compra feita', message: `Você adquiriu ${item.name}. Ele está na sua Mala.`, autoCloseMs: 2400 });
         renderShopView();
       } else {
         const pl = gameState.getPlayer();

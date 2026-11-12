@@ -199,12 +199,7 @@
           <div class="profile-weapon-panel">
             <div class="panel-header-banner"><h3>Arma</h3></div>
             <div class="weapon-slot" id="slot-equipped-weapon">
-              <div class="weapon-slot-head">
-                <span class="slot-badge">ARMA EQUIPADA</span>
-                <button type="button" class="weapon-slot-unequip" id="btn-unequip-weapon">Guardar na Mala</button>
-              </div>
               <div class="weapon-slot-body" id="equipped-wep-display"></div>
-              <p class="weapon-slot-hint">Arraste uma arma da Mala até aqui para trocar. Arraste esta arma para a Mala para guardá-la.</p>
             </div>
           </div>
 
@@ -303,6 +298,12 @@
             <button class="choice-btn" data-scat="gear">🎩 Equipamento</button>
             <button class="choice-btn" data-scat="consumable">🥃 Consumíveis</button>
           </div>
+        </div>
+
+        <!-- ZONA DE VENDA (R-MALA-8): vender só aqui, arrastando um item da Mala -->
+        <div class="sell-zone" id="sell-zone" role="region" aria-label="Vender item da Mala">
+          <svg class="ico" aria-hidden="true"><use href="#i-coin"/></svg>
+          <span id="sell-zone-text">Arraste um item da Mala até aqui para vender (recebe metade do preço)</span>
         </div>
 
         <div class="shop-catalog-grid" id="shop-items-container">

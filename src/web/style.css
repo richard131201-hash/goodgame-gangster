@@ -3939,3 +3939,57 @@ html[data-skin="bege"] .game-nav-tab .ico-img { filter: drop-shadow(0 0 0.1rem r
 html[data-skin="bege"] .game-nav-tab.active .ico-img { filter: drop-shadow(0 0 0.14rem rgba(255, 244, 214, 0.9)); }
 .shop-art-svg { opacity: 0.85; }
 .shop-art-svg svg { width: 100%; height: 100%; }
+
+/* ================================================================================================ */
+/* MALA E EQUIPAMENTO (R-MALA-7, R-MALA-8, R-ARMA-7, R-SLOT-1): slots 4:3, arma só foto, vender na loja */
+/* ================================================================================================ */
+/* Todos os slots são 4:3 (mais largos que altos, para a arma caber maior) */
+.sub-sheet .inventory-slots-grid { grid-template-columns: repeat(5, 8.8rem); grid-auto-rows: 6.6rem; }
+.equipped-slots-grid .gear-slot { aspect-ratio: 4 / 3; }
+.equipped-slots-grid .gear-ico { margin-bottom: 0.2rem; }
+.inv-slot .inv-art { width: 88%; height: 76%; margin-top: 0; }
+.gear-slot.filled { cursor: grab; }
+.gear-slot.drop-ok { border-color: var(--good); background: rgba(95, 210, 138, 0.14); }
+.gear-slot.drop-bad { border-color: var(--bad); }
+
+/* Painel da Arma: só a foto (nome, dano e o resto no balão) */
+.weapon-slot { padding: 0.4rem; }
+.weapon-slot-body { display: block; width: 100%; }
+.weapon-slot-art { flex: none; width: 100%; height: auto; aspect-ratio: 4 / 3; display: grid; place-items: center; }
+.weapon-slot-body[data-weapon-id] { cursor: pointer; }
+.weapon-slot-art .warr { width: 96%; height: 96%; }
+.weapon-slot-art svg { max-width: 96%; max-height: 96%; }
+.weapon-slot-art.empty-weapon { color: var(--soft); opacity: 0.35; }
+.weapon-slot-art.empty-weapon .ico { width: 4.5rem; height: 4.5rem; }
+
+/* A Mala também aparece na loja, só com a aba Mala, para vender arrastando */
+#app[data-tab="loja"] .sub-folder {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  flex: 0 0 auto;
+  margin-top: 2.4rem;
+  padding: 1rem 1.2rem 1.1rem;
+  background: var(--cover);
+  border: 0.1rem solid var(--cover-edge);
+  border-radius: 0 0.9rem 0.9rem 0.9rem;
+}
+#app[data-tab="loja"] .sub-tab:not([data-pane="mala"]) { display: none; }
+#app[data-tab="loja"] .sub-sheet { flex: 0 0 auto; }
+.sell-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin: 0 0 0.9rem;
+  padding: 0.7rem 1rem;
+  background: var(--paper-2);
+  border: 0.12rem dashed var(--gold);
+  border-radius: 0.6rem;
+  color: var(--ink);
+  font-size: 1.05rem;
+  transition: background 0.15s, border-color 0.15s;
+}
+.sell-zone .ico { width: 1.8rem; height: 1.8rem; color: var(--gold-text); }
+.sell-zone.drop-ok { border-style: solid; border-color: var(--good); background: rgba(95, 210, 138, 0.16); }
+.sell-zone.drop-bad { border-color: var(--bad); }
