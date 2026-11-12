@@ -3722,7 +3722,6 @@ html[data-skin="bege"] .game-main-content .boss-portrait-box * { color: var(--in
   --font-type: 'Rye', Georgia, serif;
   --font-serif: 'Rye', Georgia, serif;
   --font-num: 'Bebas Neue', 'Arial Narrow', sans-serif;
-  --fillet: 0.55rem;
 }
 
 /* Títulos em Rye (estilo faroeste/saloon) */
@@ -3791,7 +3790,6 @@ html[data-skin="bege"] .game-main-content .boss-portrait-box * { color: var(--in
   cursor: pointer;
   opacity: 0.9;
 }
-.sub-tab { --fillet: 0.8rem; }
 .sub-tab:hover { opacity: 1; color: var(--gold-text); }
 .sub-tab:focus-visible { outline: 0.15rem solid var(--gold); outline-offset: 0.1rem; }
 .sub-tab.active { background: var(--cover); border-color: var(--gold); color: var(--gold); padding-bottom: 0.62rem; margin-bottom: -0.2rem; opacity: 1; z-index: 2; }
@@ -3829,28 +3827,17 @@ html[data-skin="bege"] .sub-tab.active { color: #6a3d0a; }
   border-right-width: 0;
   background: var(--cover);
 }
-.game-nav-tab.active::before {
-  content: "";
-  position: absolute;
-  right: 0.2rem;
-  top: calc(var(--fillet) * -1);
-  bottom: calc(var(--fillet) * -1);
-  width: var(--fillet);
-  pointer-events: none;
-  background-image:
-    radial-gradient(circle at 0 0, transparent calc(var(--fillet) - 0.1rem), var(--gold) calc(var(--fillet) - 0.1rem) var(--fillet), var(--cover) var(--fillet)),
-    radial-gradient(circle at 0 100%, transparent calc(var(--fillet) - 0.1rem), var(--gold) calc(var(--fillet) - 0.1rem) var(--fillet), var(--cover) var(--fillet));
-  background-size: var(--fillet) var(--fillet), var(--fillet) var(--fillet);
-  background-position: 0 0, 0 100%;
-  background-repeat: no-repeat;
-}
-.sub-tab.active::before, .sub-tab.active::after {
-  content: "";
-  position: absolute;
-  bottom: 0.2rem;
-  width: var(--fillet);
-  height: var(--fillet);
-  pointer-events: none;
-}
-.sub-tab.active::before { left: calc(var(--fillet) * -1 - 0.1rem); background: radial-gradient(circle at 0 0, transparent calc(var(--fillet) - 0.1rem), var(--gold) calc(var(--fillet) - 0.1rem) var(--fillet), var(--cover-dark) var(--fillet)); }
-.sub-tab.active::after { right: calc(var(--fillet) * -1 - 0.1rem); background: radial-gradient(circle at 100% 0, transparent calc(var(--fillet) - 0.1rem), var(--gold) calc(var(--fillet) - 0.1rem) var(--fillet), var(--cover-dark) var(--fillet)); }
+
+/* Sem as curvas de encaixe: a aba ativa só se liga direto à pasta (pedido do fundador). */
+/* O balão do nome da aba fica por cima de tudo (antes o da Mala cobria o do Ranking). */
+.game-main-nav { z-index: 30; }
+/* 10 abas (Ficha, Missões, Duelo, Mercado Negro, Ranking, Família, Distritos, Tarefas, Eventos, Simulador) com folga para mais */
+.game-main-nav { gap: 0.35rem; }
+.game-nav-tab { height: 3.7rem; }
+.game-nav-tab .ico { width: 1.9rem; height: 1.9rem; }
+/* Pastas ainda em desenho */
+.soon-card { max-width: 46rem; margin: 3rem auto 0; padding: 1.6rem 2rem; text-align: center; background: var(--paper-2); border: 0.1rem dashed var(--slot-line); border-radius: 0.6rem; }
+.soon-card h2 { margin: 0 0 0.8rem; font-family: var(--font-type); font-weight: 400; font-size: 1.5rem; color: var(--gold-text); letter-spacing: 0.05rem; }
+.soon-card p { margin: 0; font-size: 1.05rem; line-height: 1.45; color: var(--soft); }
+/* Missão especial do servidor (chefão) dentro de Missões */
+#view-missoes .raid-event-card { margin-bottom: 1rem; }

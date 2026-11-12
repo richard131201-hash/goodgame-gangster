@@ -58,7 +58,10 @@ describe('casca em forma de pasta (R-LAYOUT-9)', () => {
   const tabs = [...html.matchAll(/class="game-nav-tab[^"]*"[^>]*data-tab="([a-z]+)"/g)].map(m => m[1]);
 
   it('as 8 abas ficam à esquerda, só com ícone (nome só no balão), e cada uma tem título e carimbo de pasta', () => {
-    expect(tabs).toEqual(['perfil', 'missoes', 'duelos', 'loja', 'ranking', 'familia', 'eventos', 'simulador']);
+    expect(tabs).toEqual(['perfil', 'missoes', 'duelos', 'loja', 'ranking', 'familia', 'distritos', 'tarefas', 'eventos', 'simulador']);
+    // nomes das abas (R-NAV-1)
+    const nomes = [...html.matchAll(/class="game-nav-tab[^"]*"[^>]*data-name="([^"]+)"/g)].map(m => m[1]);
+    expect(nomes).toEqual(['Ficha', 'Missões', 'Duelo', 'Mercado Negro', 'Ranking', 'Família', 'Distritos', 'Tarefas', 'Eventos', 'Simulador']);
     for (const t of tabs) expect(FOLDER_HEADERS[t], t).toBeDefined();
     expect(html).not.toContain('tab-emoji');
     for (const m of html.matchAll(/<button class="game-nav-tab[^>]*>([\s\S]*?)<\/button>/g)) expect(m[1].replace(/<[^>]*>/g, '').trim()).toBe(''); // sem texto, só o ícone
@@ -113,10 +116,24 @@ describe('segunda rodada da pasta (R-LAYOUT-10)', () => {
     expect(main).toContain("setAttribute('data-tab', tab)");
   });
 
-  it('a aba ativa (da esquerda e da subpasta) se liga à pasta: cobre a borda e tem curva de encaixe', () => {
-    expect(css).toMatch(/\.game-nav-tab\.active::before \{/);
-    expect(css).toMatch(/\.sub-tab\.active::before, \.sub-tab\.active::after \{/);
+  it('a aba ativa (da esquerda e da subpasta) se liga direto à pasta, sem as curvas de encaixe', () => {
+    expect(css).toMatch(/\.game-nav-tab\.active \{[^}]*width: 6\.2rem/);
     expect(css).toMatch(/\.sub-tab\.active \{[^}]*margin-bottom: -0\.2rem/);
+    expect(css).not.toContain('fillet');
+    expect(css).not.toMatch(/\.game-nav-tab\.active::before/);
+  });
+
+  it('o balão do nome da aba fica por cima de tudo, inclusive das orelhas da subpasta', () => {
+    expect(css).toMatch(/\.game-main-nav \{ z-index: 30; \}/);
+  });
+
+  it('o chefão virou missão especial dentro de Missões (e não é mais uma aba); Distritos, Tarefas e Eventos são pastas em desenho', () => {
+    const missoes = html.slice(html.indexOf('id="view-missoes"'), html.indexOf('id="view-duelos"'));
+    expect(missoes).toContain('id="attack-raid-boss-btn"');
+    expect(missoes).toContain('MISSÃO ESPECIAL DO SERVIDOR');
+    expect(html).not.toContain('Operações & Chefão');
+    for (const id of ['distritos', 'tarefas', 'eventos']) expect(html).toMatch(new RegExp(`id="view-${id}"[^>]*>\\s*<div class="soon-card">`));
+    expect(main).toContain('renderRaidEvent();');
   });
 
   it('os painéis Família e Honra usam dados reais do jogador, e Conquistas avisa que ainda não existem', () => {

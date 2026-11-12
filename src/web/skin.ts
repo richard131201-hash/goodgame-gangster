@@ -35,11 +35,13 @@ export function toggleSkin(): Skin {
 /** Título e carimbo da orelha da pasta em cada aba (identidade de "arquivo"). */
 export const FOLDER_HEADERS: Record<string, { title: string; stamp: string }> = {
   perfil: { title: 'FICHA', stamp: 'CONFIDENCIAL' },
-  missoes: { title: 'CONTRATOS DO DON', stamp: 'URGENTE' },
+  missoes: { title: 'MISSÕES DO DON', stamp: 'URGENTE' },
   duelos: { title: 'FICHAS DE RIVAIS', stamp: 'PROCURADO' },
-  loja: { title: 'MERCADO CLANDESTINO', stamp: 'SEM NOTA' },
+  loja: { title: 'MERCADO NEGRO', stamp: 'SEM NOTA' },
   ranking: { title: 'ARQUIVO DA CIDADE', stamp: 'ARQUIVADO' },
   familia: { title: 'REGISTRO DAS FAMÍLIAS', stamp: 'CONFIDENCIAL' },
-  eventos: { title: 'OPERAÇÕES', stamp: 'ALTO RISCO' },
+  distritos: { title: 'DISTRITOS', stamp: 'TERRITÓRIO' },
+  tarefas: { title: 'TAREFAS', stamp: 'PENDENTE' },
+  eventos: { title: 'EVENTOS', stamp: 'EM BREVE' },
   simulador: { title: 'RELATÓRIO DO SIMULADOR', stamp: 'RASCUNHO' },
 };

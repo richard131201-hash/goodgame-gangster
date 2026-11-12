@@ -489,6 +489,7 @@ function renderActiveTab(tabName: string) {
       break;
     case 'missoes':
       renderMissionsView();
+      renderRaidEvent(); // a missão especial do servidor (chefão) fica dentro de Missões
       break;
     case 'duelos':
       renderDuelsView();
@@ -502,9 +503,10 @@ function renderActiveTab(tabName: string) {
     case 'familia':
       renderFamilyView();
       break;
+    case 'distritos':
+    case 'tarefas':
     case 'eventos':
-      renderEventsView();
-      break;
+      break; // pastas ainda em desenho: só o aviso do HTML
     case 'simulador':
       renderDashboard(activeMatrixLevel);
       break;
@@ -1738,7 +1740,7 @@ function renderFamilyView() {
 // ========================================================
 // VIEW 7: EVENTOS & CHEFÃO MUNDIAL
 // ========================================================
-function renderEventsView() {
+function renderRaidEvent() {
   const event = CURRENT_RAID_EVENT;
   document.getElementById('raid-title')!.textContent = event.name;
   document.getElementById('raid-desc')!.textContent = event.description;
