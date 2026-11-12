@@ -4150,12 +4150,5 @@ html[data-skin="bege"] .res-gold-plus { background-color: #d9c690; color: #6a3d0
 @media (prefers-reduced-motion: reduce) { .res-gold-plus::after { animation: none; } }
 /* Simetria do card do Ouro (R-OURO-2): o mesmo respiro à esquerda (ícone) e à direita (botão), "+" no centro do botão */
 .res-card.res-gold { padding: 0.4rem 0.8rem; }
-/* o "+" é desenhado (duas barras no centro exato do botão), não é letra, para ficar sempre centralizado */
-.res-gold-plus {
-  --plus: var(--gold);
-  background-image: linear-gradient(var(--plus), var(--plus)), linear-gradient(var(--plus), var(--plus));
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 0.62rem 0.15rem, 0.15rem 0.62rem;
-}
-html[data-skin="bege"] .res-gold-plus { --plus: #6a3d0a; }
+/* o "+" é um desenho vetorial (cruz perfeita, 4 braços iguais) no centro exato do botão; não é letra nem fundo em pixels */
+.res-gold-plus svg { display: block; width: 0.78rem; height: 0.78rem; shape-rendering: geometricPrecision; }
