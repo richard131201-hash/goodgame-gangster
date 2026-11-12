@@ -16,6 +16,8 @@ export interface NoticeOptions {
   kind?: NoticeKind;
   /** Título na orelha. Se faltar, vem do tipo. */
   title?: string;
+  /** Texto do carimbo. Se faltar, vem do tipo. */
+  stamp?: string;
   message: string;
   /** Linha pequena abaixo da mensagem (por exemplo, o motivo técnico). */
   detail?: string;
@@ -165,7 +167,7 @@ function showNext() {
     <div class="notice-backdrop" data-notice-backdrop>
       <div class="notice-card notice-${o.kind ?? 'info'}" role="alertdialog" aria-modal="true" aria-labelledby="notice-title" aria-describedby="notice-msg">
         <div class="notice-ear" id="notice-title">${esc(noticeTitle(o)).toUpperCase()}</div>
-        <div class="notice-stamp" aria-hidden="true">${esc(item.isAsk ? 'CONFIRMAR' : k.stamp)}</div>
+        <div class="notice-stamp" aria-hidden="true">${esc(item.isAsk ? 'CONFIRMAR' : (o.stamp ?? k.stamp))}</div>
         <div class="notice-sheet">
           <div class="notice-icon" aria-hidden="true">${k.img ? `<img class="notice-img" src="${k.img}" alt="" draggable="false">` : `<svg class="ico"><use href="#${k.icon}"/></svg>`}</div>
           <div class="notice-body">

@@ -429,6 +429,11 @@ setInterval(() => {
 }, 1000);
 
 // ENERGY REFILL BUTTON
+// R-OURO-2: o "+" do ouro ainda não leva à compra; avisa que não está liberada
+document.getElementById('buy-gold-btn')?.addEventListener('click', () => {
+  void notify({ kind: 'ouro', title: 'Ouro', stamp: 'EM BREVE', message: 'A compra de Ouro ainda não está liberada. Por enquanto, o ouro vem das missões e dos duelos.' });
+});
+
 document.getElementById('quick-refill-energy-btn')?.addEventListener('click', () => {
   const p = gameState.getPlayer();
   if (p.energy >= p.maxEnergy) {

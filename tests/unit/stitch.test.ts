@@ -53,4 +53,14 @@ describe('costura que contorna a aba ativa (R-PASTA-1)', () => {
     expect(css).toMatch(/\.folder-stamp, \.notice-stamp \{[^}]*background: var\(--paper\);[^}]*opacity: 1;[^}]*filter: url\(#stamp-grunge\);/);
     expect(css).toMatch(/\.folder-stamp::before, \.notice-stamp::before \{/);
   });
+
+  it('o "+" do ouro (R-OURO-2) existe no card do Ouro, é retângulo com brilho e avisa que a compra não está liberada', () => {
+    const html = readFileSync('index.html', 'utf8');
+    expect(html).toMatch(/id="hud-gold"[\s\S]{0,120}id="buy-gold-btn"/);
+    expect(css).toMatch(/\.res-gold-plus \{[^}]*width: 2\.5rem;[^}]*height: 1\.55rem;/);
+    expect(css).toContain('@keyframes gold-shine');
+    expect(css).toMatch(/html\[data-skin="bege"\] \.res-gold-plus \{ background: #d9c690;/);
+    expect(main).toContain("getElementById('buy-gold-btn')");
+    expect(main).toContain('A compra de Ouro ainda não está liberada');
+  });
 });

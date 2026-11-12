@@ -87,3 +87,4 @@ Mais recente no topo. Cada decisão: data, o que, quem decidiu.
 - **Costura contorna a aba ativa (R-PASTA-1, 2026-11-12):** a linha tracejada de todas as pastas passa a dar a volta na aba selecionada, numa conexão só. *(Fundador)*
 - **Respiros iguais na Ficha (R-LAYOUT-13, 2026-11-12):** Atributos ocupa o espaço que sobra; Arma e Equipamento vão para a direita; esquerda e direita ficam com o mesmo respiro. *(Fundador)*
 - **Selo "Papel" (R-SELO-1, 2026-11-12):** carimbo com fundo de papel opaco e tinta falhada em todas as pastas e avisos. A costura ficou rente à borda (0,25 rem) e a 1ª aba começa no topo da pasta. *(Fundador)*
+- **Botão "+" do ouro (R-OURO-2, 2026-11-12):** retângulo horizontal com contorno de ouro e brilho; avisa que a compra ainda não está liberada. Costura do tema claro mais escura. *(Fundador)*

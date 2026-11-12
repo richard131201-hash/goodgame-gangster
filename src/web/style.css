@@ -3318,7 +3318,7 @@ html[data-skin="bege"] {
   --cover: #c9a56a;
   --cover-dark: #b08c53;
   --cover-edge: #8a6a36;
-  --stitch: rgba(138, 106, 54, 0.55);
+  --stitch: rgba(92, 64, 24, 0.85);
   --paper: #f2e8cd;
   --paper-2: #e8dab4;
   --ink: #2b2015;
@@ -4124,3 +4124,27 @@ html[data-skin="bege"] .game-nav-tab .ico-img.ico-ficha, html[data-skin="bege"] 
 .folder-stamp { padding: 0.15rem 0.95rem; }
 .notice-stamp { padding: 0.08rem 0.9rem; }
 .folder-stamp::before, .notice-stamp::before { content: ""; position: absolute; inset: 0.18rem; border: 0.07rem solid var(--stamp); border-radius: 0.2rem; pointer-events: none; }
+
+/* BOTÃO "+" DO OURO (R-OURO-2): retângulo horizontal com contorno de ouro e brilho passando; um tom mais claro que o card no escuro e mais escuro no claro */
+.res-gold-plus {
+  position: relative;
+  overflow: hidden;
+  flex: 0 0 auto;
+  width: 2.5rem;
+  height: 1.55rem;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  font: 800 1.55rem/1 var(--font-sans);
+  color: var(--gold);
+  background: #3a2d20;
+  border: 0.1rem solid var(--gold);
+  border-radius: 0.3rem;
+  cursor: pointer;
+}
+html[data-skin="bege"] .res-gold-plus { background: #d9c690; color: #6a3d0a; border-color: #8a5a10; }
+.res-gold-plus::after { content: ""; position: absolute; top: 0; bottom: 0; width: 0.5rem; left: -1rem; background: rgba(255, 255, 255, 0.5); transform: skewX(-20deg); animation: gold-shine 2.8s infinite; }
+@keyframes gold-shine { 0%, 50% { left: -1rem; } 100% { left: 100%; } }
+.res-gold-plus:hover { filter: brightness(1.15); }
+.res-gold-plus:focus-visible { outline: 0.15rem solid var(--gold); outline-offset: 0.12rem; }
+@media (prefers-reduced-motion: reduce) { .res-gold-plus::after { animation: none; } }
