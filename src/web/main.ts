@@ -73,6 +73,7 @@ import {
 import { ITEM_SLOTS, type ItemSlot } from '../shared/itemRoll.js';
 import { applySkin, readSkin, toggleSkin, FOLDER_HEADERS } from './skin.js';
 import { notify, ask } from './notice.js';
+import { weaponArtImg } from './weaponArt.js';
 import { isGearItem, rollRandomGear, GEAR_ICONS } from '../shared/gear.js';
 import { ITEM_SLOT_LABELS } from '../shared/itemRoll.js';
 
@@ -633,7 +634,7 @@ function renderWeaponSlot() {
   if (unequipBtn) unequipBtn.style.display = armed ? '' : 'none';
 
   body.innerHTML = `
-    <div class="weapon-slot-art">${getWeaponSprite(w.id, 'preview').svg}</div>
+    <div class="weapon-slot-art">${weaponArtImg(w.id) || getWeaponSprite(w.id, 'preview').svg}</div>
     <div class="weapon-slot-info">
       <strong>${w.icon} ${escHtml(armed ? w.name : 'Desarmado')}</strong>
       <span class="wdmg">Dano: ${damageText(w)}</span>
@@ -703,7 +704,7 @@ function renderInventoryGrid() {
       html += `
         <div class="inv-slot ${isEquipped ? 'equipped' : ''} ${weaponDef ? 'is-weapon' : ''}" data-inv-idx="${index}" data-slot="${i}" draggable="true"
              data-bag-tip="${index}" ${weaponDef ? `data-weapon-id="${weaponDef.id}"` : ''}>
-          <span>${item.icon}</span>
+          ${weaponDef && weaponArtImg(weaponDef.id) ? weaponArtImg(weaponDef.id, 'inv-art') : `<span>${item.icon}</span>`}
           ${weaponDef ? `<span class="inv-dmg">${damageShort(weaponDef)}</span>` : ''}
           ${isEquipped ? '<span class="inv-slot-badge">USO</span>' : ''}
         </div>
@@ -820,6 +821,7 @@ function showWeaponTooltip(el: HTMLElement) {
   const w = getWeaponById(id);
   const isEquippedSlot = el.id === 'equipped-wep-display';
   weaponTooltip.innerHTML = `
+    ${weaponArtImg(w.id, 'wtip-art')}
     <div class="wtip-title">${w.icon} ${escHtml(w.name)}</div>
     <div class="wtip-cat">${escHtml(w.categoryName)}${isEquippedSlot ? ' · equipada' : ''}</div>
     <div class="wtip-dmg">Dano: <b>${w.min}</b> mín – <b>${w.max}</b> máx</div>
@@ -860,6 +862,7 @@ function showBagItemTooltip(el: HTMLElement) {
       ? `${ITEM_SLOT_LABELS[item.gear.slot]} · nível ${item.gear.level}`
       : ITEM_TYPE_LABEL[item.type] ?? item.type;
   weaponTooltip.innerHTML = `
+    ${weaponDef ? weaponArtImg(weaponDef.id, 'wtip-art') : ''}
     <div class="wtip-title">${item.icon} ${escHtml(item.name)}</div>
     <div class="wtip-cat">${cat}</div>
     ${lines.map(l => `<div class="wtip-dmg">${l}</div>`).join('')}
@@ -1477,7 +1480,7 @@ function renderShopView() {
           </span>
         </div>
         <p style="font-size: 0.75rem; color: var(--text-muted);">${item.description}</p>
-        ${shopWeapon ? `<div class="shop-item-dmg">Dano: ${damageText(shopWeapon)}</div>` : ''}
+        ${shopWeapon ? `${weaponArtImg(shopWeapon.id, 'shop-art') || `<div class="shop-art shop-art-svg">${getWeaponSprite(shopWeapon.id, 'preview').svg}</div>`}<div class="shop-item-dmg">Dano: ${damageText(shopWeapon)}</div>` : ''}
         <div class="shop-item-price-row">
           <span style="font-weight: 800; color: #f1c40f; font-size: 0.8125rem;">
             ${item.priceCash > 0 ? `$${item.priceCash.toLocaleString()} ` : ''}

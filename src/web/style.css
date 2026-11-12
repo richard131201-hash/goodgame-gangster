@@ -3924,3 +3924,18 @@ html[data-skin="couro"] .notice-ear { color: var(--gold); }
 
 /* Botão de comprar sem condição de compra: fica apagado, mas clicável, para o aviso explicar o motivo (R-AVISO-1) */
 .btn-buy-shop-item[aria-disabled="true"] { opacity: 0.55; filter: grayscale(0.4); cursor: not-allowed; }
+
+/* ARTE DAS ARMAS E ÍCONE DE MISSÕES (R-ARTE-1) */
+.warr { display: block; object-fit: contain; pointer-events: none; user-select: none; }
+.weapon-slot-art { flex: 0 0 7rem; width: 7rem; height: 5.2rem; }
+.weapon-slot-art .warr { width: 100%; height: 100%; filter: drop-shadow(0 0.2rem 0.3rem rgba(0, 0, 0, 0.45)); }
+.inv-slot .inv-art { width: 82%; height: 62%; margin-top: 0.3rem; }
+.wtip-art { width: 9rem; height: 6rem; margin: 0 auto 0.3rem; }
+.shop-art { width: 100%; height: 6rem; margin: 0.25rem 0; }
+/* O chapéu é escuro: na aba ele ganha um brilho fino para não sumir no couro */
+.game-nav-tab .ico-img { width: 2.6rem; height: auto; pointer-events: none; filter: brightness(1.6) contrast(1.05) drop-shadow(0 0 0.14rem rgba(241, 227, 191, 0.55)); }
+.game-nav-tab.active .ico-img { filter: brightness(1.9) contrast(1.05) drop-shadow(0 0 0.18rem rgba(212, 175, 55, 0.85)); }
+html[data-skin="bege"] .game-nav-tab .ico-img { filter: drop-shadow(0 0 0.1rem rgba(255, 244, 214, 0.7)); }
+html[data-skin="bege"] .game-nav-tab.active .ico-img { filter: drop-shadow(0 0 0.14rem rgba(255, 244, 214, 0.9)); }
+.shop-art-svg { opacity: 0.85; }
+.shop-art-svg svg { width: 100%; height: 100%; }

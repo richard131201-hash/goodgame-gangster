@@ -324,6 +324,25 @@ export const WEAPONS_CATALOG: WeaponDef[] = [
       screenShake: 'heavy',
     },
   },
+  {
+    // Rifle de precisão enviado pelo fundador (2026-11-12). Dano e nível PROVISÓRIOS (do Claude), a calibrar na C6.
+    id: 'springfield_1903',
+    name: 'Springfield M1903 de Precisão',
+    category: 'rifle',
+    categoryName: 'Rifle de Precisão',
+    icon: '🎯',
+    min: 30,
+    max: 54,
+    description: 'Rifle de ferrolho com luneta. Um único disparo preciso e devastador, de longe.',
+    shotEffect: {
+      type: 'rifle',
+      bulletCount: 1,
+      spreadRadius: 6,
+      smokeIntensity: 'medium',
+      sound: 'rifle',
+      screenShake: 'heavy',
+    },
+  },
 ];
 
 /**

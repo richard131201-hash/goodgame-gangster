@@ -514,6 +514,9 @@ export function getWeaponSprite(weaponId: string, side: 'A' | 'B' | 'preview'): 
         `,
       };
 
+    case 'springfield_1903':
+      return getWeaponSprite('m1_garand', side); // rifle de ferrolho: usa o desenho do rifle até haver o próprio
+
     default:
       return getWeaponSprite('colt_1911', side);
   }
