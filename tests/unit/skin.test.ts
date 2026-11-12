@@ -87,3 +87,41 @@ describe('casca em forma de pasta (R-LAYOUT-9)', () => {
     expect(css).not.toMatch(/html\[data-skin="bege"\] \.combat/);
   });
 });
+
+describe('segunda rodada da pasta (R-LAYOUT-10)', () => {
+  const html = ler('index.html');
+  const css = ler('src/web/style.css');
+  const main = ler('src/web/main.ts');
+
+  it('fontes escolhidas pelo fundador: títulos em Rye e números em Bebas Neue', () => {
+    expect(html).toContain('family=Rye');
+    expect(html).toContain('family=Bebas+Neue');
+    expect(css).toMatch(/--font-type: 'Rye'/);
+    expect(css).toMatch(/--font-num: 'Bebas Neue'/);
+  });
+
+  it('o HUD mostra só ícone e valor: o texto de Energia, Cash, Ouro e Respeito fica escondido', () => {
+    expect(css).toMatch(/\.res-label \{ display: none; \}/);
+    for (const id of ['hud-energy', 'hud-cash', 'hud-gold', 'hud-respect']) expect(html).toContain(`id="${id}"`);
+    expect((html.match(/class="ico res-icon"/g) ?? []).length).toBe(4);
+  });
+
+  it('a subpasta do perfil tem as 4 abas, com a Mala primeiro, e só aparece no Perfil', () => {
+    const panes = [...html.matchAll(/class="sub-tab[^"]*"[^>]*data-pane="([a-z]+)"/g)].map(m => m[1]);
+    expect(panes).toEqual(['mala', 'familia', 'conquistas', 'honra']);
+    expect(css).toMatch(/\.sub-folder \{ display: none; \}\n#app\[data-tab="perfil"\] \.sub-folder \{/);
+    expect(main).toContain("setAttribute('data-tab', tab)");
+  });
+
+  it('a aba ativa (da esquerda e da subpasta) se liga à pasta: cobre a borda e tem curva de encaixe', () => {
+    expect(css).toMatch(/\.game-nav-tab\.active::before \{/);
+    expect(css).toMatch(/\.sub-tab\.active::before, \.sub-tab\.active::after \{/);
+    expect(css).toMatch(/\.sub-tab\.active \{[^}]*margin-bottom: -0\.2rem/);
+  });
+
+  it('os painéis Família e Honra usam dados reais do jogador, e Conquistas avisa que ainda não existem', () => {
+    expect(main).toContain('MAFIA_FAMILIES_LIST.find(f => f.id === p.familyId)');
+    expect(main).toContain('p.statsRecord');
+    expect(main).toContain('As conquistas ainda não existem');
+  });
+});

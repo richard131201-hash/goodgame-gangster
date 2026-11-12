@@ -179,8 +179,10 @@ describe('layout do perfil (R-LAYOUT-7)', () => {
   const css = readFileSync(join(process.cwd(), 'src', 'web', 'style.css'), 'utf8').replace(/\r\n/g, '\n');
   const html = readFileSync(join(process.cwd(), 'index.html'), 'utf8').replace(/\r\n/g, '\n');
 
-  it('em cima: boneco, atributos, arma e os 8 itens; embaixo: a Mala sob boneco, atributos e arma', () => {
-    expect(css).toMatch(/grid-template-areas:\s*"doll attrs weapon gear"\s*"mala mala mala \."/);
+  it('na pasta, uma linha: boneco, atributos (menores), arma e os 8 itens; a Mala vai para a subpasta (R-LAYOUT-10)', () => {
+    expect(css).toMatch(/\.profile-layout-grid \{ grid-template-columns: 17rem 15\.5rem 17rem minmax\(0, 1fr\); grid-template-areas: "doll attrs weapon gear";/);
+    const sub = html.slice(html.indexOf('id="sub-folder"'));
+    expect(sub).toContain('id="inventory-grid"');
   });
 
   it('a arma, os 8 itens e a Mala são painéis próprios, e a arma e os 8 itens não ficam mais embaixo do boneco', () => {
@@ -190,8 +192,8 @@ describe('layout do perfil (R-LAYOUT-7)', () => {
     expect(doll).not.toContain('gear-slots-grid');
   });
 
-  it('os 8 itens são uma grade de 4 colunas (2 linhas), do tamanho dos slots da Mala', () => {
-    expect(css).toMatch(/\.equipped-slots-grid\s*\{[^}]*grid-template-columns:\s*repeat\(4, 6\.86rem\)/);
+  it('os 8 itens são uma grade de 4 colunas (2 linhas) que ocupa a largura do painel', () => {
+    expect(css).toMatch(/\.equipped-slots-grid \{ grid-template-columns: repeat\(4, minmax\(0, 1fr\)\); \}/);
   });
 });
 

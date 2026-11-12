@@ -293,9 +293,68 @@ async function boot() {
 // ========================================================
 // TOP HUD UPDATES
 // ========================================================
+// ---------- Subpasta do perfil (R-LAYOUT-10): Mala, Família, Conquistas e Honra ----------
+function kvRows(rows: [string, string][]): string {
+  return `<dl class="kv">${rows.map(([k, v]) => `<dt>${k}</dt><dd class="n">${v}</dd>`).join('')}</dl>`;
+}
+
+function renderSubPanes() {
+  const p = gameState.getPlayer();
+
+  const fam = p.familyId ? MAFIA_FAMILIES_LIST.find(f => f.id === p.familyId) : undefined;
+  const paneFam = document.getElementById('pane-familia');
+  if (paneFam) {
+    paneFam.innerHTML = fam
+      ? `<div class="sp-fam"><div class="sp-emblem" aria-hidden="true">${fam.emblem}</div><div class="sp-body">
+           <h4 class="sp-title">${escHtml(fam.name)}</h4>
+           <p class="sp-motto">${escHtml(fam.motto)}</p>
+           ${kvRows([
+             ['Líder', escHtml(fam.leaderName)],
+             ['Membros', `${fam.membersCount} / ${fam.maxMembers}`],
+             ['Bônus de XP', `+${fam.buffs.xpBonusPct}%`],
+             ['Bônus de dano', `+${fam.buffs.attackBonusPct}%`],
+             ['Energia', `+${fam.buffs.energyRegenBonusPct}%`],
+           ])}
+         </div></div>`
+      : `<p class="sp-empty">Você ainda não faz parte de uma família. Escolha uma na aba dos três vultos, à esquerda.</p>`;
+  }
+
+  const paneConq = document.getElementById('pane-conquistas');
+  if (paneConq) {
+    paneConq.innerHTML =
+      `<div class="sp-achs" aria-label="Conquistas">${Array.from({ length: 10 }, () => '<div class="sp-ach"><svg class="ico" aria-hidden="true"><use href="#i-q"/></svg></div>').join('')}</div>
+       <p class="sp-empty">As conquistas ainda não existem. Cada uma vai aparecer aqui quando for desbloqueada.</p>`;
+  }
+
+  const paneHonra = document.getElementById('pane-honra');
+  if (paneHonra) {
+    const r = p.statsRecord;
+    const duels = r.duelsWon + r.duelsLost;
+    paneHonra.innerHTML = `<div class="sp-honor"><div class="sp-plaque"><small>RESPEITO</small><div class="n">${p.respect.toLocaleString()}</div></div>
+      ${kvRows([
+        ['Duelos vencidos', `${r.duelsWon} / ${duels}`],
+        ['Missões cumpridas', r.missionsCompleted.toLocaleString()],
+        ['Maior crítico', Math.round(r.highestCrit).toLocaleString()],
+        ['Dano total causado', Math.round(r.totalDamageDealt).toLocaleString()],
+      ])}</div>`;
+  }
+}
+
+document.querySelectorAll<HTMLElement>('.sub-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const pane = tab.dataset.pane;
+    document.querySelectorAll<HTMLElement>('.sub-tab').forEach(o => {
+      o.classList.toggle('active', o === tab);
+      o.setAttribute('aria-selected', String(o === tab));
+    });
+    document.querySelectorAll<HTMLElement>('.sub-pane').forEach(pn => pn.classList.toggle('active', pn.dataset.pane === pane));
+  });
+});
+
 /** Orelha e carimbo da pasta da aba aberta (R-LAYOUT-9). */
 function updateFolderHeader(tabName?: string) {
   const tab = tabName ?? document.querySelector('.game-nav-tab.active')?.getAttribute('data-tab') ?? 'perfil';
+  document.getElementById('app')?.setAttribute('data-tab', tab);
   const h = FOLDER_HEADERS[tab] ?? FOLDER_HEADERS.perfil;
   const p = gameState.getPlayer();
   const title = tab === 'perfil' && p.hasCreatedCharacter ? `${h.title} · ${p.name}` : h.title;
@@ -462,7 +521,7 @@ function renderProfileView() {
   // 1. Paperdoll & Wielded Weapon
   const avatarSvg = document.getElementById('profile-avatar-svg');
   if (avatarSvg) {
-    avatarSvg.innerHTML = renderPaperdollSVG(p.appearance, { width: 16.2, height: 21 });
+    avatarSvg.innerHTML = renderPaperdollSVG(p.appearance, { width: 15.2, height: 16.5 });
   }
 
   const weaponHolder = document.getElementById('profile-weapon-holder');
@@ -510,6 +569,7 @@ function renderProfileView() {
 
   // 4. Inventory Slots (12 slots)
   renderInventoryGrid();
+  renderSubPanes();
 }
 
 // STAT BUTTONS (FREE POINTS & CASH TRAINING)

@@ -3713,3 +3713,144 @@ html[data-skin="bege"] .game-main-content .gg-style-badge, html[data-skin="bege"
 html[data-skin="bege"] .game-main-content [style*="rgba(0,0,0,0.3)"], html[data-skin="bege"] .game-main-content [style*="rgba(0,0,0,0.2)"], html[data-skin="bege"] .game-main-content [style*="rgba(0,0,0,0.4)"] { background: rgba(255, 255, 255, 0.35) !important; }
 html[data-skin="bege"] .game-main-content .boss-portrait-box, html[data-skin="bege"] .game-main-content .boss-hp-track { background: var(--slot); border-color: var(--slot-line); }
 html[data-skin="bege"] .game-main-content .boss-portrait-box * { color: var(--ink); }
+
+/* ================================================================================================ */
+/* SEGUNDA RODADA DA PASTA (R-LAYOUT-10): fontes Rye e Bebas, HUD só com ícones, atributos menores,   */
+/* subpasta do perfil (Mala, Família, Conquistas, Honra) e abas ativas ligadas à pasta.               */
+/* ================================================================================================ */
+:root {
+  --font-type: 'Rye', Georgia, serif;
+  --font-serif: 'Rye', Georgia, serif;
+  --font-num: 'Bebas Neue', 'Arial Narrow', sans-serif;
+  --fillet: 0.55rem;
+}
+
+/* Títulos em Rye (estilo faroeste/saloon) */
+.hud-player-name { font-size: 1.55rem; letter-spacing: 0.03rem; }
+.folder-tab { font-size: 1.05rem; letter-spacing: 0.05rem; }
+.folder-stamp { font-size: 1.55rem; letter-spacing: 0.06rem; }
+.profile-stats-panel.compact .panel-header-banner h3, .profile-weapon-panel .panel-header-banner h3, .profile-gear-panel .panel-header-banner h3 { font-size: 1.1rem; letter-spacing: 0.05rem; }
+.mala-side-label { font-size: 1.4rem; letter-spacing: 0.08rem; }
+
+/* Números em Bebas Neue (condensada, mais legível) */
+.res-val, .attr-c-pts, .hud-lvl-circle, .hud-xp-text, .inv-dmg, .kv .n, .sp-plaque .n { font-family: var(--font-num); font-weight: 400; font-variant-numeric: lining-nums tabular-nums; }
+.res-val { font-size: 1.5rem; letter-spacing: 0.04rem; line-height: 1; }
+.hud-lvl-circle { font-size: 1.15rem; }
+.hud-xp-text { font-size: 0.85rem; letter-spacing: 0.05rem; }
+.attr-c-pts { font-size: 1.6rem; letter-spacing: 0.03rem; }
+.inv-dmg { font-size: 0.8rem; letter-spacing: 0.04rem; }
+
+/* HUD: Energia, Cash, Ouro e Respeito só com ícone e valor (os ícones são provisórios) */
+.res-label { display: none; }
+.res-card { padding: 0.4rem 1.1rem 0.4rem 0.8rem; gap: 0.65rem; }
+.res-icon { width: 1.9rem; height: 1.9rem; }
+
+/* Pilha: a pasta do perfil e, embaixo dela, a subpasta */
+.stack { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.stack > .folder { flex: 1 1 auto; padding: 1rem 1.2rem 1.2rem; border-radius: 0 0.9rem 0.9rem 0.9rem; }
+#app[data-tab="perfil"] .stack > .folder { flex: 0 0 auto; }
+.folder-stamp { top: -1.9rem; right: 2.2rem; }
+
+/* Perfil: atributos menores, equipamento em 4 colunas, foto menor */
+.profile-layout-grid { grid-template-columns: 17rem 15.5rem 17rem minmax(0, 1fr); grid-template-areas: "doll attrs weapon gear"; grid-template-rows: auto; height: auto; align-items: start; }
+.profile-avatar-frame { height: 16.5rem; }
+.attr-c-row { grid-template-columns: 1fr 4rem 0.8rem 2.6rem; height: 2.35rem; }
+.attr-c-name { font-size: 0.98rem; }
+.btn-attr-plus { width: 2.6rem; height: 1.45rem; font-size: 1.2rem; }
+.equipped-slots-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.equipped-slots-grid .gear-ico { width: 3.4rem; height: 3.4rem; }
+
+/* Subpasta */
+.sub-folder { display: none; }
+#app[data-tab="perfil"] .sub-folder {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-top: 2.4rem;
+  padding: 1rem 1.2rem 1.1rem;
+  background: var(--cover);
+  border: 0.1rem solid var(--cover-edge);
+  border-radius: 0 0.9rem 0.9rem 0.9rem;
+}
+.sub-folder::after { content: ""; position: absolute; inset: 0.45rem; border: 0.12rem dashed var(--stitch); border-radius: 0.6rem; pointer-events: none; z-index: 3; }
+.sub-tabs { position: absolute; left: 1.5rem; bottom: calc(100% + 0.1rem); display: flex; align-items: flex-end; gap: 0.3rem; z-index: 4; }
+.sub-tab {
+  position: relative;
+  font-family: var(--font-type);
+  font-size: 1rem;
+  letter-spacing: 0.05rem;
+  text-transform: uppercase;
+  padding: 0.32rem 1.3rem 0.3rem;
+  background: var(--cover-dark);
+  border: 0.1rem solid var(--cover-edge);
+  border-bottom: 0;
+  border-radius: 0.7rem 0.7rem 0 0;
+  color: var(--glyph);
+  cursor: pointer;
+  opacity: 0.9;
+}
+.sub-tab { --fillet: 0.8rem; }
+.sub-tab:hover { opacity: 1; color: var(--gold-text); }
+.sub-tab:focus-visible { outline: 0.15rem solid var(--gold); outline-offset: 0.1rem; }
+.sub-tab.active { background: var(--cover); border-color: var(--gold); color: var(--gold); padding-bottom: 0.62rem; margin-bottom: -0.2rem; opacity: 1; z-index: 2; }
+html[data-skin="bege"] .sub-tab.active { color: #6a3d0a; }
+.sub-sheet { position: relative; z-index: 1; flex: 1 1 auto; min-height: 0; overflow: hidden; background: var(--paper); border: 0.0625rem solid var(--line); border-radius: 0.5rem; padding: 1rem 1.2rem; }
+.sub-pane { display: none; height: 100%; }
+.sub-pane.active { display: block; }
+.sub-sheet .profile-inventory-panel { grid-area: auto; background: transparent; border: 0; padding: 0; gap: 1rem; align-items: stretch; box-shadow: none; }
+.sub-sheet .inventory-slots-grid { grid-template-columns: repeat(5, 6.6rem); grid-auto-rows: 6.6rem; }
+.sub-sheet .inv-slot { aspect-ratio: auto; }
+.sub-sheet .inv-item-details-box { flex: 1 1 0; min-width: 0; }
+
+/* painéis Família, Conquistas e Honra */
+.sp-fam { display: grid; grid-template-columns: 9rem 1fr; gap: 1.4rem; align-items: center; }
+.sp-emblem { aspect-ratio: 1; display: grid; place-items: center; font-size: 4.5rem; background: var(--slot); border: 0.1rem solid var(--gold); border-radius: 0.6rem; }
+.sp-title { margin: 0 0 0.2rem; font-family: var(--font-type); font-weight: 400; font-size: 1.3rem; color: var(--gold-text); }
+.sp-motto { margin: 0 0 0.7rem; font-size: 0.9rem; font-style: italic; color: var(--soft); }
+.sp-empty { margin: 0.6rem 0 0; font-size: 0.95rem; color: var(--soft); }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 1.4rem; align-items: baseline; margin: 0; }
+.kv dt { color: var(--soft); font-size: 0.95rem; }
+.kv dd { margin: 0; color: var(--ink); font-size: 1.3rem; letter-spacing: 0.03rem; }
+.sp-achs { display: grid; grid-template-columns: repeat(10, 1fr); gap: 0.6rem; }
+.sp-ach { aspect-ratio: 1; display: grid; place-items: center; background: var(--slot); border: 0.08rem solid var(--slot-line); border-radius: 0.4rem; color: var(--glyph); opacity: 0.45; }
+.sp-ach .ico { width: 55%; height: 55%; }
+.sp-honor { display: grid; grid-template-columns: 16rem 1fr; gap: 1.6rem; align-items: center; }
+.sp-plaque { background: var(--gold); color: var(--gold-ink); border: 0.12rem solid var(--cover-edge); border-radius: 0.5rem; padding: 0.7rem 1rem; text-align: center; }
+.sp-plaque small { display: block; letter-spacing: 0.15rem; font-size: 0.8rem; font-weight: 700; }
+.sp-plaque .n { font-size: 3rem; line-height: 1.05; }
+
+/* ---------- Abas ativas LIGADAS à pasta: a aba e a capa viram uma peça só ---------- */
+.game-nav-tab.active {
+  width: 6.2rem;
+  z-index: 3;
+  border-color: var(--gold);
+  border-right-width: 0;
+  background: var(--cover);
+}
+.game-nav-tab.active::before {
+  content: "";
+  position: absolute;
+  right: 0.2rem;
+  top: calc(var(--fillet) * -1);
+  bottom: calc(var(--fillet) * -1);
+  width: var(--fillet);
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 0 0, transparent calc(var(--fillet) - 0.1rem), var(--gold) calc(var(--fillet) - 0.1rem) var(--fillet), var(--cover) var(--fillet)),
+    radial-gradient(circle at 0 100%, transparent calc(var(--fillet) - 0.1rem), var(--gold) calc(var(--fillet) - 0.1rem) var(--fillet), var(--cover) var(--fillet));
+  background-size: var(--fillet) var(--fillet), var(--fillet) var(--fillet);
+  background-position: 0 0, 0 100%;
+  background-repeat: no-repeat;
+}
+.sub-tab.active::before, .sub-tab.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0.2rem;
+  width: var(--fillet);
+  height: var(--fillet);
+  pointer-events: none;
+}
+.sub-tab.active::before { left: calc(var(--fillet) * -1 - 0.1rem); background: radial-gradient(circle at 0 0, transparent calc(var(--fillet) - 0.1rem), var(--gold) calc(var(--fillet) - 0.1rem) var(--fillet), var(--cover-dark) var(--fillet)); }
+.sub-tab.active::after { right: calc(var(--fillet) * -1 - 0.1rem); background: radial-gradient(circle at 100% 0, transparent calc(var(--fillet) - 0.1rem), var(--gold) calc(var(--fillet) - 0.1rem) var(--fillet), var(--cover-dark) var(--fillet)); }

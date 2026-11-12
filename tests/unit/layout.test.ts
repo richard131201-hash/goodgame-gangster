@@ -101,7 +101,7 @@ describe('Mala: 2 fileiras de 5 slots, slot 50% maior (R-MALA-1)', () => {
 
   it('o painel se chama "Mala" na tela', () => {
     const html = ler('index.html');
-    expect(html).toMatch(/class="mala-side-label"[^>]*>Mala</); // nome escrito de lado, à esquerda dos slots (R-LAYOUT-8)
+    expect(html).toMatch(/class="sub-tab active"[^>]*data-pane="mala">Mala</); // a Mala é a primeira aba da subpasta do perfil (R-LAYOUT-10)
     expect(html).not.toContain('inv-capacity-count'); // sem cabeçalho nem contador de slots
     expect(html).not.toContain('Mochila');
   });

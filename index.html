@@ -6,7 +6,7 @@
   <title>Mobster Rise — Gangster RPG</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600;700;800&family=Special+Elite&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600;700;800&family=Rye&family=Bebas+Neue&display=swap" rel="stylesheet">
   <script>try{if(localStorage.getItem('mobster-skin')==='bege')document.documentElement.setAttribute('data-skin','bege')}catch(e){}</script>
   <link rel="stylesheet" href="/src/web/style.css" />
 </head>
@@ -31,6 +31,7 @@
       <symbol id="i-exit" viewBox="0 0 24 24"><path d="M10 4H5v16h5M14 8l4 4-4 4M18 12H9"/></symbol>
       <symbol id="i-scissors" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><path d="M8 7.5l12 9M8 16.5l12-9"/></symbol>
       <symbol id="i-theme" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4v16"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></symbol>
+      <symbol id="i-q" viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4c0 3 1 4 3 5M17 6h3c0 3-1 4-3 5M12 14v4M8 20h8M10.2 8.2a2 2 0 1 1 2.8 1.8c-.7.4-1 .7-1 1.5"/></symbol>
       <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.5-5.8M20 4v5h-5"/></symbol>
       <symbol id="g-chapeu" viewBox="0 0 24 24"><path d="M2 16h20M5 16v-3a7 7 0 0 1 14 0v3M5 13.5h14"/></symbol>
       <symbol id="g-peitoral" viewBox="0 0 24 24"><path d="M8 3L3 7l2.5 3.5V21h13V10.5L21 7l-5-4-4 3zM12 6v15M9.5 10h1M9.5 14h1"/></symbol>
@@ -121,6 +122,7 @@
       <button class="game-nav-tab" role="tab" aria-selected="false" data-tab="simulador" data-name="Simulador" aria-label="Simulador"><svg class="ico " aria-hidden="true"><use href="#i-chart"/></svg></button>
     </nav>
 
+    <div class="stack">
     <div class="folder">
       <div class="folder-tab" id="folder-title">FICHA</div>
       <div class="folder-stamp" id="folder-stamp" aria-hidden="true">CONFIDENCIAL</div>
@@ -202,17 +204,6 @@
           <div class="profile-gear-panel">
             <div class="panel-header-banner"><h3>Equipamento</h3></div>
             <div class="equipped-slots-grid" id="gear-slots-grid"></div>
-          </div>
-
-          <!-- MALA (quadro verde do fundador) -->
-          <div class="profile-inventory-panel">
-            <div class="mala-side-label" aria-hidden="true">Mala</div>
-
-            <div class="inventory-slots-grid" id="inventory-grid">
-              <!-- 12 slots dynamically rendered -->
-            </div>
-
-            <div class="inv-item-details-box" id="inv-details-card" style="display: none;"></div>
           </div>
 
         </div>
@@ -407,6 +398,30 @@
       </section>
 
     </main>
+    </div>
+
+    <!-- SUBPASTA DO PERFIL (R-LAYOUT-10): Mala, Família, Conquistas e Honra. Só aparece no Perfil. -->
+    <div class="sub-folder" id="sub-folder">
+      <div class="sub-tabs" role="tablist" aria-label="Subpasta do perfil">
+        <button type="button" class="sub-tab active" role="tab" aria-selected="true" data-pane="mala">Mala</button>
+        <button type="button" class="sub-tab" role="tab" aria-selected="false" data-pane="familia">Família</button>
+        <button type="button" class="sub-tab" role="tab" aria-selected="false" data-pane="conquistas">Conquistas</button>
+        <button type="button" class="sub-tab" role="tab" aria-selected="false" data-pane="honra">Honra</button>
+      </div>
+      <div class="sub-sheet">
+        <div class="sub-pane active" data-pane="mala">
+          <div class="profile-inventory-panel">
+            <div class="inventory-slots-grid" id="inventory-grid">
+              <!-- slots da Mala desenhados pelo main.ts -->
+            </div>
+            <div class="inv-item-details-box" id="inv-details-card" style="display: none;"></div>
+          </div>
+        </div>
+        <div class="sub-pane" data-pane="familia" id="pane-familia"></div>
+        <div class="sub-pane" data-pane="conquistas" id="pane-conquistas"></div>
+        <div class="sub-pane" data-pane="honra" id="pane-honra"></div>
+      </div>
+    </div>
     </div>
     </div>
 
