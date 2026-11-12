@@ -4148,3 +4148,6 @@ html[data-skin="bege"] .res-gold-plus { background: #d9c690; color: #6a3d0a; bor
 .res-gold-plus:hover { filter: brightness(1.15); }
 .res-gold-plus:focus-visible { outline: 0.15rem solid var(--gold); outline-offset: 0.12rem; }
 @media (prefers-reduced-motion: reduce) { .res-gold-plus::after { animation: none; } }
+/* Simetria do card do Ouro (R-OURO-2): o mesmo respiro à esquerda (ícone) e à direita (botão), "+" no centro do botão */
+.res-card.res-gold { padding: 0.4rem 0.8rem; }
+.res-gold-plus { padding-bottom: 0.14rem; }
