@@ -4107,3 +4107,20 @@ html[data-skin="bege"] .game-nav-tab .ico-img.ico-ficha, html[data-skin="bege"] 
 .folder.has-stitch::after, .sub-folder.has-stitch::after, .notice-card.has-stitch::after { display: none; }
 /* A aba ativa não tem mais a linha amarela cheia: a borda dela é a mesma da pasta, e quem a contorna é só a costura (R-PASTA-1) */
 .game-nav-tab.active, .sub-tab.active { border-color: var(--cover-edge); }
+
+/* A 1ª aba de ícone começa na linha do topo da pasta (sem a quina que sobrava acima dela) (R-PASTA-1) */
+.game-main-nav { padding-top: 0; }
+.folder { z-index: auto; }
+
+/* SELO "PAPEL" (R-SELO-1): carimbo com fundo de papel que cobre o que estiver atrás, moldura dupla e tinta falhada */
+.folder-stamp, .notice-stamp {
+  background: var(--paper);
+  border: 0.22rem solid var(--stamp);
+  border-radius: 0.4rem;
+  opacity: 1;
+  filter: url(#stamp-grunge);
+  z-index: 25;
+}
+.folder-stamp { padding: 0.15rem 0.95rem; }
+.notice-stamp { padding: 0.08rem 0.9rem; }
+.folder-stamp::before, .notice-stamp::before { content: ""; position: absolute; inset: 0.18rem; border: 0.07rem solid var(--stamp); border-radius: 0.2rem; pointer-events: none; }

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { cleanPoints, roundedPath, stitchOutline } from '../../src/web/stitch.js';
+import { cleanPoints, roundedPath, stitchOutline, STITCH_INSET_REM } from '../../src/web/stitch.js';
 
 const css = readFileSync('src/web/style.css', 'utf8');
 const main = readFileSync('src/web/main.ts', 'utf8');
@@ -37,5 +37,20 @@ describe('costura que contorna a aba ativa (R-PASTA-1)', () => {
     expect(main).toContain("top: () => sub.querySelector<HTMLElement>('.sub-tab.active')");
     expect(notice).toContain("top: () => card.querySelector<HTMLElement>('.notice-ear')");
     expect(css).toMatch(/\.folder\.has-stitch::after, \.sub-folder\.has-stitch::after, \.notice-card\.has-stitch::after \{ display: none; \}/);
+  });
+
+  it('a costura fica rente à borda, com o mesmo respiro em todo o jogo, e a 1ª aba começa na linha do topo da pasta', () => {
+    expect(STITCH_INSET_REM).toBe(0.25);
+    expect(main).not.toMatch(/insetRem: 0\.[0-9]+[,}]/);
+    expect(notice).not.toMatch(/insetRem: 0\.[0-9]+[,}]/);
+    expect(css).toMatch(/\.game-main-nav \{ padding-top: 0; \}/);
+    expect(css).toMatch(/\.game-nav-tab\.active, \.sub-tab\.active \{ border-color: var\(--cover-edge\); \}/);
+  });
+
+  it('o selo é o "Papel" (R-SELO-1): fundo de papel opaco que cobre o que estiver atrás, moldura dupla, tinta falhada', () => {
+    const html = readFileSync('index.html', 'utf8');
+    expect(html).toContain('id="stamp-grunge"');
+    expect(css).toMatch(/\.folder-stamp, \.notice-stamp \{[^}]*background: var\(--paper\);[^}]*opacity: 1;[^}]*filter: url\(#stamp-grunge\);/);
+    expect(css).toMatch(/\.folder-stamp::before, \.notice-stamp::before \{/);
   });
 });

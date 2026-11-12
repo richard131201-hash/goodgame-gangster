@@ -73,7 +73,7 @@ import {
 import { ITEM_SLOTS, type ItemSlot } from '../shared/itemRoll.js';
 import { applySkin, readSkin, toggleSkin, FOLDER_HEADERS } from './skin.js';
 import { notify, ask } from './notice.js';
-import { attachStitch } from './stitch.js';
+import { attachStitch, STITCH_INSET_REM } from './stitch.js';
 import { weaponArtImg, sellableInShop } from './weaponArt.js';
 import { positionAmongNpcs, positionInRows, rankLabel } from './rankPosition.js';
 import { BAG_CAPACITY_MAX, BAG_UPGRADE_SLOTS, BIG_BAG_PRICE_GOLD } from '../shared/bag.js';
@@ -2348,11 +2348,11 @@ function initStitches() {
       body: () => shell.querySelector<HTMLElement>('.stack > .folder'),
       top: () => document.getElementById('folder-title'),
       left: () => shell.querySelector<HTMLElement>('.game-nav-tab.active'),
-      insetRem: 0.5,
+      insetRem: STITCH_INSET_REM,
     });
   }
   const sub = document.getElementById('sub-folder');
-  if (sub) attachStitch({ host: sub, top: () => sub.querySelector<HTMLElement>('.sub-tab.active'), insetRem: 0.45 });
+  if (sub) attachStitch({ host: sub, top: () => sub.querySelector<HTMLElement>('.sub-tab.active'), insetRem: STITCH_INSET_REM });
 }
 initStitches();
 

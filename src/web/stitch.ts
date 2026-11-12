@@ -17,6 +17,9 @@ export interface StitchSpec {
   insetRem: number;
 }
 
+/** Distância da costura até a borda da pasta: a mesma em TODO o jogo (R-PASTA-1). */
+export const STITCH_INSET_REM = 0.25;
+
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
 function dist(a: Pt, b: Pt): number {
