@@ -4103,5 +4103,7 @@ html[data-skin="bege"] .game-nav-tab .ico-img.ico-ficha, html[data-skin="bege"] 
 .shell { position: relative; isolation: isolate; }
 .sub-folder, .notice-card { position: relative; }
 .stitch-svg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 20; }
-.stitch-svg path { fill: none; stroke: var(--stitch); stroke-width: 0.12rem; stroke-dasharray: 0.4rem 0.26rem; stroke-linecap: butt; }
+.stitch-svg path { fill: none; stroke: var(--stitch); stroke-width: 0.06rem; stroke-dasharray: 0.28rem 0.2rem; stroke-linecap: butt; opacity: 0.85; }
 .folder.has-stitch::after, .sub-folder.has-stitch::after, .notice-card.has-stitch::after { display: none; }
+/* A aba ativa não tem mais a linha amarela cheia: a borda dela é a mesma da pasta, e quem a contorna é só a costura (R-PASTA-1) */
+.game-nav-tab.active, .sub-tab.active { border-color: var(--cover-edge); }
