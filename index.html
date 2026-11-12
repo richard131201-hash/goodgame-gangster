@@ -130,13 +130,11 @@
             <div class="profile-paperdoll-wrapper">
               <div class="profile-avatar-frame" id="profile-avatar-frame">
                 <div class="avatar-svg-container" id="profile-avatar-svg"></div>
+                <button type="button" id="open-customizer-modal-btn" class="avatar-edit-btn" title="Personalizar visual do gangster" aria-label="Personalizar visual do gangster">✂️</button>
                 <div class="avatar-weapon-holder side-a" id="profile-weapon-holder"></div>
               </div>
             </div>
 
-            <button id="open-customizer-modal-btn" class="arena-btn-secondary" style="width: 100%; margin-top: 0.625rem;">
-              ✂️ Personalizar Visual do Gangster
-            </button>
           </div>
 
           <!-- CENTRO: ATRIBUTOS (compacto, ao lado do personagem). O balão de cada linha mostra o que ele influencia. -->
@@ -214,18 +212,15 @@
             </div>
           </div>
 
-          <!-- OS 8 ITENS DO PERFIL (quadro vermelho do fundador): desenhados pelo main.ts (renderGearSlots) -->
+          <!-- EQUIPAMENTO: os 8 itens (quadro vermelho do fundador): desenhados pelo main.ts (renderGearSlots) -->
           <div class="profile-gear-panel">
-            <div class="panel-header-banner"><h3>Itens do Perfil</h3></div>
+            <div class="panel-header-banner"><h3>Equipamento</h3></div>
             <div class="equipped-slots-grid" id="gear-slots-grid"></div>
           </div>
 
           <!-- MALA (quadro verde do fundador) -->
           <div class="profile-inventory-panel">
-            <div class="panel-header-banner">
-              <h3>Mala</h3>
-              <span class="inv-capacity-text" id="inv-capacity-count">0 / 12 slots</span>
-            </div>
+            <div class="mala-side-label" aria-hidden="true">Mala</div>
 
             <div class="inventory-slots-grid" id="inventory-grid">
               <!-- 12 slots dynamically rendered -->
@@ -283,7 +278,7 @@
           <div class="shop-filter-tabs" id="shop-category-filters">
             <button class="choice-btn active" data-scat="all">Todos os Artigos</button>
             <button class="choice-btn" data-scat="weapon">🔫 Armas (15)</button>
-            <button class="choice-btn" data-scat="gear">🎩 Itens do Perfil</button>
+            <button class="choice-btn" data-scat="gear">🎩 Equipamento</button>
             <button class="choice-btn" data-scat="consumable">🥃 Consumíveis</button>
           </div>
         </div>

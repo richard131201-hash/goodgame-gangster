@@ -3222,3 +3222,60 @@ body.dragging-weapon .weapon-slot { box-shadow: 0 0 0.625rem rgba(212, 175, 55, 
 
 /* Mala (R-MALA-1): 2 fileiras de 5 slots; cada slot 50% maior que antes (73 px -> 110 px no palco de 1672) = 6.86rem */
 .inventory-slots-grid { grid-template-columns: repeat(5, 6.86rem); justify-content: start; }
+
+/* ===================================================== */
+/* SEM ROLAGEM (R-LAYOUT-8): o jogo cabe no palco 16:9   */
+/* ===================================================== */
+html, body { height: 100%; overflow: hidden; }
+#app {
+  height: calc(var(--stage-w) * 9 / 16);
+  min-height: 0;
+  padding-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#app > .app-header, #app > .game-main-nav { flex: 0 0 auto; }
+.game-main-nav { margin-bottom: 0.75rem; }
+.game-main-content { flex: 1 1 auto; min-height: 0; overflow: hidden; }
+.game-main-content > .game-view-section.active { height: 100%; }
+/* abas com listas longas (missões, loja, ranking...): a PÁGINA não rola; a lista rola dentro do próprio espaço, por enquanto */
+.game-main-content > .view-section.active { height: 100%; overflow-y: auto; }
+
+/* Perfil: a Mala embaixo, sem cabeçalho, com o nome "Mala" de lado, à esquerda dos slots (R-LAYOUT-8) */
+.profile-inventory-panel { display: flex; align-items: stretch; gap: 0.875rem; padding: 0.75rem 1rem 0.75rem 0.5rem; }
+.mala-side-label {
+  flex: 0 0 auto;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.1rem;
+  color: #fff;
+  padding: 0 0.25rem;
+}
+.profile-inventory-panel .inventory-slots-grid { margin-bottom: 0; flex: 0 0 auto; }
+.profile-inventory-panel .inv-item-details-box { flex: 1 1 0; min-width: 0; align-self: stretch; min-height: 0; overflow: hidden; }
+
+/* Botão de personalizar: quadrado de cantos arredondados no canto do card do personagem */
+.avatar-edit-btn {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 5;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  line-height: 1;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.55);
+  border: 0.0625rem solid rgba(212, 175, 55, 0.55);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.avatar-edit-btn:hover { background: rgba(212, 175, 55, 0.25); border-color: #f1c40f; }

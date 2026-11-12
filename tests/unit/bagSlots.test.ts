@@ -194,3 +194,29 @@ describe('layout do perfil (R-LAYOUT-7)', () => {
     expect(css).toMatch(/\.equipped-slots-grid\s*\{[^}]*grid-template-columns:\s*repeat\(4, 6\.86rem\)/);
   });
 });
+
+describe('perfil sem rolagem (R-LAYOUT-8)', () => {
+  const css = readFileSync(join(process.cwd(), 'src', 'web', 'style.css'), 'utf8').replace(/\r\n/g, '\n');
+  const html = readFileSync(join(process.cwd(), 'index.html'), 'utf8').replace(/\r\n/g, '\n');
+  const main = readFileSync(join(process.cwd(), 'src', 'web', 'main.ts'), 'utf8').replace(/\r\n/g, '\n');
+
+  it('a página não rola: o app tem a altura do palco 16:9 e o corpo não tem rolagem', () => {
+    expect(css).toMatch(/html, body \{ height: 100%; overflow: hidden; \}/);
+    expect(css).toMatch(/#app \{[^}]*height: calc\(var\(--stage-w\) \* 9 \/ 16\)/);
+  });
+
+  it('o botão de personalizar é um quadrado no canto do card do personagem, e não fica mais sob o boneco', () => {
+    const frame = html.slice(html.indexOf('id="profile-avatar-frame"'), html.indexOf('class="profile-stats-panel'));
+    expect(frame).toContain('id="open-customizer-modal-btn"');
+    expect(html).not.toContain('Personalizar Visual do Gangster');
+    expect(css).toMatch(/\.avatar-edit-btn \{[^}]*position: absolute/);
+  });
+
+  it('o painel dos 8 itens se chama Equipamento e a célula não mostra os atributos (só o balão ao passar o mouse)', () => {
+    expect(html).toContain('<h3>Equipamento</h3>');
+    expect(html).not.toContain('Itens do Perfil');
+    const cell = main.slice(main.indexOf('function renderGearSlots'), main.indexOf('function renderInventoryGrid'));
+    expect(cell).not.toContain('slot-pts');
+    expect(cell).toContain('data-bag-tip');
+  });
+});
