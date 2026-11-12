@@ -36,9 +36,9 @@ export function rollSceneMissions(rand: () => number = Math.random): SceneMissio
 
 // posição (centro, em % da largura da cena), altura (em % da altura da cena) e cores dos bonecos provisórios
 const BOSSES = [
-  { label: 'Trabalho leve', left: 12, h: 46, suit: '#b4b2a6', tie: '#5fa86a' },
-  { label: 'Trabalho médio', left: 43, h: 53, suit: '#6f8a8c', tie: '#d4af37' },
-  { label: 'Trabalho pesado', left: 73, h: 62, suit: '#5b5b63', tie: '#9c2a20' },
+  { label: 'Trabalho leve', left: 30, h: 46, suit: '#b4b2a6', tie: '#5fa86a' },
+  { label: 'Trabalho médio', left: 55, h: 53, suit: '#6f8a8c', tie: '#d4af37' },
+  { label: 'Trabalho pesado', left: 79, h: 62, suit: '#5b5b63', tie: '#9c2a20' },
 ] as const;
 
 const fmt = (n: number) => n.toLocaleString('pt-BR');
