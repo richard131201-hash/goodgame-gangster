@@ -2,6 +2,7 @@ import type { StyleId, Points } from '../engine/types.js';
 import type { CharacterAppearance } from '../web/paperdoll.js';
 import { SHOP_ITEMS, type GameItem } from '../web/gameData.js';
 import { GOLD } from './gold.js';
+import type { ItemSlot } from './itemRoll.js';
 
 /**
  * Modelo do jogador e contas puras (sem tela, sem navegador).
@@ -28,6 +29,8 @@ export interface PlayerState {
   maxEnergy: number;
   /** Marca de tempo (ms) da última regeneração de energia. Ausente em saves antigos. */
   lastEnergyAt?: number;
+  /** Sobe a cada compra de item da loja e muda o estoque (R-ITEM-2). Ausente = 0. */
+  shopSerial?: number;
   /** Capacidade da mochila. Ausente em saves antigos = 10 (R-MOCHILA-1). */
   bagCapacity?: number;
   respect: number;
@@ -39,8 +42,8 @@ export interface PlayerState {
   equipped: {
     /** Arma no espaço da arma. null = desarmado (luta com os punhos). */
     weaponId: string | null;
-    armorId: string | null;
-    accessoryId: string | null;
+    /** Item equipado em cada um dos 8 slots do perfil (id do item na Mala) (R-ITEM-2). */
+    gear: Partial<Record<ItemSlot, string>>;
     consumables: (string | null)[];
   };
 
@@ -109,8 +112,7 @@ export function createNewPlayer(
     freePoints: 0,
     equipped: {
       weaponId: startingWeaponId,
-      armorId: null,
-      accessoryId: null,
+      gear: {},
       consumables: [null, null, null],
     },
     inventory: [
@@ -149,12 +151,12 @@ export function applyXp(p: PlayerState, amount: number): boolean {
   return leveledUp;
 }
 
-/** Pontos efetivos de combate: os do personagem mais os bônus da armadura e do acessório equipados. */
-export function combatPointsOf(p: Pick<PlayerState, 'points' | 'equipped'>): Points {
+/** Pontos efetivos de combate: os do personagem mais os pontos dos itens dos 8 slots que estão equipados. */
+export function combatPointsOf(p: Pick<PlayerState, 'points' | 'equipped' | 'inventory'>): Points {
   const pts: Points = { ...p.points };
-  for (const itemId of [p.equipped.armorId, p.equipped.accessoryId]) {
+  for (const itemId of Object.values(p.equipped.gear ?? {})) {
     if (!itemId) continue;
-    const bonus = SHOP_ITEMS.find(i => i.id === itemId)?.statsBonus;
+    const bonus = p.inventory.find(i => i.id === itemId && i.type === 'gear')?.statsBonus;
     if (!bonus) continue;
     if (bonus.attack) pts.attack += bonus.attack;
     if (bonus.life) pts.life += bonus.life;

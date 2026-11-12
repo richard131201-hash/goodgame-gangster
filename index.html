@@ -145,16 +145,8 @@
             </div>
 
             <!-- OUTROS EQUIPAMENTOS -->
-            <div class="equipped-slots-grid">
-              <div class="gear-slot slot-armor" id="slot-equipped-armor" title="Blindagem/Colete Equipado">
-                <span class="slot-badge">BLINDAGEM</span>
-                <div class="slot-content" id="equipped-armor-display">Nenhum</div>
-              </div>
-              <div class="gear-slot slot-accessory" id="slot-equipped-accessory" title="Amuleto/Acessório Equipado">
-                <span class="slot-badge">ACESSÓRIO</span>
-                <div class="slot-content" id="equipped-acc-display">Nenhum</div>
-              </div>
-            </div>
+            <!-- OS 8 SLOTS DO PERFIL (R-ITEM-2): desenhados pelo main.ts (renderGearSlots) -->
+            <div class="equipped-slots-grid" id="gear-slots-grid"></div>
 
             <button id="open-customizer-modal-btn" class="arena-btn-secondary" style="width: 100%; margin-top: 0.625rem;">
               ✂️ Personalizar Visual do Gangster
@@ -286,8 +278,7 @@
           <div class="shop-filter-tabs" id="shop-category-filters">
             <button class="choice-btn active" data-scat="all">Todos os Artigos</button>
             <button class="choice-btn" data-scat="weapon">🔫 Armas (15)</button>
-            <button class="choice-btn" data-scat="armor">🛡️ Blindagens</button>
-            <button class="choice-btn" data-scat="accessory">💍 Amuletos</button>
+            <button class="choice-btn" data-scat="gear">🎩 Itens do Perfil</button>
             <button class="choice-btn" data-scat="consumable">🥃 Consumíveis</button>
           </div>
         </div>

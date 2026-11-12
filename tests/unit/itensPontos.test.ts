@@ -4,25 +4,30 @@ import { combatPointsOf } from '../../src/shared/player.js';
 import { derivedStats } from '../../src/engine/stats.js';
 import { validateConfig } from '../../src/engine/schema.js';
 import balanceJson from '../../config/balance.config.json' with { type: 'json' };
+import { buildGearItem } from '../../src/shared/gear.js';
 
-describe('itens dão pontos de atributo pequenos (R-ITEM-1)', () => {
-  it('nenhum item de armadura ou acessório dá mais de 15 pontos de um atributo', () => {
-    for (const i of SHOP_ITEMS.filter(x => x.type === 'armor' || x.type === 'accessory')) {
-      for (const k of ['attack', 'life', 'astucia', 'tenacidade'] as const) {
-        expect(i.statsBonus?.[k] ?? 0, `${i.id} ${k}`).toBeLessThanOrEqual(15);
-      }
-    }
+describe('itens dão pontos de atributo pequenos (R-ITEM-1, R-ITEM-2)', () => {
+  it('a loja de catálogo não vende mais armadura nem acessório de valor fixo', () => {
+    expect(SHOP_ITEMS.filter(x => x.type === 'armor' || x.type === 'accessory')).toEqual([]);
   });
 
-  it('o Sobretudo Noir Forrado não infla o HP (antes: 27 pontos viravam 377 e o HP ia a 57 mil)', () => {
+  it('um Peitoral equipado não infla o HP (antes: 27 pontos viravam 377 e o HP ia a 57 mil)', () => {
     const cfg = validateConfig(balanceJson);
     const base = { attack: 35, life: 27, astucia: 37, tenacidade: 12 };
-    const vestido = combatPointsOf({ points: base, equipped: { weaponId: null, armorId: 'armor_sobretudo_blindado', accessoryId: null, consumables: [] } });
-    expect(vestido.life).toBe(27 + 6);
+    const peitoral = buildGearItem('g_peitoral_x', {
+      slot: 'peitoral',
+      level: 9,
+      points: { attack: 0, life: 5, astucia: 0, tenacidade: 0 },
+      variant: 0,
+    });
+    const vestido = combatPointsOf({
+      points: base,
+      inventory: [peitoral],
+      equipped: { weaponId: null, gear: { peitoral: peitoral.id }, consumables: [] },
+    });
+    expect(vestido.life).toBe(27 + 5);
     const input = (points: typeof base) => ({ style: 'malandro' as const, level: 9, points, weapon: undefined as never });
-    const hpBase = derivedStats(input(base), cfg).maxHp;
-    const hpVestido = derivedStats(input(vestido), cfg).maxHp;
-    expect(hpVestido / hpBase).toBeLessThan(1.3);
+    expect(derivedStats(input(vestido), cfg).maxHp / derivedStats(input(base), cfg).maxHp).toBeLessThan(1.3);
   });
 });
 

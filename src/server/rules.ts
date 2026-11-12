@@ -4,6 +4,8 @@ import type { FighterInput, FightEvent, StyleId } from '../engine/types.js';
 import { simulateFight } from '../engine/fight.js';
 import { getWeaponById, WEAPONS_CATALOG, FISTS } from '../engine/weapons.js';
 import { SHOP_ITEMS, MAFIA_FAMILIES_LIST } from '../web/gameData.js';
+import { buildGearItem, gearProblem } from '../shared/gear.js';
+import { ITEM_SLOTS, type ItemSlot } from '../shared/itemRoll.js';
 import type { CharacterAppearance } from '../web/paperdoll.js';
 import { DUEL, duelBounty } from '../shared/duel.js';
 import { goldCap } from '../shared/gold.js';
@@ -180,11 +182,20 @@ const saveSchema = z.object({
   freePoints: int.min(0).max(1_000_000),
   equipped: z.object({
     weaponId: idOrNull,
-    armorId: idOrNull,
-    accessoryId: idOrNull,
+    // itens dos 8 slots: slot -> id do item na mochila (R-ITEM-2)
+    gear: z.record(z.string(), z.string().max(64)).optional(),
     consumables: z.array(idOrNull).max(3),
   }),
-  inventory: z.array(z.object({ id: z.string().max(64), slot: z.number().int().min(0).max(LIMITS.inventoryMax).optional() })).max(LIMITS.inventoryMax),
+  shopSerial: int.min(0).max(1_000_000).optional(),
+  inventory: z
+    .array(
+      z.object({
+        id: z.string().max(64),
+        slot: z.number().int().min(0).max(LIMITS.inventoryMax).optional(),
+        gear: z.object({ slot: z.string().max(16), level: int, points: pointsSchema, variant: int }).optional(),
+      }),
+    )
+    .max(LIMITS.inventoryMax),
   familyId: idOrNull,
   statsRecord: z.object({
     missionsCompleted: nonNeg,
@@ -252,23 +263,42 @@ export function validateSave(db: DbPlayerRow, raw: unknown, now: number): SaveRe
     db.duel_cash_earned;
   if (n.cash > cashCap) return { ok: false, reason: 'cash acima do que o jogo pode ter dado' };
 
-  // Mochila: itens existentes no catálogo (o servidor usa os dados do catálogo, nunca os do navegador)
+  // Mochila: itens do catálogo (o servidor usa os dados do catálogo, nunca os do navegador) ou itens dos 8 slots,
+  // que o servidor refaz a partir de slot, nível, pontos e aparência depois de conferir a coerência (R-ITEM-2).
   const inventory = [];
+  const seenIds = new Set<string>();
   for (const it of n.inventory) {
-    const item = SHOP_ITEMS.find(i => i.id === it.id);
-    if (!item) return { ok: false, reason: `item desconhecido (${it.id})` };
+    if (seenIds.has(it.id)) return { ok: false, reason: `item repetido (${it.id})` };
+    seenIds.add(it.id);
+    let item;
+    if (it.gear) {
+      if (!/^g_[a-z]+_[a-z0-9_]+$/.test(it.id)) return { ok: false, reason: 'id de item inválido' };
+      const g = { ...it.gear, slot: it.gear.slot as ItemSlot };
+      const problem = gearProblem(g, n.level);
+      if (problem) return { ok: false, reason: problem };
+      item = buildGearItem(it.id, g);
+    } else {
+      item = SHOP_ITEMS.find(i => i.id === it.id);
+      if (!item) return { ok: false, reason: `item desconhecido (${it.id})` };
+    }
     inventory.push(it.slot === undefined ? { ...item } : { ...item, slot: it.slot });
   }
+  const shopSerial = n.shopSerial ?? 0;
+  if (shopSerial < (db.save.shopSerial ?? 0)) return { ok: false, reason: 'o contador da loja não pode diminuir' };
   if ((n.bagCapacity ?? LIMITS.bagCapacity) !== LIMITS.bagCapacity) return { ok: false, reason: 'capacidade da mochila inválida' };
 
   // Equipamento: precisa existir e estar na mochila
-  const { weaponId, armorId, accessoryId } = n.equipped;
+  const { weaponId } = n.equipped;
   if (weaponId) {
     if (!WEAPONS_CATALOG.some(w => w.id === weaponId)) return { ok: false, reason: 'arma equipada desconhecida' };
     if (!inventory.some(i => i.weaponRefId === weaponId)) return { ok: false, reason: 'arma equipada não está na mochila' };
   }
-  for (const id of [armorId, accessoryId]) {
-    if (id && !inventory.some(i => i.id === id)) return { ok: false, reason: 'equipamento não está na mochila' };
+  const gear: Partial<Record<ItemSlot, string>> = {};
+  for (const [slot, id] of Object.entries(n.equipped.gear ?? {})) {
+    if (!(ITEM_SLOTS as readonly string[]).includes(slot)) return { ok: false, reason: 'slot de equipamento desconhecido' };
+    const found = inventory.find(i => i.id === id);
+    if (!found || found.gear?.slot !== slot) return { ok: false, reason: 'equipamento não está na mochila ou é de outro slot' };
+    gear[slot as ItemSlot] = id;
   }
   if (n.familyId && !MAFIA_FAMILIES_LIST.some(f => f.id === n.familyId)) return { ok: false, reason: 'família desconhecida' };
 
@@ -287,10 +317,10 @@ export function validateSave(db: DbPlayerRow, raw: unknown, now: number): SaveRe
     points: n.points,
     trainedPoints: n.trainedPoints,
     freePoints: n.freePoints,
+    shopSerial,
     equipped: {
       weaponId: weaponId ?? null,
-      armorId: armorId ?? null,
-      accessoryId: accessoryId ?? null,
+      gear,
       consumables: [...n.equipped.consumables, null, null, null].slice(0, 3),
     },
     inventory,

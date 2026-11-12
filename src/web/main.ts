@@ -70,6 +70,10 @@ import {
   type DuelRival,
 } from './gameData.js';
 
+import { ITEM_SLOTS, type ItemSlot } from '../shared/itemRoll.js';
+import { isGearItem, rollRandomGear, GEAR_ICONS } from '../shared/gear.js';
+import { ITEM_SLOT_LABELS } from '../shared/itemRoll.js';
+
 const config: BalanceConfig = validateConfig(balanceJson);
 
 // ========================================================
@@ -442,11 +446,7 @@ function renderProfileView() {
   const currentWeapon = equippedWeaponDef(p.equipped.weaponId);
   renderWeaponSlot();
 
-  const armorItem = SHOP_ITEMS.find(i => i.id === p.equipped.armorId);
-  document.getElementById('equipped-armor-display')!.textContent = armorItem ? `${armorItem.icon} ${armorItem.name}` : 'Nenhum';
-
-  const accItem = SHOP_ITEMS.find(i => i.id === p.equipped.accessoryId);
-  document.getElementById('equipped-acc-display')!.textContent = accItem ? `${accItem.icon} ${accItem.name}` : 'Nenhum';
+  renderGearSlots();
 
   // 3. Stats & Evolution
   const combatPoints = gameState.getCombatPoints();
@@ -580,6 +580,26 @@ function comparisonHtml(weaponId: string): string {
     <div class="wtip-verdict ${c.verdict}">${verdictText[c.verdict]}</div>`;
 }
 
+/** Os 8 slots do perfil (R-ITEM-2): o item equipado em cada um, com os pontos que ele dá. Clicar num slot cheio desequipa. */
+function renderGearSlots() {
+  const grid = document.getElementById('gear-slots-grid');
+  if (!grid) return;
+  const p = gameState.getPlayer();
+  const short: Record<string, string> = { attack: 'Atq', life: 'Vid', astucia: 'Ast', tenacidade: 'Ten' };
+  grid.innerHTML = ITEM_SLOTS.map(slot => {
+    const item = gameState.equippedGear(slot);
+    if (!item) {
+      return `<div class="gear-slot" data-gear-slot="${slot}"><span class="slot-badge">${ITEM_SLOT_LABELS[slot]}</span><div class="slot-content" style="color: var(--text-muted);">Vazio</div></div>`;
+    }
+    const idx = p.inventory.indexOf(item);
+    const pts = (['attack', 'life', 'astucia', 'tenacidade'] as const)
+      .filter(k => (item.statsBonus?.[k] ?? 0) > 0)
+      .map(k => `+${item.statsBonus![k]} ${short[k]}`)
+      .join(' ');
+    return `<div class="gear-slot filled" data-gear-slot="${slot}" data-bag-tip="${idx}" title="Clique para desequipar"><span class="slot-badge">${ITEM_SLOT_LABELS[slot]}</span><div class="slot-content">${item.icon} ${escHtml(item.name)}</div><div class="slot-pts">${pts}</div></div>`;
+  }).join('');
+}
+
 function renderInventoryGrid() {
   hideWeaponTooltip();
   const p = gameState.getPlayer();
@@ -597,7 +617,7 @@ function renderInventoryGrid() {
     if (entry) {
       const { item, index } = entry;
       const weaponDef = isWeaponItem(item) ? getWeaponById(item.weaponRefId) : null;
-      const isEquipped = !weaponDef && (item.id === p.equipped.armorId || item.id === p.equipped.accessoryId);
+      const isEquipped = !weaponDef && isGearEquipped(item);
 
       html += `
         <div class="inv-slot ${isEquipped ? 'equipped' : ''} ${weaponDef ? 'is-weapon' : ''}" data-inv-idx="${index}" data-slot="${i}" draggable="true"
@@ -623,6 +643,11 @@ function renderInventoryGrid() {
   });
 }
 
+/** O item dos 8 slots está equipado agora? */
+function isGearEquipped(item: GameItem): boolean {
+  return isGearItem(item) && gameState.getPlayer().equipped.gear[item.gear.slot] === item.id;
+}
+
 function showInventoryItemDetails(index: number) {
   const p = gameState.getPlayer();
   const item = p.inventory[index];
@@ -636,7 +661,7 @@ function showInventoryItemDetails(index: number) {
   detailsBox.style.display = '';
 
   const weaponDef = isWeaponItem(item) ? getWeaponById(item.weaponRefId) : null;
-  const isEquipped = !weaponDef && (item.id === p.equipped.armorId || item.id === p.equipped.accessoryId);
+  const isEquipped = !weaponDef && isGearEquipped(item);
   const refund = Math.round(item.priceCash * 0.5);
 
   detailsBox.innerHTML = `
@@ -669,10 +694,8 @@ function showInventoryItemDetails(index: number) {
       renderProfileView();
       showInventoryItemDetails(-1); // a arma saiu da mochila: limpa o cartão de detalhes
       return;
-    } else if (item.type === 'armor') {
-      gameState.equipArmor(item.id);
-    } else if (item.type === 'accessory') {
-      gameState.equipAccessory(item.id);
+    } else if (isGearItem(item)) {
+      gameState.equipGear(item.id);
     }
     renderProfileView();
   });
@@ -691,6 +714,14 @@ function showInventoryItemDetails(index: number) {
     detailsBox.innerHTML = '';
   });
 }
+
+// clicar num slot cheio do perfil desequipa o item (ele continua na Mala)
+document.addEventListener('click', e => {
+  const cell = (e.target as HTMLElement).closest?.('.gear-slot.filled[data-gear-slot]') as HTMLElement | null;
+  if (!cell) return;
+  gameState.unequipGear(cell.getAttribute('data-gear-slot') as ItemSlot);
+  renderProfileView();
+});
 
 // ---------- balão ao passar o mouse (qualquer arma: mochila, loja ou espaço da arma) ----------
 const weaponTooltip = document.createElement('div');
@@ -743,7 +774,11 @@ function showBagItemTooltip(el: HTMLElement) {
   if (!lines.length) lines.push(escHtml(item.description));
   const price = item.priceCash > 0 ? `$${item.priceCash.toLocaleString()}` : 'sem preço';
   const refund = Math.round(item.priceCash * 0.5);
-  const cat = weaponDef ? `Arma · ${escHtml(weaponDef.categoryName)}` : ITEM_TYPE_LABEL[item.type] ?? item.type;
+  const cat = weaponDef
+    ? `Arma · ${escHtml(weaponDef.categoryName)}`
+    : isGearItem(item)
+      ? `${ITEM_SLOT_LABELS[item.gear.slot]} · nível ${item.gear.level}`
+      : ITEM_TYPE_LABEL[item.type] ?? item.type;
   weaponTooltip.innerHTML = `
     <div class="wtip-title">${item.icon} ${escHtml(item.name)}</div>
     <div class="wtip-cat">${cat}</div>
@@ -1052,7 +1087,11 @@ function startMissionCombat(mission: MissionDef) {
       if (won) {
         let dropMsg = '';
         if (Math.random() < mission.itemDropChance && mission.possibleDropId) {
-          const dropItem = SHOP_ITEMS.find(i => i.id === mission.possibleDropId);
+          // 'gear' = item aleatório dos 8 slots, do nível do jogador (R-ITEM-2); o resto vem do catálogo
+          const dropItem =
+            mission.possibleDropId === 'gear'
+              ? rollRandomGear(gameState.getPlayer().level, Math.random)
+              : SHOP_ITEMS.find(i => i.id === mission.possibleDropId);
           if (dropItem) {
             const coube = gameState.grantItem(dropItem);
             dropMsg = coube
@@ -1336,9 +1375,12 @@ function renderShopView() {
 
   const player = gameState.getPlayer();
 
-  const filtered = activeShopFilter === 'all'
-    ? SHOP_ITEMS
-    : SHOP_ITEMS.filter(i => i.type === activeShopFilter);
+  // Itens dos 8 slots: estoque já sorteado, atributos à vista (R-ITEM-2); o resto vem do catálogo fixo
+  const stock = gameState.getShopStock();
+  const filtered = [
+    ...(activeShopFilter === 'all' || activeShopFilter === 'gear' ? stock : []),
+    ...(activeShopFilter === 'gear' ? [] : activeShopFilter === 'all' ? SHOP_ITEMS : SHOP_ITEMS.filter(i => i.type === activeShopFilter)),
+  ];
 
   container.innerHTML = filtered.map(item => {
     const meetsLevel = player.level >= item.levelReq;
@@ -1352,7 +1394,7 @@ function renderShopView() {
         <div class="shop-item-header">
           <span class="shop-item-title">${item.icon} ${item.name}</span>
           <span style="font-size: 0.625rem; color: ${meetsLevel ? '#2ecc71' : '#e74c3c'}; font-weight: 700;">
-            Nv. Mínimo: ${item.levelReq}
+            ${isGearItem(item) ? `${ITEM_SLOT_LABELS[item.gear.slot]} · Nv. ${item.gear.level}` : `Nv. Mínimo: ${item.levelReq}`}
           </span>
         </div>
         <p style="font-size: 0.75rem; color: var(--text-muted);">${item.description}</p>
@@ -1373,6 +1415,17 @@ function renderShopView() {
   container.querySelectorAll('.btn-buy-shop-item').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = btn.getAttribute('data-item-id');
+      if (id && id.startsWith('g_')) {
+        // item dos 8 slots: confere cash e espaço antes de cobrar; o estoque muda depois da compra
+        const why = gameState.buyGearFromStock(id);
+        if (why === null) {
+          sound.playCrit();
+          renderShopView();
+        } else {
+          alert({ sem_item: 'Este item não está mais à venda.', cash: 'Cash insuficiente para esta compra.', mochila: `Mala cheia (${gameState.getBagCount()}/${gameState.getBagCapacity()}). Venda ou use um item para abrir espaço.` }[why]);
+        }
+        return;
+      }
       const item = SHOP_ITEMS.find(i => i.id === id);
       if (!item) return;
 

@@ -1,8 +1,18 @@
 import { WEAPONS_CATALOG, type WeaponDef } from '../engine/weapons.js';
 import type { StyleId } from '../engine/types.js';
 import type { CharacterAppearance } from './paperdoll.js';
+import type { ItemAttr, ItemSlot } from '../shared/itemRoll.js';
 
-export type ItemType = 'weapon' | 'armor' | 'accessory' | 'consumable';
+export type ItemType = 'weapon' | 'armor' | 'accessory' | 'consumable' | 'gear';
+
+/** Dados de um item dos 8 slots do perfil (R-ITEM-2): slot, nível do jogador na hora do sorteio e pontos sorteados. */
+export interface GearInfo {
+  slot: ItemSlot;
+  level: number;
+  points: Record<ItemAttr, number>;
+  /** Qual dos nomes do slot este item usa (só aparência). */
+  variant: number;
+}
 
 export interface GameItem {
   id: string;
@@ -14,6 +24,8 @@ export interface GameItem {
   levelReq: number;
   description: string;
   weaponRefId?: string; // links to WeaponDef if weapon
+  /** Presente só nos itens dos 8 slots (type 'gear'). */
+  gear?: GearInfo;
   /** Posição (0, 1, 2...) do item na Mala. Ausente = o jogo coloca no primeiro slot vazio (R-MALA-4). */
   slot?: number;
   statsBonus?: {
@@ -50,76 +62,6 @@ export const SHOP_ITEMS: GameItem[] = [
       attack: Math.round((w.min + w.max) / 2),
     },
   })),
-
-  // Defensive Armors / Suits
-  {
-    id: 'armor_colete_leve',
-    name: 'Colete de Kevlar Oculto',
-    type: 'armor',
-    icon: '🛡️',
-    priceCash: 280,
-    priceGold: 0,
-    levelReq: 2,
-    description: 'Colete balístico leve usado por baixo da camisa. Concede +3 pontos de Vida e +3% de Armadura.',
-    statsBonus: { life: 3, armorReduction: 0.03 },
-  },
-  {
-    id: 'armor_sobretudo_blindado',
-    name: 'Sobretudo Noir Forrado',
-    type: 'armor',
-    icon: '🧥',
-    priceCash: 750,
-    priceGold: 10,
-    levelReq: 5,
-    description: 'Sobretudo elegante com placas de aço costuradas. Concede +6 pontos de Vida e +6% de Armadura.',
-    statsBonus: { life: 6, armorReduction: 0.06 },
-  },
-  {
-    id: 'armor_colete_tatico',
-    name: 'Blindagem Tática do Don',
-    type: 'armor',
-    icon: '🦺',
-    priceCash: 2200,
-    priceGold: 25,
-    levelReq: 12,
-    description: 'Proteção pesada de alta tecnologia para guerras de clãs. Concede +12 pontos de Vida e +10% de Armadura.',
-    statsBonus: { life: 12, armorReduction: 0.10 },
-  },
-
-  // Mafia Accessories / Lucky Charms
-  {
-    id: 'acc_anel_ouro',
-    name: 'Anel do Selo da Família',
-    type: 'accessory',
-    icon: '💍',
-    priceCash: 350,
-    priceGold: 5,
-    levelReq: 3,
-    description: 'Símbolo de autoridade mafiosa. +2 pontos de Astúcia e +2% de Esquiva.',
-    statsBonus: { astucia: 2, dodgeChance: 0.02 },
-  },
-  {
-    id: 'acc_relogio_ouro',
-    name: 'Relógio de Bolso em Ouro 24k',
-    type: 'accessory',
-    icon: '⏱️',
-    priceCash: 980,
-    priceGold: 12,
-    levelReq: 8,
-    description: 'Precisão para cronometrar os golpes e assaltos. +4 pontos de Astúcia e +4 de Tenacidade.',
-    statsBonus: { astucia: 4, tenacidade: 4 },
-  },
-  {
-    id: 'acc_amuleto_corleone',
-    name: 'Corrente de Ouro com Santo Protetor',
-    type: 'accessory',
-    icon: '🪙',
-    priceCash: 2400,
-    priceGold: 30,
-    levelReq: 15,
-    description: 'Abençoado pelo Don. Concede +6 pontos de Ataque, +6 de Vida e +5 de Tenacidade.',
-    statsBonus: { attack: 6, life: 6, tenacidade: 5 },
-  },
 
   // Consumables
   {
@@ -165,6 +107,79 @@ export const SHOP_ITEMS: GameItem[] = [
     levelReq: 1,
     description: 'Adrenalina pura. Restaura completamente 100 de Energia!',
     consumableEffect: { type: 'energy', value: 100 },
+  },
+];
+
+/**
+ * Itens de armadura e acessório do modelo ANTIGO (valores fixos). Não são mais vendidos nem sorteados:
+ * ficam só para converter saves antigos em itens dos 8 slots (Peitoral e Amuleto da sorte) em shared/gear.ts.
+ */
+export const LEGACY_GEAR_ITEMS: GameItem[] = [
+  {
+    id: 'armor_colete_leve',
+    name: 'Colete de Kevlar Oculto',
+    type: 'armor',
+    icon: '🛡️',
+    priceCash: 280,
+    priceGold: 0,
+    levelReq: 2,
+    description: 'Colete balístico leve usado por baixo da camisa. Concede +3 pontos de Vida e +3% de Armadura.',
+    statsBonus: { life: 3, armorReduction: 0.03 },
+  },
+  {
+    id: 'armor_sobretudo_blindado',
+    name: 'Sobretudo Noir Forrado',
+    type: 'armor',
+    icon: '🧥',
+    priceCash: 750,
+    priceGold: 10,
+    levelReq: 5,
+    description: 'Sobretudo elegante com placas de aço costuradas. Concede +6 pontos de Vida e +6% de Armadura.',
+    statsBonus: { life: 6, armorReduction: 0.06 },
+  },
+  {
+    id: 'armor_colete_tatico',
+    name: 'Blindagem Tática do Don',
+    type: 'armor',
+    icon: '🦺',
+    priceCash: 2200,
+    priceGold: 25,
+    levelReq: 12,
+    description: 'Proteção pesada de alta tecnologia para guerras de clãs. Concede +12 pontos de Vida e +10% de Armadura.',
+    statsBonus: { life: 12, armorReduction: 0.10 },
+  },
+  {
+    id: 'acc_anel_ouro',
+    name: 'Anel do Selo da Família',
+    type: 'accessory',
+    icon: '💍',
+    priceCash: 350,
+    priceGold: 5,
+    levelReq: 3,
+    description: 'Símbolo de autoridade mafiosa. +2 pontos de Astúcia e +2% de Esquiva.',
+    statsBonus: { astucia: 2, dodgeChance: 0.02 },
+  },
+  {
+    id: 'acc_relogio_ouro',
+    name: 'Relógio de Bolso em Ouro 24k',
+    type: 'accessory',
+    icon: '⏱️',
+    priceCash: 980,
+    priceGold: 12,
+    levelReq: 8,
+    description: 'Precisão para cronometrar os golpes e assaltos. +4 pontos de Astúcia e +4 de Tenacidade.',
+    statsBonus: { astucia: 4, tenacidade: 4 },
+  },
+  {
+    id: 'acc_amuleto_corleone',
+    name: 'Corrente de Ouro com Santo Protetor',
+    type: 'accessory',
+    icon: '🪙',
+    priceCash: 2400,
+    priceGold: 30,
+    levelReq: 15,
+    description: 'Abençoado pelo Don. Concede +6 pontos de Ataque, +6 de Vida e +5 de Tenacidade.',
+    statsBonus: { attack: 6, life: 6, tenacidade: 5 },
   },
 ];
 
@@ -309,7 +324,7 @@ export const MISSIONS_LIST: MissionDef[] = [
     xpReward: 210,
     cashReward: 750,
     itemDropChance: 0.50,
-    possibleDropId: 'armor_sobretudo_blindado',
+    possibleDropId: 'gear', // item sorteado de um dos 8 slots (R-ITEM-2)
     briefing: 'O gerente do Cassino tentou desviar fichas da contabilidade da Família. Confronte o chefe dos seguranças dele no salão nobre.',
     opponent: {
       name: 'Dino "Gatilho Rápido"',

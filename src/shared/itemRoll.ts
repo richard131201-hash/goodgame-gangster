@@ -45,10 +45,11 @@ export function itemPoints(level: number): number {
 }
 
 /** Sorteia um item do slot, do nível do jogador. Cada ponto cai em um dos 4 atributos com a mesma chance. */
-export function rollItem(level: number, slot: ItemSlot, rand: () => number): RolledItem {
+export function rollItem(level: number, slot: ItemSlot, rand: () => number, multiplier = 1): RolledItem {
   const lv = Math.max(1, Math.floor(level));
   const points: Record<ItemAttr, number> = { attack: 0, life: 0, astucia: 0, tenacidade: 0 };
-  const total = itemPoints(lv);
+  // multiplier > 1 = item "muito acima da média" (chefão, wanted): mais pontos, no mesmo nível
+  const total = Math.max(ITEM_ROLL.minPoints, Math.round(itemPoints(lv) * Math.max(1, multiplier)));
   for (let n = 0; n < total; n++) {
     const i = Math.min(ITEM_ATTRS.length - 1, Math.floor(rand() * ITEM_ATTRS.length));
     points[ITEM_ATTRS[i]] += 1;

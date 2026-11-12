@@ -4,6 +4,7 @@ import { validateConfig } from '../../src/engine/schema.js';
 import { handleOp, type Db, type Ctx, type DuelLogRow } from '../../src/server/handlers.js';
 import { DUEL, LIMITS, maxLevelForAge, STARTER_WEAPON_IDS, type DbPlayerRow } from '../../src/server/rules.js';
 import { goldCap } from '../../src/shared/gold.js';
+import { rollGear } from '../../src/shared/gear.js';
 import { defaultAppearance } from '../../src/web/characterOptions.js';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -217,6 +218,55 @@ describe('servidor: conferir o save (R-SERVIDOR-3)', () => {
     const kept = db.rows.get('u1')!.save.inventory[0] as { priceCash: number; statsBonus?: unknown };
     expect(kept.priceCash).toBeGreaterThan(1);
     expect(kept.statsBonus).not.toEqual({ attack: 99999 }); // fica o valor do catálogo
+  });
+
+  it('itens dos 8 slots: aceita o item honesto e o equipado, e guarda o que o servidor refaz (R-ITEM-2)', async () => {
+    const db = await setup();
+    const s = saveOf(db);
+    const item = rollGear(1, 'chapeu', () => 0.4);
+    s.inventory.push({ ...item, slot: 5 } as never);
+    s.equipped.gear = { chapeu: item.id };
+    const r = await send(db, s);
+    expect(r.status).toBe(200);
+    const kept = db.rows.get('u1')!.save;
+    expect(kept.equipped.gear.chapeu).toBe(item.id);
+    expect(kept.inventory.find(i => i.id === item.id)?.gear?.slot).toBe('chapeu');
+  });
+
+  it('itens dos 8 slots: recusa item de nível acima, pontos inventados, repetido e slot trocado (R-ITEM-2)', async () => {
+    const db = await setup();
+    const bom = rollGear(1, 'pet', () => 0.4);
+
+    const alto = structuredClone(bom);
+    alto.gear!.level = 50;
+    const s1 = saveOf(db);
+    s1.inventory.push(alto as never);
+    expect((await send(db, s1)).status).toBe(422);
+
+    const trapaca = structuredClone(bom);
+    trapaca.gear!.points.attack = 500;
+    const s2 = saveOf(db);
+    s2.inventory.push(trapaca as never);
+    expect((await send(db, s2)).status).toBe(422);
+
+    const s3 = saveOf(db);
+    s3.inventory.push(bom as never, bom as never);
+    expect((await send(db, s3)).status).toBe(422);
+
+    const s4 = saveOf(db);
+    s4.inventory.push(bom as never);
+    s4.equipped.gear = { chapeu: bom.id }; // o item é de Pet, não de Chapéu
+    expect((await send(db, s4)).status).toBe(422);
+  });
+
+  it('o contador da loja nunca diminui (R-ITEM-2)', async () => {
+    const db = await setup();
+    const s = saveOf(db);
+    s.shopSerial = 3;
+    expect((await send(db, s)).status).toBe(200);
+    const s2 = saveOf(db);
+    s2.shopSerial = 1;
+    expect((await send(db, s2)).status).toBe(422);
   });
 
   it('nome, classe, aparência e placar de duelos nunca vêm do navegador', async () => {

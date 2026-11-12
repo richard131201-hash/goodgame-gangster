@@ -3,6 +3,8 @@ import { DEFAULT_CARRASCO } from './paperdoll.js';
 import { SHOP_ITEMS, MAFIA_FAMILIES_LIST, type GameItem } from './gameData.js';
 import { regenEnergy } from './energy.js';
 import { GOLD } from '../shared/gold.js';
+import { migrateLegacyGear, isGearItem, shopStock } from '../shared/gear.js';
+import { ITEM_SLOTS, type ItemSlot } from '../shared/itemRoll.js';
 import { saveKeyFor } from './saveKey.js';
 import { isWeaponItem, equippedInventoryIndex, bagCapacityOf, bagCount, bagHasRoom, bagLayout, bagSlotCount } from './weaponSlot.js';
 import {
@@ -89,6 +91,7 @@ export class GameStateManager {
    */
   adoptServerSave(save: PlayerState) {
     const fresh = structuredClone(save);
+    migrateLegacyGear(fresh);
     for (const k of Object.keys(this.player)) delete (this.player as unknown as Record<string, unknown>)[k];
     Object.assign(this.player, fresh);
     this.saveToStorage();
@@ -101,6 +104,7 @@ export class GameStateManager {
       if (data) {
         const parsed = JSON.parse(data);
         if (parsed && parsed.hasCreatedCharacter) {
+          migrateLegacyGear(parsed); // armadura/acessório antigos viram Peitoral/Amuleto (R-ITEM-2)
           return parsed;
         }
       }
@@ -126,8 +130,7 @@ export class GameStateManager {
       freePoints: 0,
       equipped: {
         weaponId: 'colt_1911',
-        armorId: null,
-        accessoryId: null,
+        gear: {},
         consumables: [null, null, null],
       },
       inventory: [],
@@ -324,10 +327,8 @@ export class GameStateManager {
     // senão vai para a mochila e o jogador decide arrastando.
     if (item.type === 'weapon' && item.weaponRefId) {
       if (!this.player.equipped.weaponId) this.player.equipped.weaponId = item.weaponRefId;
-    } else if (item.type === 'armor' && !this.player.equipped.armorId) {
-      this.player.equipped.armorId = item.id;
-    } else if (item.type === 'accessory' && !this.player.equipped.accessoryId) {
-      this.player.equipped.accessoryId = item.id;
+    } else if (isGearItem(item) && !this.player.equipped.gear[item.gear.slot]) {
+      this.player.equipped.gear[item.gear.slot] = item.id;
     }
 
     this.notify();
@@ -341,8 +342,9 @@ export class GameStateManager {
     if (index === equippedInventoryIndex(this.player.inventory, this.player.equipped.weaponId)) {
       this.player.equipped.weaponId = null;
     }
-    if (item.id === this.player.equipped.armorId) this.player.equipped.armorId = null;
-    if (item.id === this.player.equipped.accessoryId) this.player.equipped.accessoryId = null;
+    for (const slot of ITEM_SLOTS) {
+      if (this.player.equipped.gear[slot] === item.id) delete this.player.equipped.gear[slot];
+    }
 
     const sellRefund = Math.round(item.priceCash * 0.5);
     this.addCash(sellRefund);
@@ -398,14 +400,42 @@ export class GameStateManager {
     return true;
   }
 
-  equipArmor(armorId: string | null) {
-    this.player.equipped.armorId = armorId;
+  /** Equipa um item dos 8 slots no slot dele (troca o que estava lá). Retorna false se não é desse tipo. */
+  equipGear(itemId: string): boolean {
+    const item = this.player.inventory.find(i => i.id === itemId);
+    if (!isGearItem(item)) return false;
+    this.player.equipped.gear[item.gear.slot] = item.id;
+    this.notify();
+    return true;
+  }
+
+  unequipGear(slot: ItemSlot) {
+    delete this.player.equipped.gear[slot];
     this.notify();
   }
 
-  equipAccessory(accId: string | null) {
-    this.player.equipped.accessoryId = accId;
-    this.notify();
+  /** Item de loja de um dos 8 slots que está equipado agora (ou undefined). */
+  equippedGear(slot: ItemSlot): GameItem | undefined {
+    const id = this.player.equipped.gear[slot];
+    return id ? this.player.inventory.find(i => i.id === id) : undefined;
+  }
+
+  /** Estoque atual da loja de itens (1 por slot, atributos à vista). Muda a cada compra. */
+  getShopStock(): GameItem[] {
+    return shopStock(this.player.name, this.player.level, this.player.shopSerial ?? 0);
+  }
+
+  /** Compra um item do estoque (confere cash e espaço antes de cobrar). Retorna o motivo da recusa, ou null se comprou. */
+  buyGearFromStock(itemId: string): 'sem_item' | 'cash' | 'mochila' | null {
+    const item = this.getShopStock().find(i => i.id === itemId);
+    if (!item) return 'sem_item';
+    if (this.player.cash < item.priceCash) return 'cash';
+    if (!this.bagHasRoom()) return 'mochila';
+    const id = this.player.inventory.some(i => i.id === item.id) ? `${item.id}_${this.player.shopSerial ?? 0}` : item.id;
+    this.spendCash(item.priceCash);
+    this.player.shopSerial = (this.player.shopSerial ?? 0) + 1; // o estoque muda
+    this.placeItem({ ...item, id });
+    return null;
   }
 
   useConsumable(item: GameItem, invIndex: number): boolean {
