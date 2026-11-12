@@ -1054,7 +1054,7 @@ function startMissionCombat(mission: MissionDef) {
         if (Math.random() < mission.itemDropChance && mission.possibleDropId) {
           const dropItem = SHOP_ITEMS.find(i => i.id === mission.possibleDropId);
           if (dropItem) {
-            const coube = gameState.buyItem({ ...dropItem, priceCash: 0, priceGold: 0 });
+            const coube = gameState.grantItem(dropItem);
             dropMsg = coube
               ? `<div style="margin-top: 0.5rem; color: #f1c40f;">🎁 Drop de Item Raro: <strong>${dropItem.icon} ${dropItem.name}</strong> adicionado à Mala!</div>`
               : `<div style="margin-top: 0.5rem; color: #e67e22;">🎁 Caiu <strong>${dropItem.icon} ${dropItem.name}</strong>, mas a Mala está cheia (${gameState.getBagCount()}/${gameState.getBagCapacity()}) e o item foi perdido. Abra espaço antes da próxima missão.</div>`;

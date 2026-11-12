@@ -60,8 +60,8 @@ export const SHOP_ITEMS: GameItem[] = [
     priceCash: 280,
     priceGold: 0,
     levelReq: 2,
-    description: 'Colete balístico leve usado por baixo da camisa. Concede +120 de Vida e +3% de Armadura.',
-    statsBonus: { life: 120, armorReduction: 0.03 },
+    description: 'Colete balístico leve usado por baixo da camisa. Concede +3 pontos de Vida e +3% de Armadura.',
+    statsBonus: { life: 3, armorReduction: 0.03 },
   },
   {
     id: 'armor_sobretudo_blindado',
@@ -71,8 +71,8 @@ export const SHOP_ITEMS: GameItem[] = [
     priceCash: 750,
     priceGold: 10,
     levelReq: 5,
-    description: 'Sobretudo elegante com placas de aço costuradas. Concede +350 de Vida e +6% de Armadura.',
-    statsBonus: { life: 350, armorReduction: 0.06 },
+    description: 'Sobretudo elegante com placas de aço costuradas. Concede +6 pontos de Vida e +6% de Armadura.',
+    statsBonus: { life: 6, armorReduction: 0.06 },
   },
   {
     id: 'armor_colete_tatico',
@@ -82,8 +82,8 @@ export const SHOP_ITEMS: GameItem[] = [
     priceCash: 2200,
     priceGold: 25,
     levelReq: 12,
-    description: 'Proteção pesada de alta tecnologia para guerras de clãs. Concede +900 de Vida e +10% de Armadura.',
-    statsBonus: { life: 900, armorReduction: 0.10 },
+    description: 'Proteção pesada de alta tecnologia para guerras de clãs. Concede +12 pontos de Vida e +10% de Armadura.',
+    statsBonus: { life: 12, armorReduction: 0.10 },
   },
 
   // Mafia Accessories / Lucky Charms
@@ -95,8 +95,8 @@ export const SHOP_ITEMS: GameItem[] = [
     priceCash: 350,
     priceGold: 5,
     levelReq: 3,
-    description: 'Símbolo de autoridade mafiosa. +15 Astúcia e +2% de Esquiva.',
-    statsBonus: { astucia: 15, dodgeChance: 0.02 },
+    description: 'Símbolo de autoridade mafiosa. +2 pontos de Astúcia e +2% de Esquiva.',
+    statsBonus: { astucia: 2, dodgeChance: 0.02 },
   },
   {
     id: 'acc_relogio_ouro',
@@ -106,8 +106,8 @@ export const SHOP_ITEMS: GameItem[] = [
     priceCash: 980,
     priceGold: 12,
     levelReq: 8,
-    description: 'Precisão para cronometrar os golpes e assaltos. +25 Astúcia e +25 Tenacidade.',
-    statsBonus: { astucia: 25, tenacidade: 25 },
+    description: 'Precisão para cronometrar os golpes e assaltos. +4 pontos de Astúcia e +4 de Tenacidade.',
+    statsBonus: { astucia: 4, tenacidade: 4 },
   },
   {
     id: 'acc_amuleto_corleone',
@@ -117,8 +117,8 @@ export const SHOP_ITEMS: GameItem[] = [
     priceCash: 2400,
     priceGold: 30,
     levelReq: 15,
-    description: 'Abençoado pelo Don. Concede +40 Ataque, +400 Vida e +30 Tenacidade.',
-    statsBonus: { attack: 40, life: 400, tenacidade: 30 },
+    description: 'Abençoado pelo Don. Concede +6 pontos de Ataque, +6 de Vida e +5 de Tenacidade.',
+    statsBonus: { attack: 6, life: 6, tenacidade: 5 },
   },
 
   // Consumables

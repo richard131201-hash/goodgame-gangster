@@ -296,12 +296,28 @@ export class GameStateManager {
     return null;
   }
 
+  /**
+   * Item que o jogador GANHA (drop de missão, chefão): sem preço e sem exigir nível, só precisa de espaço na Mala (R-DROP-1).
+   * O nível mínimo vale para usar o item, não para recebê-lo.
+   */
+  grantItem(item: GameItem): boolean {
+    const goesToWeaponSlot = isWeaponItem(item) && !this.player.equipped.weaponId;
+    if (!goesToWeaponSlot && !this.bagHasRoom()) return false;
+    this.placeItem(item);
+    return true;
+  }
+
   buyItem(item: GameItem): boolean {
     // Tudo é conferido ANTES de cobrar: nunca gasta ouro e falha depois por falta de cash ou de espaço.
     if (this.buyBlockReason(item) !== null) return false;
     if (item.priceGold > 0) this.spendGold(item.priceGold);
     if (item.priceCash > 0) this.spendCash(item.priceCash);
+    this.placeItem(item);
+    return true;
+  }
 
+  /** Coloca o item na Mala (primeiro slot vazio) e equipa sozinho o que couber em espaço vazio. */
+  private placeItem(item: GameItem): void {
     this.player.inventory.push({ ...item, slot: this.firstEmptySlot() });
 
     // Arma nova só é equipada sozinha se o espaço da arma estiver vazio (R-ARMA-5);
@@ -315,7 +331,6 @@ export class GameStateManager {
     }
 
     this.notify();
-    return true;
   }
 
   sellItem(index: number): boolean {
