@@ -4026,3 +4026,7 @@ html[data-skin="bege"] .game-nav-tab .ico-img.ico-ficha, html[data-skin="bege"] 
   user-select: none;
 }
 .inv-slot.empty.drop-target::after { color: var(--good); opacity: 0.9; }
+
+/* Icones de arte do topo (Energia, Cash, Ouro) e dos avisos (R-ARTE-3) */
+.res-img { width: 2.5rem; height: 2.5rem; flex: none; object-fit: contain; pointer-events: none; filter: drop-shadow(0 0.1rem 0.12rem rgba(0, 0, 0, 0.45)); }
+.notice-icon .notice-img { width: 3.4rem; height: 3.4rem; object-fit: contain; }

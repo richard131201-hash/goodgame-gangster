@@ -140,3 +140,25 @@ describe('ícones de Missões (chapéu) e Ficha (foto com clipe) (R-ARTE-1)', ()
     expect(html).toMatch(/data-tab="duelos"[^>]*><svg class="ico"/);
   });
 });
+
+describe('ícones de Energia, Cash e Ouro (R-ARTE-3)', () => {
+  const html = readFileSync(join(process.cwd(), 'index.html'), 'utf8');
+  it('as 3 imagens existem, são WebP com transparência e leves', () => {
+    for (const n of ['energia', 'ouro', 'cash']) {
+      const b = readFileSync(pub(`/assets/icons/${n}.webp`));
+      expect(b.subarray(8, 12).toString('latin1'), n).toBe('WEBP');
+      expect(b[20] & 0x10, `${n} sem alfa`).toBe(0x10);
+      expect(b.length, n).toBeLessThan(100 * 1024);
+    }
+  });
+  it('o topo usa as imagens (bateria, cash, ouro) no lugar do raio, da nota e da moeda de traço', () => {
+    for (const n of ['energia', 'cash', 'ouro']) expect(html).toContain(`class="res-img" src="/assets/icons/${n}.webp"`);
+    expect(html).not.toMatch(/class="ico res-icon"[^>]*><use href="#i-(bolt|cash|coin)"/);
+  });
+  it('os avisos de energia, cash e ouro mostram a mesma arte', async () => {
+    const { NOTICE_KINDS } = await import('../../src/web/notice.js');
+    expect(NOTICE_KINDS.energia.img).toBe('/assets/icons/energia.webp');
+    expect(NOTICE_KINDS.cash.img).toBe('/assets/icons/cash.webp');
+    expect(NOTICE_KINDS.ouro.img).toBe('/assets/icons/ouro.webp');
+  });
+});

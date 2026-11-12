@@ -25,11 +25,11 @@ export interface AskOptions extends NoticeOptions {
 }
 
 /** Aparência de cada tipo: ícone do conjunto de ícones, título e carimbo. */
-export const NOTICE_KINDS: Record<NoticeKind, { icon: string; title: string; stamp: string }> = {
+export const NOTICE_KINDS: Record<NoticeKind, { icon: string; img?: string; title: string; stamp: string }> = {
   info: { icon: 'i-file', title: 'Aviso', stamp: 'AVISO' },
-  energia: { icon: 'i-bolt', title: 'Energia', stamp: 'AVISO' },
-  cash: { icon: 'i-cash', title: 'Cash', stamp: 'SEM FUNDOS' },
-  ouro: { icon: 'i-coin', title: 'Ouro', stamp: 'SEM OURO' },
+  energia: { icon: 'i-bolt', img: '/assets/icons/energia.webp', title: 'Energia', stamp: 'AVISO' },
+  cash: { icon: 'i-cash', img: '/assets/icons/cash.webp', title: 'Cash', stamp: 'SEM FUNDOS' },
+  ouro: { icon: 'i-coin', img: '/assets/icons/ouro.webp', title: 'Ouro', stamp: 'SEM OURO' },
   mala: { icon: 'i-bag', title: 'Mala cheia', stamp: 'SEM ESPAÇO' },
   sucesso: { icon: 'i-check', title: 'Feito', stamp: 'APROVADO' },
   erro: { icon: 'i-alert', title: 'Atenção', stamp: 'RECUSADO' },
@@ -162,7 +162,7 @@ function showNext() {
         <div class="notice-ear" id="notice-title">${esc(noticeTitle(o)).toUpperCase()}</div>
         <div class="notice-stamp" aria-hidden="true">${esc(item.isAsk ? 'CONFIRMAR' : k.stamp)}</div>
         <div class="notice-sheet">
-          <div class="notice-icon" aria-hidden="true"><svg class="ico"><use href="#${k.icon}"/></svg></div>
+          <div class="notice-icon" aria-hidden="true">${k.img ? `<img class="notice-img" src="${k.img}" alt="" draggable="false">` : `<svg class="ico"><use href="#${k.icon}"/></svg>`}</div>
           <div class="notice-body">
             <p class="notice-msg" id="notice-msg">${esc(o.message)}</p>
             ${o.detail ? `<p class="notice-detail">${esc(o.detail)}</p>` : ''}
