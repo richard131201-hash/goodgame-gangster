@@ -165,13 +165,13 @@ describe('Ficha mais baixa (R-LAYOUT-11)', () => {
 describe('Ficha compacta, Equipamento intacto (R-LAYOUT-12)', () => {
   const css3 = readFileSync(join(process.cwd(), 'src/web/style.css'), 'utf8').replace(/\r\n/g, '\n');
   it('o Equipamento tem largura fixa (37,8 rem) e os slots seguem 4:3, então o tamanho dos slots não muda', () => {
-    expect(css3).toMatch(/\.profile-layout-grid \{ grid-template-columns: 14\.96rem 13\.64rem 14\.96rem 37\.8rem; \}/);
+    expect(css3).toMatch(/\.profile-layout-grid \{ grid-template-columns: 14\.96rem 17\.6rem 14\.96rem 37\.8rem; \}/);
     expect(css3).toMatch(/\.equipped-slots-grid \.gear-slot \{ aspect-ratio: 4 \/ 3; \}/);
     expect(css3).toMatch(/\.equipped-slots-grid \{ grid-template-columns: repeat\(4, minmax\(0, 1fr\)\); \}/);
   });
   it('os 3 cards da esquerda encolhem e só o respiro do Equipamento e da pasta diminui', () => {
     expect(css3).toMatch(/\.profile-gear-panel \{ padding: 0\.5rem 0\.9rem; \}/);
     expect(css3).toMatch(/#app\[data-tab="perfil"\] \.stack > \.folder \{ padding: 0\.6rem 1\.2rem 0\.7rem; \}/);
-    expect(css3).toMatch(/\.attr-c-row \{ grid-template-columns: 1fr 3\.5rem 0\.7rem 2\.3rem; height: 2\.07rem; \}/);
+    expect(css3).toMatch(/\.attr-c-row \{ grid-template-columns: 1fr 4\.6rem 0\.7rem 2\.3rem; height: 2\.07rem; \}/);
   });
 });
