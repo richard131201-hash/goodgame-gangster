@@ -1,4 +1,4 @@
-# Recorta as armas (JPG com xadrez gravado) e gera 2 versoes por arma: "comum" (so borda preta) e "epico" (borda branca + brilho vermelho). Ver R-ARTE-2.
+# Recorta as armas (JPG com xadrez gravado) e gera 3 versoes por arma: "comum" (borda preta), "epico" (borda branca + brilho vermelho) e "lendario" (borda branca + brilho roxo). Ver R-ARTE-2.
 # Uso: python -I tools/recorta_armas.py (origens em Downloads, veja FILES).
 import glob, os, sys
 import numpy as np
@@ -87,10 +87,11 @@ def camadas(rgb, interno, tipo):
         out[..., :3] = np.where(novo_a > 0, (np.array(cor, dtype=np.float32) * a + out[..., :3] * base_a * (1 - a)) / np.maximum(novo_a, 1e-6), 0)
         out[..., 3:4] = novo_a
 
-    if tipo == "epico":
+    if tipo in ("epico", "lendario"):
+        cor_brilho = (255, 40, 30) if tipo == "epico" else (150, 60, 255)  # épico: vermelho; lendário: roxo
         borda_preta, branca, brilho = 6, 15, 95
         t = np.clip(1 - (d - (borda_preta + branca)) / brilho, 0, 1)
-        sobre((255, 40, 30), (t ** 1.35) * 1.0)  # brilho vermelho (desfoque)
+        sobre(cor_brilho, (t ** 1.35) * 1.0)  # brilho vermelho (desfoque)
         sobre((255, 255, 255), (d <= borda_preta + branca).astype(np.float32))  # borda branca
         sobre((20, 14, 14), (d <= borda_preta).astype(np.float32))  # contorno preto fino
     else:
@@ -131,7 +132,7 @@ for wid, padrao in FILES.items():
     m = int(lado * MARGEM)
     h, w = interno.shape
     caixa = (max(0, xs.min() - m), max(0, ys.min() - m), min(w, xs.max() + m), min(h, ys.max() + m))
-    for tipo in ("comum", "epico"):
+    for tipo in ("comum", "epico", "lendario"):
         out = camadas(rgb, interno, tipo)
         img, kb = salvar(out, caixa, f"{wid}.{tipo}")
         resultados[(wid, tipo)] = img
@@ -141,9 +142,9 @@ for wid, padrao in FILES.items():
 ids = list(FILES)
 W = 340
 for nome, cor in (("laranja", (232, 122, 28)), ("couro", (41, 32, 26))):
-    folha = Image.new("RGB", (W * len(ids), W * 2), cor)
+    folha = Image.new("RGB", (W * len(ids), W * 3), cor)
     for i, wid in enumerate(ids):
-        for j, tipo in enumerate(("comum", "epico")):
+        for j, tipo in enumerate(("comum", "epico", "lendario")):
             im = resultados[(wid, tipo)].copy()
             im.thumbnail((W - 16, W - 16))
             folha.paste(im, (i * W + (W - im.width) // 2, j * W + (W - im.height) // 2), im)

@@ -6,6 +6,7 @@ import { GOLD } from '../shared/gold.js';
 import { migrateLegacyGear, isGearItem, shopStock } from '../shared/gear.js';
 import { ITEM_SLOTS, type ItemSlot } from '../shared/itemRoll.js';
 import { saveKeyFor } from './saveKey.js';
+import { sellableInShop } from './weaponArt.js';
 import { isWeaponItem, equippedInventoryIndex, bagCapacityOf, bagCount, bagHasRoom, bagLayout, bagSlotCount } from './weaponSlot.js';
 import {
   applyXp,
@@ -295,7 +296,9 @@ export class GameStateManager {
    * Por que a compra não pode ser feita agora (ou null se pode). Todo item comprado vai primeiro para a Mala,
    * então precisa haver espaço (R-MALA-7).
    */
-  buyBlockReason(item: GameItem): 'nivel' | 'ouro' | 'cash' | 'mochila' | null {
+  buyBlockReason(item: GameItem): 'nivel' | 'ouro' | 'cash' | 'mochila' | 'indisponivel' | null {
+    // Épico e lendário nunca são vendidos (R-ORIGEM-1)
+    if (isWeaponItem(item) && !sellableInShop(item.weaponRefId)) return 'indisponivel';
     if (this.player.level < item.levelReq) return 'nivel';
     if (this.player.gold < item.priceGold) return 'ouro';
     if (this.player.cash < item.priceCash) return 'cash';

@@ -4,14 +4,14 @@ import { join } from 'node:path';
 import { WEAPONS_CATALOG } from '../../src/engine/weapons.js';
 import { SHOP_ITEMS } from '../../src/web/gameData.js';
 import { getWeaponSprite } from '../../src/web/weaponSprites.js';
-import { FICHA_ICON_URL, MISSIONS_ICON_URL, WEAPON_ART_IDS, WEAPON_FRAME, weaponArtImg, weaponArtUrl, weaponFrame } from '../../src/web/weaponArt.js';
+import { FICHA_ICON_URL, MISSIONS_ICON_URL, WEAPON_ART_IDS, WEAPON_FRAME, sellableInShop, weaponArtImg, weaponArtUrl, weaponFrame, type ArtFrame } from '../../src/web/weaponArt.js';
 
 const pub = (url: string) => join(process.cwd(), 'public', url.replace(/^\//, ''));
 
 describe('arte das armas (R-ARTE-1)', () => {
   it('cada imagem existe, é WebP com transparência e é leve', () => {
     const todas: [string, string][] = [['chapeu', MISSIONS_ICON_URL], ['ficha', FICHA_ICON_URL]];
-    for (const id of WEAPON_ART_IDS) for (const f of ['comum', 'epico'] as const) todas.push([`${id}.${f}`, weaponArtUrl(id, f)!]);
+    for (const id of WEAPON_ART_IDS) for (const f of ['comum', 'epico', 'lendario'] as const) todas.push([`${id}.${f}`, weaponArtUrl(id, f)!]);
     for (const [id, url] of todas) {
       const caminho = pub(url);
       expect(existsSync(caminho), `${id}: ${url}`).toBe(true);
@@ -41,23 +41,62 @@ describe('arte das armas (R-ARTE-1)', () => {
   });
 });
 
-describe('molduras das armas no estilo do Goodgame antigo (R-ARTE-2)', () => {
-  it('cada arma tem a versão comum (borda preta) e a épica (borda branca e brilho vermelho); a épica não é menor que a comum', async () => {
-    for (const id of WEAPON_ART_IDS) {
-      const c = readFileSync(pub(weaponArtUrl(id, 'comum')!));
-      const e = readFileSync(pub(weaponArtUrl(id, 'epico')!));
-      expect(e.length, id).toBeGreaterThan(c.length); // o brilho acrescenta pixels
+describe('origem por moldura: épico nunca na loja, lendário só por evento (R-ORIGEM-1)', () => {
+  it('nenhuma arma vendida na loja tem moldura épica ou lendária', () => {
+    for (const i of SHOP_ITEMS.filter(x => x.weaponRefId)) {
+      expect(weaponFrame(i.weaponRefId!), i.id).toBe('comum');
+      expect(sellableInShop(i.weaponRefId!), i.id).toBe(true);
     }
   });
 
-  it('a moldura padrão é a comum; só as armas marcadas usam a épica', () => {
-    expect(weaponFrame('colt_1911')).toBe('comum');
-    expect(weaponFrame('arma_que_nao_existe')).toBe('comum');
-    for (const [id, f] of Object.entries(WEAPON_FRAME)) {
-      expect(f).toBe('epico');
-      expect(weaponArtUrl(id)).toBe(`/assets/weapons/${id}.epico.webp`);
+  it('se uma arma virar épica ou lendária, a loja deixa de vendê-la (não lista e recusa a compra)', async () => {
+    const store = new Map<string, string>();
+    (globalThis as unknown as { localStorage: unknown }).localStorage = {
+      getItem: (k: string) => store.get(k) ?? null,
+      setItem: (k: string, v: string) => void store.set(k, v),
+      removeItem: (k: string) => void store.delete(k),
+    };
+    const { GameStateManager, createNewPlayer } = await import('../../src/web/state.js');
+    const { defaultAppearance } = await import('../../src/web/characterOptions.js');
+    const gm = new GameStateManager();
+    Object.assign(gm.getPlayer(), createNewPlayer('Teste', 'malandro', defaultAppearance(), 'colt_1911'));
+    gm.getPlayer().cash = 10_000_000;
+    gm.getPlayer().level = 100;
+    const item = SHOP_ITEMS.find(i => i.weaponRefId === 'revolver_38')!;
+    expect(gm.buyBlockReason(item)).toBeNull();
+    const frames = WEAPON_FRAME as Record<string, ArtFrame>;
+    try {
+      for (const moldura of ['epico', 'lendario'] as const) {
+        frames.revolver_38 = moldura;
+        expect(sellableInShop('revolver_38'), moldura).toBe(false);
+        expect(gm.buyBlockReason(item), moldura).toBe('indisponivel');
+        expect(gm.buyItem(item), moldura).toBe(false);
+      }
+    } finally {
+      delete frames.revolver_38;
     }
-    expect(weaponArtUrl('bar_1918', 'comum')).toBe('/assets/weapons/bar_1918.comum.webp');
+    expect(gm.buyBlockReason(item)).toBeNull();
+  });
+});
+
+describe('molduras das armas no estilo do Goodgame antigo (R-ARTE-2)', () => {
+  it('cada arma tem a comum (borda preta), a épica (borda branca e brilho vermelho) e a lendária (borda branca e brilho roxo); as com brilho têm mais pixels que a comum', async () => {
+    for (const id of WEAPON_ART_IDS) {
+      const c = readFileSync(pub(weaponArtUrl(id, 'comum')!));
+      const e = readFileSync(pub(weaponArtUrl(id, 'epico')!));
+      const l = readFileSync(pub(weaponArtUrl(id, 'lendario')!));
+      expect(e.length, id).toBeGreaterThan(c.length); // o brilho acrescenta pixels
+      expect(l.length, id).toBeGreaterThan(c.length);
+    }
+  });
+
+  it('a moldura padrão é a comum e hoje nenhuma arma do catálogo nasce épica ou lendária', () => {
+    expect(weaponFrame('colt_1911')).toBe('comum');
+    expect(weaponFrame('bar_1918')).toBe('comum');
+    expect(weaponFrame('arma_que_nao_existe')).toBe('comum');
+    expect(Object.keys(WEAPON_FRAME)).toEqual([]);
+    expect(weaponArtUrl('bar_1918', 'epico')).toBe('/assets/weapons/bar_1918.epico.webp');
+    expect(weaponArtUrl('bar_1918', 'lendario')).toBe('/assets/weapons/bar_1918.lendario.webp');
   });
 });
 

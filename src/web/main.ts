@@ -73,7 +73,7 @@ import {
 import { ITEM_SLOTS, type ItemSlot } from '../shared/itemRoll.js';
 import { applySkin, readSkin, toggleSkin, FOLDER_HEADERS } from './skin.js';
 import { notify, ask } from './notice.js';
-import { weaponArtImg } from './weaponArt.js';
+import { weaponArtImg, sellableInShop } from './weaponArt.js';
 import { isGearItem, rollRandomGear, GEAR_ICONS } from '../shared/gear.js';
 import { ITEM_SLOT_LABELS } from '../shared/itemRoll.js';
 
@@ -1535,7 +1535,7 @@ function renderShopView() {
   const stock = gameState.getShopStock();
   const filtered = [
     ...(activeShopFilter === 'all' || activeShopFilter === 'gear' ? stock : []),
-    ...(activeShopFilter === 'gear' ? [] : activeShopFilter === 'all' ? SHOP_ITEMS : SHOP_ITEMS.filter(i => i.type === activeShopFilter)),
+    ...(activeShopFilter === 'gear' ? [] : (activeShopFilter === 'all' ? SHOP_ITEMS : SHOP_ITEMS.filter(i => i.type === activeShopFilter)).filter(i => !i.weaponRefId || sellableInShop(i.weaponRefId))),
   ];
 
   container.innerHTML = filtered.map(item => {
@@ -1597,7 +1597,8 @@ function renderShopView() {
         renderShopView();
       } else {
         const pl = gameState.getPlayer();
-        if (reason === 'nivel') void notify({ kind: 'info', title: 'Nível insuficiente', message: `Este item exige o nível ${item.levelReq}, e você está no nível ${pl.level}.` });
+        if (reason === 'indisponivel') void notify({ kind: 'info', title: 'Não é vendido', message: 'Este item não é vendido na loja. Ele só se consegue em distritos, Wanteds ou eventos.' });
+        else if (reason === 'nivel') void notify({ kind: 'info', title: 'Nível insuficiente', message: `Este item exige o nível ${item.levelReq}, e você está no nível ${pl.level}.` });
         else if (reason === 'ouro') void notify({ kind: 'ouro', title: 'Faltam ouros', message: `Este item custa ${item.priceGold} de ouro e você tem ${pl.gold}.` });
         else if (reason === 'mochila') void notify({ kind: 'mala', message: `Sua Mala está cheia (${gameState.getBagCount()} de ${gameState.getBagCapacity()}). Venda ou use um item para abrir espaço.` });
         else void notify({ kind: 'cash', title: 'Faltam $', message: `Este item custa $${item.priceCash.toLocaleString()} e você tem $${pl.cash.toLocaleString()}.` });
