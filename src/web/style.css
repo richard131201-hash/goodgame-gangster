@@ -4156,6 +4156,6 @@ html[data-skin="bege"] .res-gold-plus { background-color: #d9c690; color: #6a3d0
   background-image: linear-gradient(var(--plus), var(--plus)), linear-gradient(var(--plus), var(--plus));
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 1rem 0.2rem, 0.2rem 1rem;
+  background-size: 0.75rem 0.17rem, 0.17rem 0.75rem;
 }
 html[data-skin="bege"] .res-gold-plus { --plus: #6a3d0a; }
