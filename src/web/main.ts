@@ -71,6 +71,7 @@ import {
 } from './gameData.js';
 
 import { ITEM_SLOTS, type ItemSlot } from '../shared/itemRoll.js';
+import { applySkin, readSkin, toggleSkin, FOLDER_HEADERS } from './skin.js';
 import { isGearItem, rollRandomGear, GEAR_ICONS } from '../shared/gear.js';
 import { ITEM_SLOT_LABELS } from '../shared/itemRoll.js';
 
@@ -292,6 +293,18 @@ async function boot() {
 // ========================================================
 // TOP HUD UPDATES
 // ========================================================
+/** Orelha e carimbo da pasta da aba aberta (R-LAYOUT-9). */
+function updateFolderHeader(tabName?: string) {
+  const tab = tabName ?? document.querySelector('.game-nav-tab.active')?.getAttribute('data-tab') ?? 'perfil';
+  const h = FOLDER_HEADERS[tab] ?? FOLDER_HEADERS.perfil;
+  const p = gameState.getPlayer();
+  const title = tab === 'perfil' && p.hasCreatedCharacter ? `${h.title} · ${p.name}` : h.title;
+  const t = document.getElementById('folder-title');
+  const s = document.getElementById('folder-stamp');
+  if (t) t.textContent = title.toUpperCase();
+  if (s) s.textContent = h.stamp;
+}
+
 function updateHUD() {
   const p = gameState.getPlayer();
   if (!p.hasCreatedCharacter) return;
@@ -310,6 +323,10 @@ function updateHUD() {
   document.getElementById('hud-cash')!.textContent = `$${p.cash.toLocaleString()}`;
   document.getElementById('hud-gold')!.textContent = p.gold.toString();
   document.getElementById('hud-respect')!.textContent = p.respect.toLocaleString();
+
+  const caption = document.getElementById('doll-caption');
+  if (caption) caption.textContent = `${p.name} · ${p.style} · NÍVEL ${p.level}`.toUpperCase();
+  updateFolderHeader();
 
   // Mini avatar thumb
   const thumb = document.getElementById('hud-avatar-thumb');
@@ -358,7 +375,13 @@ document.getElementById('quick-refill-energy-btn')?.addEventListener('click', ()
 // SOUND TOGGLE
 document.getElementById('audio-toggle-btn')?.addEventListener('click', () => {
   const on = sound.toggle();
-  document.getElementById('audio-toggle-btn')!.textContent = on ? '🔊' : '🔇';
+  document.getElementById('audio-toggle-btn')!.innerHTML = `<svg class="ico" aria-hidden="true"><use href="#${on ? 'i-sound' : 'i-mute'}"/></svg>`;
+});
+
+// TEMA DA PASTA (couro e dourado / bege)
+applySkin(readSkin());
+document.getElementById('skin-toggle-btn')?.addEventListener('click', () => {
+  toggleSkin();
 });
 
 // NEW CHARACTER BUTTON
@@ -378,14 +401,19 @@ document.getElementById('new-character-btn')?.addEventListener('click', () => {
 // ========================================================
 document.querySelectorAll('.game-nav-tab').forEach(tab => {
   tab.addEventListener('click', () => {
-    document.querySelectorAll('.game-nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.game-nav-tab').forEach(t => {
+      t.classList.remove('active');
+      t.setAttribute('aria-selected', 'false');
+    });
     tab.classList.add('active');
+    tab.setAttribute('aria-selected', 'true');
     const tabName = tab.getAttribute('data-tab') || 'perfil';
     renderActiveTab(tabName);
   });
 });
 
 function renderActiveTab(tabName: string) {
+  updateFolderHeader(tabName);
   // Hide all sections
   document.querySelectorAll('.game-view-section, .view-section').forEach(sec => {
     sec.classList.remove('active');
@@ -434,7 +462,7 @@ function renderProfileView() {
   // 1. Paperdoll & Wielded Weapon
   const avatarSvg = document.getElementById('profile-avatar-svg');
   if (avatarSvg) {
-    avatarSvg.innerHTML = renderPaperdollSVG(p.appearance, { width: 16.25, height: 20 });
+    avatarSvg.innerHTML = renderPaperdollSVG(p.appearance, { width: 16.2, height: 21 });
   }
 
   const weaponHolder = document.getElementById('profile-weapon-holder');
@@ -572,18 +600,13 @@ function renderGearSlots() {
   const grid = document.getElementById('gear-slots-grid');
   if (!grid) return;
   const p = gameState.getPlayer();
-  const short: Record<string, string> = { attack: 'Atq', life: 'Vid', astucia: 'Ast', tenacidade: 'Ten' };
   grid.innerHTML = ITEM_SLOTS.map(slot => {
     const item = gameState.equippedGear(slot);
     if (!item) {
-      return `<div class="gear-slot" data-gear-slot="${slot}" title="${ITEM_SLOT_LABELS[slot]}: vazio"><span class="slot-badge">${ITEM_SLOT_LABELS[slot]}</span><span class="gear-ico ghost">${GEAR_ICONS[slot]}</span></div>`;
+      return `<div class="gear-slot" data-gear-slot="${slot}" title="${ITEM_SLOT_LABELS[slot]}: vazio"><span class="slot-badge">${ITEM_SLOT_LABELS[slot]}</span><svg class="gear-ico ghost" aria-hidden="true"><use href="#g-${slot}"/></svg></div>`;
     }
     const idx = p.inventory.indexOf(item);
-    const pts = (['attack', 'life', 'astucia', 'tenacidade'] as const)
-      .filter(k => (item.statsBonus?.[k] ?? 0) > 0)
-      .map(k => `+${item.statsBonus![k]} ${short[k]}`)
-      .join(' ');
-    return `<div class="gear-slot filled" data-gear-slot="${slot}" data-bag-tip="${idx}"><span class="slot-badge">${ITEM_SLOT_LABELS[slot]}</span><span class="gear-ico">${item.icon}</span></div>`;
+    return `<div class="gear-slot filled" data-gear-slot="${slot}" data-bag-tip="${idx}"><span class="slot-badge">${ITEM_SLOT_LABELS[slot]}</span><svg class="gear-ico" aria-hidden="true"><use href="#g-${slot}"/></svg></div>`;
   }).join('');
 }
 

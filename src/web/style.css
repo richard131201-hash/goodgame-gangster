@@ -3279,3 +3279,437 @@ html, body { height: 100%; overflow: hidden; }
   transition: background 0.15s, border-color 0.15s;
 }
 .avatar-edit-btn:hover { background: rgba(212, 175, 55, 0.25); border-color: #f1c40f; }
+
+/* ================================================================================================ */
+/* IDENTIDADE "PASTA DE ARQUIVO" (R-LAYOUT-9): casca, abas de ícone, pasta, carimbo e dois temas     */
+/* Tudo em rem (R-LAYOUT-6). Tema padrão: couro e dourado. Tema alternativo: bege (papel manila).    */
+/* ================================================================================================ */
+:root {
+  --font-sans: 'Barlow Semi Condensed', 'Arial Narrow', Arial, sans-serif;
+  --font-serif: 'Special Elite', 'Courier New', monospace;
+  --font-type: 'Special Elite', 'Courier New', monospace;
+
+  /* couro e dourado */
+  --desk: #0d0b09;
+  --cover: #3a2418;
+  --cover-dark: #2a190f;
+  --cover-edge: #1a0f08;
+  --stitch: rgba(212, 175, 55, 0.6);
+  --paper: #1f1812;
+  --paper-2: #29201a;
+  --ink: #f1e3bf;
+  --soft: #b8a47a;
+  --line: #5a4630;
+  --gold: #d4af37;
+  --gold-text: #d4af37;
+  --gold-ink: #1a1203;
+  --stamp: #d4af37;
+  --slot: #15100c;
+  --slot-line: #4a3a28;
+  --good: #5fd28a;
+  --bad: #e0584a;
+  --photo: #2a2018;
+  --photo-line: #6a5638;
+  --glyph: #e9d9ad;
+  --clip: #b9b3a0;
+}
+html[data-skin="bege"] {
+  --desk: #1b1611;
+  --cover: #c9a56a;
+  --cover-dark: #b08c53;
+  --cover-edge: #8a6a36;
+  --stitch: rgba(138, 106, 54, 0.55);
+  --paper: #f2e8cd;
+  --paper-2: #e8dab4;
+  --ink: #2b2015;
+  --soft: #6b5638;
+  --line: #b79c65;
+  --gold: #a9741d;
+  --gold-text: #7a4e0a;
+  --gold-ink: #fff4d6;
+  --stamp: #a82a1b;
+  --slot: #e0d0a3;
+  --slot-line: #ad9158;
+  --good: #2f7a3a;
+  --bad: #b5372a;
+  --photo: #cdbf9c;
+  --photo-line: #8f7d52;
+  --glyph: #3a2c1b;
+  --clip: #7d7864;
+}
+
+/* O tema vale na casca (HUD, abas, pasta), não nos modais de combate nem no login, que continuam escuros. */
+.hud-header, .shell {
+  --bg-primary: var(--desk);
+  --bg-secondary: var(--paper);
+  --bg-card: var(--paper-2);
+  --bg-glass: var(--paper-2);
+  --text-main: var(--ink);
+  --text-muted: var(--soft);
+  --border-color: var(--line);
+  --gold-primary: var(--gold);
+  --gold-glow: rgba(212, 175, 55, 0.25);
+}
+
+.ico, .gear-ico, .res-icon { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.ico { width: 1.5rem; height: 1.5rem; flex: 0 0 auto; }
+
+body { font-family: var(--font-sans); font-weight: 600; }
+#app {
+  background-color: var(--desk);
+  background-image: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.06) 0%, transparent 60%);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- HUD: tira de papel no alto ---------- */
+.hud-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  height: 5.2rem;
+  padding: 0.5rem 1.1rem;
+  margin-bottom: 0.8rem;
+  background: var(--paper);
+  border: 0.0625rem solid var(--line);
+  border-radius: 0.6rem;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+.hud-player-widget { display: flex; align-items: center; gap: 0.8rem; min-width: 0; }
+.hud-avatar-thumb { width: 3.6rem; height: 3.6rem; border-radius: 50%; border: 0.15rem solid var(--gold); background: var(--photo); overflow: hidden; display: grid; place-items: center; flex: 0 0 auto; }
+.hud-avatar-thumb svg { margin-top: 0.35rem; }
+.hud-player-name { font-family: var(--font-type); font-size: 1.6rem; font-weight: 400; letter-spacing: 0.04rem; color: var(--ink); }
+.hud-xp-box { margin-top: 0.25rem; }
+.hud-lvl-circle { background: var(--gold); color: var(--gold-ink); border: 0; }
+.hud-xp-track { background: var(--slot); border: 0.0625rem solid var(--slot-line); }
+.hud-xp-fill { background: var(--good); }
+.hud-xp-text { color: var(--ink); }
+.hud-resources { display: flex; gap: 0.7rem; margin: 0 auto; }
+.res-card { display: flex; align-items: center; gap: 0.6rem; padding: 0.4rem 1rem; background: var(--paper-2); border: 0.0625rem solid var(--line); border-radius: 0.5rem; }
+.res-card.res-energy, .res-card.res-cash, .res-card.res-gold, .res-card.res-respect { border-color: var(--line); }
+.res-icon { width: 1.6rem; height: 1.6rem; color: var(--gold-text); font-size: 0; }
+.res-label { color: var(--soft); letter-spacing: 0.12rem; }
+.res-val { color: var(--ink); font-weight: 700; }
+.res-plus-btn { background: var(--gold); color: var(--gold-ink); border: 0.0625rem solid var(--cover-edge); border-radius: 0.3rem; }
+.hud-system-actions { display: flex; align-items: center; gap: 0.5rem; }
+.hud-btn-icon { width: 2.6rem; height: 2.6rem; padding: 0; display: grid; place-items: center; background: var(--paper-2); border: 0.0625rem solid var(--line); border-radius: 0.5rem; color: var(--glyph); cursor: pointer; }
+.hud-btn-icon:hover { border-color: var(--gold); color: var(--gold-text); }
+.hud-btn-outline { border-color: var(--bad); color: var(--bad); }
+.hud-btn-outline:hover { background: var(--paper-2); }
+
+/* ---------- Casca: abas de ícone à esquerda + pasta ---------- */
+.shell { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: 6rem minmax(0, 1fr); padding-top: 2.2rem; }
+.game-main-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.45rem;
+  padding: 0.6rem 0 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  position: relative;
+  z-index: 2;
+}
+.game-nav-tab {
+  position: relative;
+  width: 5.4rem;
+  height: 4.7rem;
+  margin: 0 -0.15rem 0 0;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  background: var(--cover-dark);
+  border: 0.1rem solid var(--cover-edge);
+  border-right: 0;
+  border-radius: 0.7rem 0 0 0.7rem;
+  color: var(--glyph);
+  cursor: pointer;
+  font: inherit;
+  white-space: normal;
+  transition: width 0.12s, background 0.12s;
+  box-shadow: none;
+}
+.game-nav-tab .ico { width: 2.2rem; height: 2.2rem; }
+.game-nav-tab:hover { background: var(--cover); }
+.game-nav-tab.active { width: 5.9rem; background: var(--cover); border-color: var(--gold); color: var(--gold-text); box-shadow: none; }
+html[data-skin="bege"] .game-nav-tab.active { color: #6a3d0a; }
+.game-nav-tab::after {
+  content: attr(data-name);
+  position: absolute;
+  left: calc(100% + 0.6rem);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.25rem 0.7rem;
+  border-radius: 0.3rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 40;
+  transition: opacity 0.12s;
+}
+.game-nav-tab:hover::after, .game-nav-tab:focus-visible::after { opacity: 1; }
+.game-nav-tab:focus-visible { outline: 0.15rem solid var(--gold); outline-offset: 0.1rem; }
+
+.folder {
+  position: relative;
+  z-index: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--cover);
+  border: 0.1rem solid var(--cover-edge);
+  border-radius: 0 0.9rem 0.9rem 0.9rem;
+  padding: 2.8rem 1.2rem 1.2rem;
+}
+.folder::after { content: ""; position: absolute; inset: 0.5rem; border: 0.12rem dashed var(--stitch); border-radius: 0.6rem; pointer-events: none; z-index: 3; }
+.folder-tab {
+  position: absolute;
+  top: -0.1rem;
+  left: 1.5rem;
+  transform: translateY(-100%);
+  background: var(--cover);
+  border: 0.1rem solid var(--cover-edge);
+  border-bottom: 0;
+  border-radius: 0.7rem 0.7rem 0 0;
+  padding: 0.45rem 1.4rem 0.35rem;
+  font-family: var(--font-type);
+  font-size: 1.1rem;
+  letter-spacing: 0.06rem;
+  color: var(--glyph);
+  white-space: nowrap;
+}
+html[data-skin="couro"] .folder-tab { color: var(--gold); }
+.folder-stamp {
+  position: absolute;
+  top: 0.7rem;
+  right: 2.2rem;
+  z-index: 6;
+  transform: rotate(-7deg);
+  border: 0.2rem double var(--stamp);
+  color: var(--stamp);
+  padding: 0.05rem 0.7rem;
+  font-family: var(--font-type);
+  font-size: 1.7rem;
+  letter-spacing: 0.12rem;
+  opacity: 0.9;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.game-main-content {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  border: 0.0625rem solid var(--line);
+  border-radius: 0.5rem;
+  padding: 1.2rem;
+  z-index: 1;
+}
+.game-main-content > .view-section.active { scrollbar-width: thin; scrollbar-color: var(--gold) transparent; }
+
+/* ---------- Perfil: 5 cartões sobre o papel ---------- */
+.profile-layout-grid {
+  grid-template-columns: 18rem 18rem 18rem minmax(0, 1fr);
+  grid-template-areas:
+    "doll attrs weapon gear"
+    "mala mala mala mala";
+  gap: 1rem;
+  height: 100%;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+.profile-doll-panel, .profile-stats-panel, .profile-weapon-panel, .profile-gear-panel, .profile-inventory-panel {
+  background: var(--paper-2);
+  border: 0.0625rem solid var(--line);
+  border-radius: 0.5rem;
+  box-shadow: none;
+}
+.profile-doll-panel { position: relative; padding: 0.9rem; align-items: stretch; }
+.profile-stats-panel.compact, .profile-weapon-panel, .profile-gear-panel { padding: 0.9rem; }
+.profile-paperdoll-wrapper { width: 100%; }
+.doll-clip { position: absolute; top: -1.3rem; right: 2rem; width: 2.2rem; height: 5rem; color: var(--clip); z-index: 5; pointer-events: none; }
+.profile-avatar-frame {
+  position: relative;
+  width: 100%;
+  height: 21rem;
+  border-radius: 0;
+  border: 0.15rem solid var(--photo-line);
+  background: var(--photo);
+  box-shadow: none;
+  overflow: hidden;
+}
+.profile-avatar-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(to bottom, transparent 0 1.9rem, var(--photo-line) 1.9rem 1.96rem);
+  opacity: 0.35;
+}
+.doll-caption { margin-top: 0.6rem; font-family: var(--font-type); font-size: 0.8rem; text-align: center; letter-spacing: 0.02rem; color: var(--soft); min-height: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.avatar-edit-btn { z-index: 3; width: 2.3rem; height: 2.3rem; top: 0.5rem; left: 0.5rem; background: rgba(0, 0, 0, 0.6); border: 0.08rem solid var(--gold); color: #fff; }
+.avatar-edit-btn .ico { width: 1.3rem; height: 1.3rem; }
+
+.panel-header-banner { border-bottom: 0.1rem dotted var(--line); }
+.profile-stats-panel.compact .panel-header-banner h3, .profile-weapon-panel .panel-header-banner h3, .profile-gear-panel .panel-header-banner h3 {
+  font-family: var(--font-type);
+  font-weight: 400;
+  font-size: 1.15rem;
+  letter-spacing: 0.1rem;
+  color: var(--ink);
+  text-transform: uppercase;
+}
+.free-points-badge { background: transparent; border: 0.1rem solid var(--good); color: var(--good); border-radius: 0.3rem; font-size: 0.72rem; letter-spacing: 0.05rem; }
+.free-points-badge strong { color: var(--good); }
+
+.attr-compact-list { border-top: 0.0625rem solid var(--line); }
+.attr-compact-list.show-eff { background: transparent; }
+.attr-c-row { grid-template-columns: 1fr 4.2rem 0.9rem 3rem; height: 2.9rem; border-bottom: 0.0625rem solid var(--line); padding-left: 0.4rem; }
+.attr-c-name { font-size: 1.05rem; color: var(--ink); }
+.attr-c-pts { font-family: var(--font-type); font-size: 1.25rem; color: var(--gold-text); }
+.attr-c-arrow { color: var(--soft); font-size: 0.7rem; }
+.attr-compact-list.show-eff .attr-c-name { color: var(--gold-text); }
+.attr-compact-list.show-eff .attr-c-pts { color: var(--ink); }
+.btn-attr-plus { width: 3rem; height: 1.7rem; background: var(--gold); border: 0.08rem solid var(--cover-edge); color: var(--gold-ink); font-family: var(--font-sans); text-shadow: none; box-shadow: none; border-radius: 0.6rem; }
+.btn-attr-plus.has-free { background: var(--good); border-color: var(--cover-edge); color: #08170d; box-shadow: none; }
+
+.weapon-slot { background: var(--paper); border: 0.12rem solid var(--gold); margin-top: 0; }
+.weapon-slot.empty { border-color: var(--slot-line); }
+.slot-badge { color: var(--soft); }
+.weapon-slot-unequip { background: var(--paper-2); color: var(--ink); border: 0.0625rem solid var(--line); }
+.weapon-slot-unequip:hover { color: var(--gold-text); border-color: var(--gold); }
+.weapon-slot-info strong { color: var(--gold-text); }
+.weapon-slot-info .wdmg { color: var(--good); }
+.weapon-slot-info .wmeta, .weapon-slot-hint { color: var(--soft); }
+
+/* Equipamento: 8 quadros de ícone */
+.equipped-slots-grid { grid-template-columns: repeat(4, 6.9rem); gap: 0.6rem; }
+.equipped-slots-grid .gear-slot { background: var(--slot); border: 0.08rem dashed var(--slot-line); border-radius: 0.4rem; justify-content: space-between; padding: 0.4rem 0.2rem 0.3rem; }
+.equipped-slots-grid .gear-slot .slot-badge { font-size: 0.62rem; letter-spacing: 0.1rem; color: var(--soft); }
+.equipped-slots-grid .gear-ico { width: 3.1rem; height: 3.1rem; margin-bottom: 0.5rem; color: var(--glyph); stroke-width: 1.5; }
+.equipped-slots-grid .gear-ico.ghost { opacity: 0.2; }
+.equipped-slots-grid .gear-slot.filled { border-style: solid; border-color: var(--gold); cursor: pointer; }
+.equipped-slots-grid .gear-slot.filled .gear-ico { color: var(--gold-text); opacity: 1; }
+.equipped-slots-grid .gear-slot.filled:hover { background: var(--paper); }
+
+/* Mala: bandeja embaixo, nome de lado */
+.profile-inventory-panel { padding: 0.8rem 1rem 0.8rem 0.5rem; }
+.mala-side-label { font-family: var(--font-type); font-weight: 400; font-size: 1.5rem; letter-spacing: 0.15rem; color: var(--gold-text); }
+.inv-slot { background: var(--slot); border: 0.08rem solid var(--slot-line); border-radius: 0.4rem; color: var(--glyph); }
+.inv-slot:hover { border-color: var(--gold); background: var(--slot); }
+.inv-slot.equipped { border-color: var(--good); background: var(--slot); }
+.inv-slot.drop-target { border-color: var(--good); }
+.inv-slot-badge { background: var(--good); color: #0a1c0f; }
+.inv-dmg { color: var(--good); }
+.profile-inventory-panel .inv-item-details-box { background: var(--paper); border: 0.0625rem solid var(--line); border-radius: 0.5rem; color: var(--ink); }
+
+/* ---------- Demais abas: papéis sobre a pasta, nos dois temas ---------- */
+.missions-header-banner, .duels-header-banner, .shop-header-banner, .family-header-banner, .dashboard-banner,
+.mission-card-item, .rival-card-item, .shop-item-card, .family-card-item, .dash-card, .ranking-table-wrapper, .npc-note {
+  background: var(--paper-2);
+  border: 0.0625rem solid var(--line);
+  color: var(--ink);
+  box-shadow: none;
+}
+.mission-card-item:hover, .rival-card-item:hover, .shop-item-card:hover, .family-card-item:hover { border-color: var(--gold); }
+.mission-rewards-row, .rival-thumb-wrap, .matrix-tab-btn { background: var(--slot); border-color: var(--slot-line); color: var(--ink); }
+.matrix-tab-btn.active { background: var(--gold); color: var(--gold-ink); }
+.ranking-table th, .details-table-wrapper th, .matrix-heatmap-table th { background: var(--slot); color: var(--soft); }
+.ranking-table td { color: var(--ink); border-color: var(--line); }
+.ranking-table tr.player-rank-row { background: rgba(212, 175, 55, 0.14); }
+.missions-header-banner h4, .duels-header-banner h3, .shop-header-banner h3, .family-header-banner h3, .dashboard-banner h2, .dash-card-header h3 { color: var(--gold-text); font-family: var(--font-type); font-weight: 400; }
+.game-main-content p { color: var(--soft); }
+.choice-btn { background: var(--slot); border: 0.0625rem solid var(--slot-line); color: var(--ink); }
+.choice-btn:hover { border-color: var(--gold); }
+.choice-btn.active { background: var(--gold); color: var(--gold-ink); border-color: var(--cover-edge); }
+.game-main-content .arena-btn-primary { background: var(--gold); color: var(--gold-ink); border: 0.0625rem solid var(--cover-edge); box-shadow: none; }
+.game-main-content .arena-btn-secondary { background: var(--paper-2); color: var(--ink); border: 0.0625rem solid var(--line); }
+.game-main-content .arena-btn-secondary:hover { border-color: var(--gold); color: var(--gold-text); }
+
+@media (prefers-reduced-motion: reduce) {
+  .game-nav-tab, .game-nav-tab::after { transition: none; }
+}
+
+/* ---- Tema bege: cores de texto claras viram escuras dentro da pasta (gerado a partir das regras de cores claras; R-LAYOUT-9) ---- */
+html[data-skin="bege"] .game-main-content .nav-tab:hover { color: var(--ink); }
+html[data-skin="bege"] .game-main-content .badge-carrasco { color: hsl(0, 100%, 27%); }
+html[data-skin="bege"] .game-main-content .badge-muralha { color: hsl(210, 100%, 27%); }
+html[data-skin="bege"] .game-main-content .badge-malandro { color: hsl(163, 83%, 27%); }
+html[data-skin="bege"] .game-main-content .hp-numbers { color: var(--ink); }
+html[data-skin="bege"] .game-main-content .pill-abertura { color: hsl(0, 100%, 27%); }
+html[data-skin="bege"] .game-main-content .pill-execucao { color: hsl(11, 90%, 27%); }
+html[data-skin="bege"] .game-main-content .pill-intim { color: hsl(210, 100%, 27%); }
+html[data-skin="bege"] .game-main-content .pill-casca { color: hsl(244, 98%, 27%); }
+html[data-skin="bege"] .game-main-content .pill-adapt { color: hsl(163, 83%, 27%); }
+html[data-skin="bege"] .game-main-content .stat-number { color: var(--ink); }
+html[data-skin="bege"] .game-main-content .stat-attack .stat-number { color: hsl(0, 100%, 27%); }
+html[data-skin="bege"] .game-main-content .stat-life .stat-number { color: hsl(145, 63%, 27%); }
+html[data-skin="bege"] .game-main-content .stat-astucia .stat-number { color: hsl(48, 89%, 27%); }
+html[data-skin="bege"] .game-main-content .stat-tenacidade .stat-number { color: hsl(210, 100%, 27%); }
+html[data-skin="bege"] .game-main-content .gg-secondary-stats strong { color: var(--ink); }
+html[data-skin="bege"] .game-main-content .preview-name-tag { color: var(--ink); }
+html[data-skin="bege"] .game-main-content .btn-action-outline { color: var(--ink); }
+html[data-skin="bege"] .game-main-content .form-field input[type="text"] { color: var(--ink); }
+html[data-skin="bege"] .game-main-content .form-field select { color: var(--ink); }
+html[data-skin="bege"] .game-main-content .choice-btn:hover { color: var(--ink); }
+html[data-skin="bege"] .game-main-content .cell-balanced { color: hsl(145, 63%, 27%); }
+html[data-skin="bege"] .game-main-content .cell-high { color: hsl(210, 100%, 27%); }
+html[data-skin="bege"] .game-main-content .cell-low { color: hsl(0, 100%, 27%); }
+html[data-skin="bege"] .game-main-content .weapon-test-fire-btn { color: hsl(48, 89%, 27%); }
+html[data-skin="bege"] .game-main-content .game-nav-tab:hover { color: var(--ink); }
+html[data-skin="bege"] .game-main-content .equipped-slots-grid .slot-pts { color: hsl(145, 63%, 27%); }
+html[data-skin="bege"] .game-main-content .slot-content { color: hsl(48, 89%, 27%); }
+html[data-skin="bege"] .game-main-content .free-points-badge { color: hsl(145, 63%, 27%); }
+html[data-skin="bege"] .game-main-content .attr-title { color: var(--ink); }
+html[data-skin="bege"] .game-main-content .attr-pts-total { color: hsl(48, 89%, 27%); }
+html[data-skin="bege"] .game-main-content .don-speech-bubble h4 { color: hsl(46, 65%, 27%); }
+html[data-skin="bege"] .game-main-content .mission-title-row h4 { color: var(--ink); }
+html[data-skin="bege"] .game-main-content .mission-energy-badge { color: hsl(204, 70%, 27%); }
+html[data-skin="bege"] .game-main-content .rival-name { color: var(--ink); }
+html[data-skin="bege"] .game-main-content .shop-item-title { color: var(--ink); }
+html[data-skin="bege"] .game-main-content .raid-tag { color: var(--ink); }
+html[data-skin="bege"] .game-main-content .c-pick-role { color: hsl(48, 89%, 27%); }
+html[data-skin="bege"] .game-main-content .weapon-slot-unequip:hover { color: var(--ink); }
+html[data-skin="bege"] .game-main-content .weapon-slot-info strong { color: hsl(48, 89%, 27%); }
+html[data-skin="bege"] .game-main-content .weapon-slot-info .wdmg { color: hsl(145, 63%, 27%); }
+html[data-skin="bege"] .game-main-content .inv-dmg { color: hsl(145, 63%, 27%); }
+html[data-skin="bege"] .game-main-content .inv-detail-dmg { color: hsl(145, 63%, 27%); }
+html[data-skin="bege"] .game-main-content .shop-item-dmg { color: hsl(145, 63%, 27%); }
+html[data-skin="bege"] .game-main-content .inv-detail-vs .up { color: hsl(145, 63%, 27%); }
+html[data-skin="bege"] .game-main-content .attr-c-name { color: var(--ink); }
+html[data-skin="bege"] .game-main-content .attr-c-pts { color: hsl(48, 89%, 27%); }
+html[data-skin="bege"] .game-main-content .attr-compact-list.show-eff .attr-c-name { color: hsl(48, 89%, 27%); }
+html[data-skin="bege"] .game-main-content .attr-compact-list.show-eff .attr-c-pts { color: var(--ink); }
+html[data-skin="bege"] .game-main-content .mala-side-label { color: var(--ink); }
+html[data-skin="bege"] .game-main-content .avatar-edit-btn { color: var(--ink); }
+/* cores claras escritas direto no HTML gerado pelo jogo */
+html[data-skin="bege"] .game-main-content [style*="color: #f1c40f"], html[data-skin="bege"] .game-main-content [style*="color:#f1c40f"] { color: var(--gold-text) !important; }
+html[data-skin="bege"] .game-main-content [style*="color: #ffd752"], html[data-skin="bege"] .game-main-content [style*="color:#ffd752"] { color: var(--gold-text) !important; }
+html[data-skin="bege"] .game-main-content [style*="color: #d4af37"], html[data-skin="bege"] .game-main-content [style*="color:#d4af37"] { color: var(--gold-text) !important; }
+html[data-skin="bege"] .game-main-content [style*="color: #2ecc71"], html[data-skin="bege"] .game-main-content [style*="color:#2ecc71"] { color: var(--good) !important; }
+html[data-skin="bege"] .game-main-content [style*="color: #e74c3c"], html[data-skin="bege"] .game-main-content [style*="color:#e74c3c"] { color: var(--bad) !important; }
+html[data-skin="bege"] .game-main-content [style*="color: #e67e22"], html[data-skin="bege"] .game-main-content [style*="color:#e67e22"] { color: #8a4a0a !important; }
+html[data-skin="bege"] .game-main-content [style*="color: #fff"], html[data-skin="bege"] .game-main-content [style*="color:#fff"] { color: var(--ink) !important; }
+html[data-skin="bege"] .game-main-content [style*="color: #ffffff"], html[data-skin="bege"] .game-main-content [style*="color:#ffffff"] { color: var(--ink) !important; }
+html[data-skin="bege"] .game-main-content [style*="color: #3498db"], html[data-skin="bege"] .game-main-content [style*="color:#3498db"] { color: #1f5f94 !important; }
+
+/* Etiquetas de classe e de nível: etiqueta dourada, igual nos dois temas */
+.gg-style-badge, .gg-level-badge { background: var(--gold); color: var(--gold-ink); border: 0; }
+html[data-skin="bege"] .game-main-content .gg-style-badge, html[data-skin="bege"] .game-main-content .gg-level-badge { color: var(--gold-ink); }
+
+/* Tema bege: caixas escuras translucidas (inline no HTML gerado) e o retrato do chefão ficam claros */
+html[data-skin="bege"] .game-main-content [style*="rgba(0,0,0,0.3)"], html[data-skin="bege"] .game-main-content [style*="rgba(0,0,0,0.2)"], html[data-skin="bege"] .game-main-content [style*="rgba(0,0,0,0.4)"] { background: rgba(255, 255, 255, 0.35) !important; }
+html[data-skin="bege"] .game-main-content .boss-portrait-box, html[data-skin="bege"] .game-main-content .boss-hp-track { background: var(--slot); border-color: var(--slot-line); }
+html[data-skin="bege"] .game-main-content .boss-portrait-box * { color: var(--ink); }
