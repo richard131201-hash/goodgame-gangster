@@ -1,4 +1,4 @@
-# Recorta as armas (JPG com xadrez gravado) e gera 3 versoes por arma em 4:3 (800x600): "comum" (borda preta), "epico" (borda branca + brilho vermelho) e "lendario" (borda branca + brilho roxo). Ver R-ARTE-2, R-SLOT-1.
+# Recorta as armas (JPG com xadrez gravado), gira cada uma para ficar quase horizontal (so assim enche um slot 4:3) e gera 3 versoes em 4:3 (800x600): "comum" (borda preta), "epico" (borda branca + brilho vermelho) e "lendario" (borda branca + brilho roxo). Ver R-ARTE-2, R-SLOT-1.
 # Uso: python -I tools/recorta_armas.py (origens em Downloads, veja FILES).
 import glob, os, sys
 import numpy as np
@@ -74,6 +74,27 @@ def mascara_arma(path, vaos):
     return im, interno
 
 
+def melhor_angulo(interno):
+    """Gira a arma (só no sentido horário, até 70 graus, ou 20 graus no anti-horário) para ela encher ao máximo um quadro 4:3."""
+    img = Image.fromarray((interno * 255).astype(np.uint8))
+    img.thumbnail((600, 600))
+    melhor = (0, -45)
+    for ang in range(-70, 21):
+        a = np.array(img.rotate(ang, expand=True, resample=Image.BILINEAR)) > 127
+        ys, xs = np.where(a)
+        w, h = xs.max() - xs.min() + 1, ys.max() - ys.min() + 1
+        escala = min(4.0 / w, 3.0 / h)  # quanto da moldura 4:3 a arma ocupa
+        if escala > melhor[0]:
+            melhor = (escala, ang)
+    return melhor[1]
+
+
+def girar(rgb, interno, ang):
+    r = rgb.rotate(ang, expand=True, resample=Image.BICUBIC, fillcolor=(0, 0, 0))
+    m = Image.fromarray((interno * 255).astype(np.uint8)).rotate(ang, expand=True, resample=Image.BICUBIC)
+    return r, np.array(m) > 127
+
+
 def camadas(rgb, interno, tipo):
     """Monta a imagem RGBA completa (na resolução da origem). tipo: 'comum' ou 'epico'."""
     d = ndi.distance_transform_edt(~interno)  # distância (px) até a arma
@@ -127,6 +148,9 @@ for wid, padrao in FILES.items():
         print("NAO ACHEI", padrao)
         sys.exit(1)
     rgb, interno = mascara_arma(achados[0], VAOS.get(wid, ()))
+    ang = melhor_angulo(interno)
+    rgb, interno = girar(rgb, interno, ang)
+    print(wid, "girada", ang, "graus")
     ys, xs = np.where(interno)
     w0, h0 = xs.max() - xs.min(), ys.max() - ys.min()
     cx, cy = (xs.max() + xs.min()) // 2, (ys.max() + ys.min()) // 2
