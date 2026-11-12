@@ -144,3 +144,18 @@ describe('segunda rodada da pasta (R-LAYOUT-10)', () => {
     expect(main).toContain('As conquistas ainda não existem');
   });
 });
+
+describe('Ficha mais baixa (R-LAYOUT-11)', () => {
+  const html2 = readFileSync(join(process.cwd(), 'index.html'), 'utf8');
+  const css2 = readFileSync(join(process.cwd(), 'src/web/style.css'), 'utf8').replace(/\r\n/g, '\n');
+  it('o card do personagem estica até a linha de baixo do Equipamento e a foto preenche o quadro', () => {
+    expect(css2).toMatch(/\.profile-doll-panel \{ align-self: stretch;/);
+    expect(css2).toMatch(/\.profile-avatar-frame \{ flex: 1 1 auto; height: auto;/);
+    expect(readFileSync(join(process.cwd(), 'src/web/main.ts'), 'utf8')).toContain("'xMidYMid slice'");
+  });
+  it('Atributos sem o título "Atributos" (só os pontos livres), mas com as 4 linhas', () => {
+    expect(css2).toMatch(/\.profile-stats-panel\.compact \.panel-header-banner h3 \{ display: none; \}/);
+    expect(html2).toContain('id="free-points-indicator"');
+    expect((html2.match(/class="attr-c-row"/g) ?? []).length).toBe(4);
+  });
+});

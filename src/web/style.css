@@ -4053,3 +4053,20 @@ html[data-skin="bege"] .game-nav-tab .ico-img.ico-ficha, html[data-skin="bege"] 
   transition: opacity 0.12s;
 }
 .res-card[data-name]:hover::after { opacity: 1; }
+
+/* Ficha mais baixa (R-LAYOUT-11): o card do personagem acaba na linha de baixo do Equipamento; Atributos sem título e bem menores;
+   Arma um pouco menor. Sobra altura para a fileira extra (bloqueada) da Mala. */
+.profile-layout-grid { grid-template-columns: 14.6rem 13rem 15.5rem minmax(0, 1fr); align-items: start; }
+.profile-doll-panel { align-self: stretch; padding: 0.7rem; }
+.profile-paperdoll-wrapper { flex: 1 1 0; min-height: 0; display: flex; }
+.profile-avatar-frame { flex: 1 1 auto; height: auto; min-height: 0; }
+.doll-caption { margin-top: 0.45rem; font-size: 0.68rem; min-height: 0.9rem; white-space: normal; line-height: 1.15; }
+#profile-avatar-svg .paperdoll-svg { width: 100% !important; height: 100% !important; }
+.profile-stats-panel.compact { padding: 0.55rem 0.65rem 0.4rem; }
+.profile-stats-panel.compact .panel-header-banner { padding-bottom: 0.35rem; margin-bottom: 0.3rem; justify-content: center; border-bottom: 0; }
+.profile-stats-panel.compact .panel-header-banner h3 { display: none; }
+.attr-c-row { grid-template-columns: 1fr 3rem 0.6rem 2.2rem; height: 1.95rem; column-gap: 0.2rem; padding-left: 0.2rem; }
+.attr-c-name { font-size: 0.82rem; }
+.attr-c-pts { font-size: 1.3rem; }
+.btn-attr-plus { width: 2.2rem; height: 1.25rem; font-size: 1.05rem; }
+.profile-weapon-panel { padding: 0.8rem; }

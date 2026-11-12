@@ -541,6 +541,7 @@ function renderProfileView() {
   const avatarSvg = document.getElementById('profile-avatar-svg');
   if (avatarSvg) {
     avatarSvg.innerHTML = renderPaperdollSVG(p.appearance, { width: 15.2, height: 16.5 });
+    avatarSvg.querySelector('svg')?.setAttribute('preserveAspectRatio', 'xMidYMid slice'); // a foto preenche o quadro, que agora é mais baixo (R-LAYOUT-11)
   }
 
   const weaponHolder = document.getElementById('profile-weapon-holder');
