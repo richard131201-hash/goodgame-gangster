@@ -233,6 +233,15 @@ describe('servidor: conferir o save (R-SERVIDOR-3)', () => {
     expect(kept.inventory.find(i => i.id === item.id)?.gear?.slot).toBe('chapeu');
   });
 
+  it('itens do catálogo podem se repetir na Mala: dois uísques (mesmo id) são aceitos (defeito reportado pelo Kya)', async () => {
+    const db = await setup();
+    const s = saveOf(db);
+    s.inventory.push({ id: 'cons_whisky', slot: 4 } as never, { id: 'cons_whisky', slot: 6 } as never, { id: 'cons_whisky', slot: 7 } as never);
+    const r = await send(db, s);
+    expect(r.status).toBe(200);
+    expect(db.rows.get('u1')!.save.inventory.filter(i => i.id === 'cons_whisky').length).toBeGreaterThanOrEqual(3);
+  });
+
   it('itens dos 8 slots: recusa item de nível acima, pontos inventados, repetido e slot trocado (R-ITEM-2)', async () => {
     const db = await setup();
     const bom = rollGear(1, 'pet', () => 0.4);

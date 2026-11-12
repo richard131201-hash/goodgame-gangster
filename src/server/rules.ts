@@ -266,10 +266,14 @@ export function validateSave(db: DbPlayerRow, raw: unknown, now: number): SaveRe
   // Mochila: itens do catálogo (o servidor usa os dados do catálogo, nunca os do navegador) ou itens dos 8 slots,
   // que o servidor refaz a partir de slot, nível, pontos e aparência depois de conferir a coerência (R-ITEM-2).
   const inventory = [];
-  const seenIds = new Set<string>();
+  // Só os itens dos 8 slots têm id único (cada um é um item diferente). Itens do catálogo (armas, consumáveis)
+  // podem se repetir na Mala: dois uísques têm o mesmo id (defeito corrigido em 2026-11-12: o servidor recusava o save).
+  const seenGearIds = new Set<string>();
   for (const it of n.inventory) {
-    if (seenIds.has(it.id)) return { ok: false, reason: `item repetido (${it.id})` };
-    seenIds.add(it.id);
+    if (it.gear) {
+      if (seenGearIds.has(it.id)) return { ok: false, reason: `item repetido (${it.id})` };
+      seenGearIds.add(it.id);
+    }
     let item;
     if (it.gear) {
       if (!/^g_[a-z]+_[a-z0-9_]+$/.test(it.id)) return { ok: false, reason: 'id de item inválido' };
