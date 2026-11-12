@@ -4078,3 +4078,21 @@ html[data-skin="bege"] .game-nav-tab .ico-img.ico-ficha, html[data-skin="bege"] 
 .attr-c-name { font-size: 0.86rem; }
 .attr-c-pts { font-size: 1.4rem; }
 .btn-attr-plus { width: 2.3rem; height: 1.28rem; font-size: 1.05rem; }
+
+/* Fileira bloqueada da Mala (R-MALA-10, opcao A escolhida pelo fundador): slot escuro hachurado com cadeado; clicar compra a mala maior */
+.inv-slot.locked {
+  display: flex; align-items: center; justify-content: center; position: relative;
+  background-color: var(--slot);
+  background-image: repeating-linear-gradient(135deg, transparent 0 0.5rem, rgba(0, 0, 0, 0.22) 0.5rem 0.6rem);
+  border-style: solid; cursor: pointer; color: var(--soft);
+}
+.inv-slot.locked .ico { width: 3rem; height: 3rem; opacity: 0.8; stroke-width: 1.5; }
+.inv-slot.locked:hover, .inv-slot.locked:focus-visible { border-color: var(--gold); color: var(--gold-text); outline: none; }
+.inv-slot.locked[data-name]::after {
+  content: attr(data-name);
+  position: absolute; left: 50%; top: calc(100% + 0.35rem); transform: translateX(-50%);
+  background: var(--ink); color: var(--paper); font-size: 0.9rem; font-weight: 600;
+  padding: 0.25rem 0.7rem; border-radius: 0.3rem; white-space: nowrap;
+  opacity: 0; pointer-events: none; z-index: 50; transition: opacity 0.12s;
+}
+.inv-slot.locked:hover::after, .inv-slot.locked:focus-visible::after { opacity: 1; }

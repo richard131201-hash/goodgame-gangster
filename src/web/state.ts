@@ -3,6 +3,7 @@ import { DEFAULT_CARRASCO } from './paperdoll.js';
 import { SHOP_ITEMS, MAFIA_FAMILIES_LIST, type GameItem } from './gameData.js';
 import { regenEnergy } from './energy.js';
 import { GOLD } from '../shared/gold.js';
+import { BAG_CAPACITY_MAX, BAG_UPGRADE_SLOTS, BIG_BAG_PRICE_GOLD } from '../shared/bag.js';
 import { migrateLegacyGear, isGearItem, shopStock } from '../shared/gear.js';
 import { ITEM_SLOTS, type ItemSlot } from '../shared/itemRoll.js';
 import { saveKeyFor } from './saveKey.js';
@@ -238,6 +239,22 @@ export class GameStateManager {
   /** Capacidade da mochila deste jogador (10 no começo, R-MOCHILA-1). */
   getBagCapacity(): number {
     return bagCapacityOf(this.player);
+  }
+
+  /** Por que a mala maior não pode ser comprada agora (ou null se pode). */
+  bagUpgradeBlockReason(): 'maximo' | 'ouro' | null {
+    if (this.getBagCapacity() >= BAG_CAPACITY_MAX) return 'maximo';
+    if (this.player.gold < BIG_BAG_PRICE_GOLD) return 'ouro';
+    return null;
+  }
+
+  /** Compra a mala maior (R-MALA-10): cobra o ouro e libera mais uma fileira. Confere tudo antes de cobrar. */
+  buyBiggerBag(): boolean {
+    if (this.bagUpgradeBlockReason() !== null) return false;
+    this.spendGold(BIG_BAG_PRICE_GOLD);
+    this.player.bagCapacity = this.getBagCapacity() + BAG_UPGRADE_SLOTS;
+    this.notify();
+    return true;
   }
 
   /** Ids dos itens do Equipamento que estão equipados (eles não ocupam lugar na Mala, R-MALA-7). */

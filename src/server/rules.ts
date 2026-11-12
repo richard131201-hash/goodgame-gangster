@@ -9,6 +9,7 @@ import { ITEM_SLOTS, type ItemSlot } from '../shared/itemRoll.js';
 import type { CharacterAppearance } from '../web/paperdoll.js';
 import { DUEL, duelBounty } from '../shared/duel.js';
 import { goldCap } from '../shared/gold.js';
+import { validBagCapacity, BAG_UPGRADE_SLOTS, BIG_BAG_PRICE_GOLD } from '../shared/bag.js';
 import { validateCharacterName, cleanCharacterName } from '../web/authRules.js';
 import {
   applyXp,
@@ -289,7 +290,13 @@ export function validateSave(db: DbPlayerRow, raw: unknown, now: number): SaveRe
   }
   const shopSerial = n.shopSerial ?? 0;
   if (shopSerial < (db.save.shopSerial ?? 0)) return { ok: false, reason: 'o contador da loja não pode diminuir' };
-  if ((n.bagCapacity ?? LIMITS.bagCapacity) !== LIMITS.bagCapacity) return { ok: false, reason: 'capacidade da mochila inválida' };
+  // Mala maior (R-MALA-10): a capacidade é 10 ou 15 e nunca diminui
+  const bagCapacity = n.bagCapacity ?? LIMITS.bagCapacity;
+  if (!validBagCapacity(bagCapacity)) return { ok: false, reason: 'capacidade da mochila inválida' };
+  if (bagCapacity < (db.save.bagCapacity ?? LIMITS.bagCapacity)) return { ok: false, reason: 'a mochila não pode diminuir' };
+  const bagSteps = (bagCapacity - (db.save.bagCapacity ?? LIMITS.bagCapacity)) / BAG_UPGRADE_SLOTS;
+  // quem comprou a mala maior pagou em ouro: o ouro que sobrou mais o preço não pode passar do que era possível ter
+  if (bagSteps > 0 && n.gold + bagSteps * BIG_BAG_PRICE_GOLD > goldCap(n.level, missions)) return { ok: false, reason: 'mala maior sem ouro para pagar' };
 
   // Equipamento: precisa existir e estar na mochila
   const { weaponId } = n.equipped;
@@ -316,7 +323,7 @@ export function validateSave(db: DbPlayerRow, raw: unknown, now: number): SaveRe
     energy: n.energy,
     maxEnergy: LIMITS.maxEnergy,
     lastEnergyAt: n.lastEnergyAt,
-    bagCapacity: LIMITS.bagCapacity,
+    bagCapacity,
     respect,
     points: n.points,
     trainedPoints: n.trainedPoints,

@@ -1,5 +1,7 @@
 import { FISTS, getWeaponById, type WeaponDef } from '../engine/weapons.js';
 import type { GameItem } from './gameData.js';
+import { BAG_CAPACITY_INITIAL, BAG_COLUMNS } from '../shared/bag.js';
+export { BAG_CAPACITY_INITIAL, BAG_COLUMNS };
 
 /**
  * Regras puras do espaço da arma (sem tela, sem relógio):
@@ -98,8 +100,6 @@ export function bagEntries(inventory: GameItem[], weaponId: string | null | unde
 }
 
 /** Capacidade inicial da mochila (R-MOCHILA-1): 10 itens, em 2 linhas de 5. */
-export const BAG_CAPACITY_INITIAL = 10;
-export const BAG_COLUMNS = 5;
 
 /** Capacidade do jogador: saves antigos não têm o campo e valem a capacidade inicial. */
 export function bagCapacityOf(player: { bagCapacity?: number }): number {
