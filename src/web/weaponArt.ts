@@ -13,6 +13,7 @@ export const WEAPON_ART: Readonly<Record<string, string>> = {
 };
 
 export const MISSIONS_ICON_URL = '/assets/icons/chapeu.webp';
+export const FICHA_ICON_URL = '/assets/icons/ficha.webp';
 
 export function weaponArtUrl(weaponId: string | null | undefined): string | null {
   return (weaponId && WEAPON_ART[weaponId]) || null;

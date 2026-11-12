@@ -4,13 +4,13 @@ import { join } from 'node:path';
 import { WEAPONS_CATALOG } from '../../src/engine/weapons.js';
 import { SHOP_ITEMS } from '../../src/web/gameData.js';
 import { getWeaponSprite } from '../../src/web/weaponSprites.js';
-import { MISSIONS_ICON_URL, WEAPON_ART, weaponArtImg, weaponArtUrl } from '../../src/web/weaponArt.js';
+import { FICHA_ICON_URL, MISSIONS_ICON_URL, WEAPON_ART, weaponArtImg, weaponArtUrl } from '../../src/web/weaponArt.js';
 
 const pub = (url: string) => join(process.cwd(), 'public', url.replace(/^\//, ''));
 
 describe('arte das armas (R-ARTE-1)', () => {
   it('cada imagem existe, é WebP com transparência e é leve', () => {
-    for (const [id, url] of Object.entries(WEAPON_ART).concat([['chapeu', MISSIONS_ICON_URL]])) {
+    for (const [id, url] of Object.entries(WEAPON_ART).concat([['chapeu', MISSIONS_ICON_URL], ['ficha', FICHA_ICON_URL]])) {
       const caminho = pub(url);
       expect(existsSync(caminho), `${id}: ${url}`).toBe(true);
       const b = readFileSync(caminho);
@@ -59,10 +59,11 @@ describe('Springfield M1903 de Precisão (nova arma, valores provisórios)', () 
   });
 });
 
-describe('ícone de Missões é o chapéu (R-ARTE-1)', () => {
-  it('a aba Missões usa a imagem do chapéu e as outras seguem com ícone de traço', () => {
+describe('ícones de Missões (chapéu) e Ficha (foto com clipe) (R-ARTE-1)', () => {
+  it('as abas Missões e Ficha usam as imagens do fundador e as outras seguem com ícone de traço', () => {
     const html = readFileSync(join(process.cwd(), 'index.html'), 'utf8');
     expect(html).toMatch(/data-tab="missoes"[^>]*><img class="ico-img" src="\/assets\/icons\/chapeu\.webp"/);
-    expect(html).toMatch(/data-tab="perfil"[^>]*><svg class="ico"/);
+    expect(html).toMatch(/data-tab="perfil"[^>]*><img class="ico-img ico-ficha" src="\/assets\/icons\/ficha\.webp"/);
+    expect(html).toMatch(/data-tab="duelos"[^>]*><svg class="ico"/);
   });
 });

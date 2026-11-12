@@ -3993,3 +3993,8 @@ html[data-skin="bege"] .game-nav-tab.active .ico-img { filter: drop-shadow(0 0 0
 .sell-zone .ico { width: 1.8rem; height: 1.8rem; color: var(--gold-text); }
 .sell-zone.drop-ok { border-style: solid; border-color: var(--good); background: rgba(95, 210, 138, 0.16); }
 .sell-zone.drop-bad { border-color: var(--bad); }
+
+/* Ícone da aba Ficha: a foto de ficha com clipe (mesmo padrão do chapéu de Missões; é clara, então só ganha sombra e brilho dourado ao ativar) */
+.game-nav-tab .ico-img.ico-ficha { width: 2.45rem; filter: drop-shadow(0 0.1rem 0.15rem rgba(0, 0, 0, 0.55)); }
+.game-nav-tab.active .ico-img.ico-ficha { filter: drop-shadow(0 0 0.2rem rgba(212, 175, 55, 0.9)); }
+html[data-skin="bege"] .game-nav-tab .ico-img.ico-ficha, html[data-skin="bege"] .game-nav-tab.active .ico-img.ico-ficha { filter: drop-shadow(0 0.1rem 0.15rem rgba(60, 40, 10, 0.5)); }
