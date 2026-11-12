@@ -541,7 +541,7 @@ function renderProfileView() {
   const avatarSvg = document.getElementById('profile-avatar-svg');
   if (avatarSvg) {
     avatarSvg.innerHTML = renderPaperdollSVG(p.appearance, { width: 15.2, height: 16.5 });
-    avatarSvg.querySelector('svg')?.setAttribute('preserveAspectRatio', 'xMidYMid slice'); // a foto preenche o quadro, que agora é mais baixo (R-LAYOUT-11)
+    avatarSvg.querySelector('svg')?.setAttribute('preserveAspectRatio', 'xMidYMin slice'); // a foto preenche o quadro, que agora é mais baixo (R-LAYOUT-11)
   }
 
   const weaponHolder = document.getElementById('profile-weapon-holder');
@@ -568,6 +568,8 @@ function renderProfileView() {
   document.getElementById('free-points-val')!.textContent = p.freePoints.toString();
   const freeBadge = document.getElementById('free-points-indicator')!;
   freeBadge.style.display = p.freePoints > 0 ? 'inline-block' : 'none';
+  const freeHeader = freeBadge.parentElement; // sem pontos livres a faixa some, para não sobrar uma linha vazia em cima de Ataque
+  if (freeHeader) freeHeader.style.display = p.freePoints > 0 ? 'flex' : 'none';
 
   // Pontos de cada atributo (o que cada um influencia aparece no balão ao passar o mouse)
   attrInfluence = attributeInfluence(input, config);

@@ -151,10 +151,12 @@ describe('Ficha mais baixa (R-LAYOUT-11)', () => {
   it('o card do personagem estica até a linha de baixo do Equipamento e a foto preenche o quadro', () => {
     expect(css2).toMatch(/\.profile-doll-panel \{ align-self: stretch;/);
     expect(css2).toMatch(/\.profile-avatar-frame \{ flex: 1 1 auto; height: auto;/);
-    expect(readFileSync(join(process.cwd(), 'src/web/main.ts'), 'utf8')).toContain("'xMidYMid slice'");
+    expect(css2).not.toMatch(/grid-template-columns: 14\.6rem/); // as colunas ficam como eram: o Equipamento não pode crescer
+    expect(readFileSync(join(process.cwd(), 'src/web/main.ts'), 'utf8')).toContain("'xMidYMin slice'");
   });
   it('Atributos sem o título "Atributos" (só os pontos livres), mas com as 4 linhas', () => {
     expect(css2).toMatch(/\.profile-stats-panel\.compact \.panel-header-banner h3 \{ display: none; \}/);
+    expect(css2).toMatch(/\.profile-stats-panel\.compact \.attr-compact-list \{ border-top: 0; \}/);
     expect(html2).toContain('id="free-points-indicator"');
     expect((html2.match(/class="attr-c-row"/g) ?? []).length).toBe(4);
   });
