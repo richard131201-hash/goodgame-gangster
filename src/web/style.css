@@ -3841,3 +3841,86 @@ html[data-skin="bege"] .sub-tab.active { color: #6a3d0a; }
 .soon-card p { margin: 0; font-size: 1.05rem; line-height: 1.45; color: var(--soft); }
 /* Missão especial do servidor (chefão) dentro de Missões */
 #view-missoes .raid-event-card { margin-bottom: 1rem; }
+
+/* ================================================================================================ */
+/* AVISOS NO CENTRO DA TELA, NO PADRÃO DA PASTA (R-AVISO-1): trocam os alert() e confirm()          */
+/* ================================================================================================ */
+#notice-root { position: fixed; inset: 0; z-index: 30000; pointer-events: none; }
+#notice-root.open { pointer-events: auto; }
+.notice-backdrop { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(0, 0, 0, 0.62); animation: notice-fade 0.14s ease-out; }
+.notice-card {
+  position: relative;
+  width: 44rem;
+  max-width: 92%;
+  margin-top: 1.6rem;
+  padding: 1rem 1.1rem 1.1rem;
+  background: var(--cover);
+  border: 0.1rem solid var(--cover-edge);
+  border-radius: 0 0.9rem 0.9rem 0.9rem;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  animation: notice-pop 0.16s ease-out;
+}
+.notice-card::after { content: ""; position: absolute; inset: 0.45rem; border: 0.12rem dashed var(--stitch); border-radius: 0.6rem; pointer-events: none; }
+.notice-ear {
+  position: absolute;
+  top: -0.1rem;
+  left: 1.5rem;
+  transform: translateY(-100%);
+  padding: 0.4rem 1.4rem 0.35rem;
+  background: var(--cover);
+  border: 0.1rem solid var(--cover-edge);
+  border-bottom: 0;
+  border-radius: 0.7rem 0.7rem 0 0;
+  font-family: var(--font-type);
+  font-size: 1.05rem;
+  letter-spacing: 0.05rem;
+  color: var(--glyph);
+  white-space: nowrap;
+}
+html[data-skin="couro"] .notice-ear { color: var(--gold); }
+.notice-stamp {
+  position: absolute;
+  top: -1.9rem;
+  right: 1.6rem;
+  z-index: 3;
+  transform: rotate(-6deg);
+  border: 0.18rem double var(--stamp);
+  color: var(--stamp);
+  padding: 0.02rem 0.7rem;
+  font-family: var(--font-type);
+  font-size: 1.25rem;
+  letter-spacing: 0.06rem;
+  opacity: 0.92;
+  white-space: nowrap;
+}
+.notice-sheet { position: relative; z-index: 1; display: flex; align-items: center; gap: 1.2rem; padding: 1.3rem 1.4rem; background: var(--paper); border: 0.0625rem solid var(--line); border-radius: 0.5rem; }
+.notice-icon { flex: 0 0 auto; width: 4.6rem; height: 4.6rem; display: grid; place-items: center; border-radius: 50%; background: var(--slot); border: 0.14rem solid var(--gold); color: var(--gold-text); }
+.notice-icon .ico { width: 2.3rem; height: 2.3rem; }
+.notice-body { min-width: 0; }
+.notice-msg { margin: 0; font-size: 1.3rem; line-height: 1.35; color: var(--ink); }
+.notice-detail { margin: 0.5rem 0 0; font-size: 0.85rem; line-height: 1.3; color: var(--soft); word-break: break-word; }
+.notice-actions { position: relative; z-index: 1; display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 0.9rem; }
+.notice-btn {
+  min-width: 8rem;
+  padding: 0.5rem 1.4rem;
+  font: 700 1.05rem var(--font-sans);
+  color: var(--ink);
+  background: var(--paper-2);
+  border: 0.08rem solid var(--line);
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+.notice-btn:hover { border-color: var(--gold); color: var(--gold-text); }
+.notice-btn.primary { background: var(--gold); color: var(--gold-ink); border-color: var(--cover-edge); }
+.notice-btn.primary:hover { filter: brightness(1.1); color: var(--gold-ink); }
+.notice-btn:focus-visible { outline: 0.15rem solid var(--gold); outline-offset: 0.12rem; }
+.notice-erro .notice-icon { border-color: var(--bad); color: var(--bad); }
+.notice-sucesso .notice-icon { border-color: var(--good); color: var(--good); }
+@keyframes notice-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes notice-pop { from { opacity: 0; transform: translateY(0.6rem) scale(0.97); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .notice-backdrop, .notice-card { animation: none; } }
+
+/* Botão de comprar sem condição de compra: fica apagado, mas clicável, para o aviso explicar o motivo (R-AVISO-1) */
+.btn-buy-shop-item[aria-disabled="true"] { opacity: 0.55; filter: grayscale(0.4); cursor: not-allowed; }

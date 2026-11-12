@@ -72,6 +72,7 @@ import {
 
 import { ITEM_SLOTS, type ItemSlot } from '../shared/itemRoll.js';
 import { applySkin, readSkin, toggleSkin, FOLDER_HEADERS } from './skin.js';
+import { notify, ask } from './notice.js';
 import { isGearItem, rollRandomGear, GEAR_ICONS } from '../shared/gear.js';
 import { ITEM_SLOT_LABELS } from '../shared/itemRoll.js';
 
@@ -149,7 +150,12 @@ function beginSync() {
       gameState.adoptServerSave(serverSave); // volta ao que o servidor considera válido
       if (Date.now() - lastRejectAlertAt > 10000) {
         lastRejectAlertAt = Date.now();
-        alert(message);
+        void notify({
+          kind: 'erro',
+          title: 'Progresso não salvo',
+          message: 'O servidor não aceitou o seu último progresso, e o personagem voltou ao último estado salvo.',
+          detail: message,
+        });
       }
     },
   );
@@ -269,12 +275,13 @@ async function boot() {
   if (logout) {
     logout.style.display = '';
     logout.addEventListener('click', () => {
-      if (confirm('Sair da conta?')) {
+      void ask({ kind: 'info', title: 'Sair da conta', message: 'Seu progresso já está salvo. Deseja sair da conta?', okLabel: 'Sair', cancelLabel: 'Ficar' }).then(ok => {
+        if (!ok) return;
         void flushSave().finally(() => {
           endSync();
           void signOutAccount();
         });
-      }
+      });
     });
   }
   initAuthUi({ onLoggedIn });
@@ -417,17 +424,18 @@ setInterval(() => {
 document.getElementById('quick-refill-energy-btn')?.addEventListener('click', () => {
   const p = gameState.getPlayer();
   if (p.energy >= p.maxEnergy) {
-    alert('Sua energia já está no máximo!');
+    void notify({ kind: 'energia', title: 'Energia cheia', message: 'Sua energia já está no máximo.' });
     return;
   }
   if (p.gold >= 5) {
-    if (confirm('Recarregar energia completamente por 5 Ouros?')) {
+    void ask({ kind: 'ouro', title: 'Recarregar energia', message: 'Recarregar a energia por completo custa 5 de ouro. Deseja gastar?', okLabel: 'Recarregar', cancelLabel: 'Agora não' }).then(ok => {
+      if (!ok) return;
       gameState.spendGold(5);
       gameState.addEnergy(100);
-      alert('Energia restaurada para 100!');
-    }
+      void notify({ kind: 'sucesso', title: 'Energia restaurada', message: 'Sua energia foi restaurada para 100.', autoCloseMs: 2600 });
+    });
   } else {
-    alert('Você precisa de 5 Ouros para recarga instantânea de energia!');
+    void notify({ kind: 'ouro', title: 'Faltam ouros', message: `A recarga instantânea de energia custa 5 de ouro, e você tem ${p.gold}.` });
   }
 });
 
@@ -446,13 +454,14 @@ document.getElementById('skin-toggle-btn')?.addEventListener('click', () => {
 // NEW CHARACTER BUTTON
 document.getElementById('new-character-btn')?.addEventListener('click', () => {
   if (syncEnabled()) {
-    alert('Cada conta tem um personagem só. Para jogar com outro, crie outra conta.');
+    void notify({ kind: 'info', title: 'Um personagem por conta', message: 'Cada conta tem um personagem só. Para jogar com outro, crie outra conta.' });
     return;
   }
-  if (confirm('Deseja criar um novo gangster? Seu progresso atual será reiniciado.')) {
+  void ask({ kind: 'erro', title: 'Novo gangster', message: 'Seu progresso atual será apagado e você recomeça do zero. Deseja continuar?', okLabel: 'Apagar e recomeçar', cancelLabel: 'Voltar' }).then(ok => {
+    if (!ok) return;
     gameState.resetAllProgress();
     startCharacterCreation(finishCharacterCreation);
-  }
+  });
 });
 
 // ========================================================
@@ -595,7 +604,7 @@ document.addEventListener('click', (e) => {
       sound.playHit();
       renderProfileView();
     } else {
-      alert(`Cash insuficiente! Você precisa de $${cost.toLocaleString()} para este treino.`);
+      void notify({ kind: 'cash', title: 'Faltam $', message: `Este treino custa $${cost.toLocaleString()} e você tem $${p.cash.toLocaleString()}. Faltam $${Math.max(0, cost - p.cash).toLocaleString()}.` });
     }
     return;
   }
@@ -985,7 +994,7 @@ document.addEventListener('dragend', endWeaponDrag);
 /** Guarda a arma na mochila; se estiver cheia, avisa em vez de falhar calado. */
 function tryUnequipWeapon(targetSlot?: number) {
   if (gameState.getPlayer().equipped.weaponId && !gameState.bagHasRoom()) {
-    alert(`Mala cheia (${gameState.getBagCount()}/${gameState.getBagCapacity()}). Venda ou use um item para abrir espaço antes de guardar a arma.`);
+    void notify({ kind: 'mala', message: `Sua Mala está cheia (${gameState.getBagCount()} de ${gameState.getBagCapacity()}). Venda ou use um item para abrir espaço antes de guardar a arma.` });
     return;
   }
   gameState.unequipWeapon(targetSlot);
@@ -1120,7 +1129,7 @@ function renderMissionsView() {
       if (!mission) return;
 
       if (!gameState.consumeEnergy(mission.energyCost)) {
-        alert('Energia insuficiente! Aguarde a recarga ou recarregue com Ouro na barra superior.');
+        void notify({ kind: 'energia', title: 'Sem energia', message: `Esta missão gasta ${mission.energyCost} de energia e você tem ${gameState.getPlayer().energy}. Espere a recarga ou use 5 de ouro no + da barra de cima.` });
         return;
       }
 
@@ -1280,14 +1289,13 @@ async function challengeRealRival(opponentId: string, btn?: HTMLButtonElement, p
   if (!d.ok && d.error === 'espera' && d.costGold && !payGold) {
     // Espera de 10 min: oferece pagar ouro para duelar agora (o servidor cobra só se aceitar).
     const min = Math.ceil((d.remainingMs ?? 0) / 60000);
-    if (confirm(`Seu próximo duelo grátis é em ${min} min.\n\nGastar ${d.costGold} de ouro para duelar agora?`)) {
-      return challengeRealRival(opponentId, btn, true);
-    }
+    const pagar = await ask({ kind: 'ouro', title: 'Duelar agora?', message: `Seu próximo duelo grátis é em ${min} min. Gastar ${d.costGold} de ouro para duelar agora?`, okLabel: `Gastar ${d.costGold} de ouro`, cancelLabel: 'Esperar' });
+    if (pagar) return challengeRealRival(opponentId, btn, true);
     if (btn) btn.disabled = false;
     return;
   }
   if (!d.ok || !d.events || !d.attacker || !d.defender || !d.save || !d.rewards || d.firstAttacker === undefined) {
-    alert(d.message ?? 'Não foi possível duelar agora. Tente de novo.');
+    void notify({ kind: d.error === 'sem_ouro' ? 'ouro' : 'duelo', title: d.error === 'sem_ouro' ? 'Faltam ouros' : 'Duelo não realizado', message: d.message ?? 'Não foi possível duelar agora. Tente de novo.' });
     realRivalsCache = null;
     renderDuelsView();
     return;
@@ -1475,7 +1483,7 @@ function renderShopView() {
             ${item.priceCash > 0 ? `$${item.priceCash.toLocaleString()} ` : ''}
             ${item.priceGold > 0 ? `🪙 ${item.priceGold}` : ''}
           </span>
-          <button class="arena-btn-primary btn-buy-shop-item" data-item-id="${item.id}" ${canBuy ? '' : 'disabled'} style="padding: 0.25rem 0.75rem; font-size: 0.6875rem;">
+          <button class="arena-btn-primary btn-buy-shop-item" data-item-id="${item.id}" ${canBuy ? '' : 'aria-disabled="true"'} style="padding: 0.25rem 0.75rem; font-size: 0.6875rem;">
             Comprar
           </button>
         </div>
@@ -1493,7 +1501,11 @@ function renderShopView() {
           sound.playCrit();
           renderShopView();
         } else {
-          alert({ sem_item: 'Este item não está mais à venda.', cash: 'Cash insuficiente para esta compra.', mochila: `Mala cheia (${gameState.getBagCount()}/${gameState.getBagCapacity()}). Venda ou use um item para abrir espaço.` }[why]);
+          const pl = gameState.getPlayer();
+          const alvo = gameState.getShopStock().find(i => i.id === id);
+          if (why === 'cash') void notify({ kind: 'cash', title: 'Faltam $', message: `Este item custa $${(alvo?.priceCash ?? 0).toLocaleString()} e você tem $${pl.cash.toLocaleString()}.` });
+          else if (why === 'mochila') void notify({ kind: 'mala', message: `Sua Mala está cheia (${gameState.getBagCount()} de ${gameState.getBagCapacity()}). Venda ou use um item para abrir espaço.` });
+          else void notify({ kind: 'info', title: 'Item indisponível', message: 'Este item não está mais à venda. O estoque mudou.' });
         }
         return;
       }
@@ -1503,16 +1515,14 @@ function renderShopView() {
       const reason = gameState.buyBlockReason(item);
       if (reason === null && gameState.buyItem(item)) {
         sound.playCrit();
-        alert(`Você adquiriu ${item.name}.`);
+        void notify({ kind: 'sucesso', title: 'Compra feita', message: `Você adquiriu ${item.name}.`, autoCloseMs: 2200 });
         renderShopView();
       } else {
-        const msg: Record<string, string> = {
-          nivel: `Você precisa do nível ${item.levelReq} para comprar este item.`,
-          ouro: 'Ouro insuficiente para esta compra.',
-          cash: 'Cash insuficiente para esta compra.',
-          mochila: `Mala cheia (${gameState.getBagCount()}/${gameState.getBagCapacity()}). Venda ou use um item para abrir espaço.`,
-        };
-        alert(msg[reason ?? 'cash']);
+        const pl = gameState.getPlayer();
+        if (reason === 'nivel') void notify({ kind: 'info', title: 'Nível insuficiente', message: `Este item exige o nível ${item.levelReq}, e você está no nível ${pl.level}.` });
+        else if (reason === 'ouro') void notify({ kind: 'ouro', title: 'Faltam ouros', message: `Este item custa ${item.priceGold} de ouro e você tem ${pl.gold}.` });
+        else if (reason === 'mochila') void notify({ kind: 'mala', message: `Sua Mala está cheia (${gameState.getBagCount()} de ${gameState.getBagCapacity()}). Venda ou use um item para abrir espaço.` });
+        else void notify({ kind: 'cash', title: 'Faltam $', message: `Este item custa $${item.priceCash.toLocaleString()} e você tem $${pl.cash.toLocaleString()}.` });
       }
     });
   });
@@ -1682,10 +1692,10 @@ function renderFamilyView() {
     document.getElementById('donate-clan-cash-btn')?.addEventListener('click', () => {
       if (gameState.spendCash(500)) {
         currentFam.treasuryCash += 500;
-        alert('Você doou $500 para o cofre da Família.');
+        void notify({ kind: 'sucesso', title: 'Doação feita', message: 'Você doou $500 ao cofre da Família.', autoCloseMs: 2200 });
         renderFamilyView();
       } else {
-        alert('Cash insuficiente para doar!');
+        void notify({ kind: 'cash', title: 'Faltam $', message: `A doação é de $500 e você tem $${gameState.getPlayer().cash.toLocaleString()}.` });
       }
     });
   } else {
@@ -1731,7 +1741,7 @@ function renderFamilyView() {
       if (!id) return;
       gameState.joinFamily(id);
       sound.playCrit();
-      alert('Parabéns! Você agora é um membro oficial da Família Mafiosa!');
+      void notify({ kind: 'familia', title: 'Bem-vindo à família', message: 'Parabéns! Você agora é um membro oficial da Família Mafiosa.' });
       renderFamilyView();
     });
   });
@@ -1754,7 +1764,7 @@ function renderRaidEvent() {
   if (attackBtn) {
     attackBtn.onclick = () => {
       if (!gameState.consumeEnergy(25)) {
-        alert('Você precisa de 25 Energia para desferir um ataque contra o Chefão!');
+        void notify({ kind: 'energia', title: 'Sem energia', message: `O ataque ao chefão gasta 25 de energia e você tem ${gameState.getPlayer().energy}. Espere a recarga ou use 5 de ouro no + da barra de cima.` });
         return;
       }
 
