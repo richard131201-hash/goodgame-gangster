@@ -13,12 +13,13 @@ FILES = {
     "energia": "Creating_character_energy_icon_*_2K.jpg",
     "ouro": "Create_gold_bars_icon_*_2K.jpg",
     "cash": "Creating_money_icon_for_game_*_2K.jpg",
+    "duelos": "Create_game_duels_icon_*_2K.jpg",
     "podio": "Create_minimalist_podium_icon_*_2K.jpg",
 }
 LADO = 256
 
 
-def fundo_xadrez(a):
+def fundo_xadrez(a, furos=False):
     mx, mn = a.max(axis=2), a.min(axis=2)
     g = a.mean(axis=2)
     cinza = (mx - mn) < 12
@@ -28,7 +29,17 @@ def fundo_xadrez(a):
     lab, _ = ndi.label(xad)
     B = 24  # faixa de borda: o JPG tem uma moldura de alguns pixels
     borda = np.unique(np.concatenate([lab[:B, :].ravel(), lab[-B:, :].ravel(), lab[:, :B].ravel(), lab[:, -B:].ravel()]))
-    return np.isin(lab, borda[borda != 0])
+    fundo = np.isin(lab, borda[borda != 0])
+    if furos:  # vaos fechados que sao so xadrez (ex.: dentro do guarda-mato das pistolas)
+        tam = ndi.sum(xad, lab, index=np.arange(1, lab.max() + 1))
+        for i, t in enumerate(tam, start=1):
+            if t >= 3000:
+                m = lab == i
+                esc, cla = (g[m] < 60).mean(), (g[m] > 78).mean()
+                cx = np.where(m)[1].mean() / m.shape[1]
+                if esc > 0.25 and cla > 0.25 and abs(cx - 0.5) < 0.12:  # so o furo do centro (o guarda-mato)  # xadrez de verdade tem os dois tons; metal escuro tem um so
+                    fundo |= m
+    return fundo
 
 
 def maior_bloco(m):
@@ -60,7 +71,7 @@ for nome, padrao in FILES.items():
     arq = glob.glob(os.path.join(DL, padrao))[0]
     img = Image.open(arq).convert("RGB")
     a = np.array(img).astype(np.int16)
-    fundo = fundo_xadrez(a)
+    fundo = fundo_xadrez(a, furos=(nome == "duelos"))
     if nome in ("ouro", "cash", "podio"):
         rgb, alfa = borda_nova(img, a, fundo, 75 if nome == "ouro" else 58 if nome == "cash" else 40)
         rgba = np.dstack([rgb, alfa * 255])

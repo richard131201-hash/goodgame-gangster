@@ -137,14 +137,15 @@ describe('ícones de Missões (chapéu) e Ficha (foto com clipe) (R-ARTE-1)', ()
     const html = readFileSync(join(process.cwd(), 'index.html'), 'utf8');
     expect(html).toMatch(/data-tab="missoes"[^>]*><img class="ico-img" src="\/assets\/icons\/chapeu\.webp"/);
     expect(html).toMatch(/data-tab="perfil"[^>]*><img class="ico-img ico-ficha" src="\/assets\/icons\/ficha\.webp"/);
-    expect(html).toMatch(/data-tab="duelos"[^>]*><svg class="ico"/);
+    expect(html).toMatch(/data-tab="duelos"[^>]*><img class="ico-img ico-ficha" src="\/assets\/icons\/duelos\.webp"/); // pistolas cruzadas (R-ARTE-5)
+    expect(html).toMatch(/data-tab="loja"[^>]*><svg class="ico"/);
   });
 });
 
 describe('ícones de Energia, Cash e Ouro (R-ARTE-3)', () => {
   const html = readFileSync(join(process.cwd(), 'index.html'), 'utf8');
   it('as 3 imagens existem, são WebP com transparência e leves', () => {
-    for (const n of ['energia', 'ouro', 'cash', 'podio']) {
+    for (const n of ['energia', 'ouro', 'cash', 'podio', 'duelos']) {
       const b = readFileSync(pub(`/assets/icons/${n}.webp`));
       expect(b.subarray(8, 12).toString('latin1'), n).toBe('WEBP');
       expect(b[20] & 0x10, `${n} sem alfa`).toBe(0x10);
