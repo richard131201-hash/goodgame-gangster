@@ -84,3 +84,5 @@ Mais recente no topo. Cada decisão: data, o que, quem decidiu.
 - **Ícone da aba Duelo (R-ARTE-5, 2026-11-12):** duas pistolas cruzadas no lugar das espadas de traço. *(Fundador enviou a arte)*
 - **Mala maior (R-MALA-10, 2026-11-12):** a Mala ganha uma 3ª fileira bloqueada (visual A, cadeado) que se libera comprando a "mala maior" com ouro. Preço (300 de ouro) e máximo (15 slots) são provisórios, a confirmar. *(Fundador decidiu A e o ouro; Claude propôs o preço)*
 - **Atributos mais largos e com fonte menor (R-LAYOUT-12, 2026-11-12):** coluna de Atributos de 13,64 para 17,6 rem e fontes menores, para caber pontos de níveis altos; Arma e Equipamento empurrados para a direita com respiro. *(Fundador)*
+- **Costura contorna a aba ativa (R-PASTA-1, 2026-11-12):** a linha tracejada de todas as pastas passa a dar a volta na aba selecionada, numa conexão só. *(Fundador)*
+- **Respiros iguais na Ficha (R-LAYOUT-13, 2026-11-12):** Atributos ocupa o espaço que sobra; Arma e Equipamento vão para a direita; esquerda e direita ficam com o mesmo respiro. *(Fundador)*

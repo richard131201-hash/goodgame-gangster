@@ -6,6 +6,10 @@
  * - Vários avisos viram uma fila (um por vez). O mesmo aviso repetido não entra duas vezes.
  * A parte de fila e de textos é pura (testada sem tela); só `render` mexe no HTML.
  */
+import { attachStitch } from './stitch.js';
+
+let disposeStitch: (() => void) | null = null;
+
 export type NoticeKind = 'info' | 'energia' | 'cash' | 'ouro' | 'mala' | 'sucesso' | 'erro' | 'familia' | 'duelo';
 
 export interface NoticeOptions {
@@ -118,6 +122,8 @@ function close(answer: boolean) {
   if (timer) clearTimeout(timer);
   timer = null;
   const r = root();
+  disposeStitch?.();
+  disposeStitch = null;
   r.innerHTML = '';
   r.classList.remove('open');
   document.removeEventListener('keydown', onKey, true);
@@ -173,6 +179,8 @@ function showNext() {
         </div>
       </div>
     </div>`;
+  const card = r.querySelector<HTMLElement>('.notice-card');
+  if (card) disposeStitch = attachStitch({ host: card, top: () => card.querySelector<HTMLElement>('.notice-ear'), insetRem: 0.45 });
   r.querySelector<HTMLElement>('[data-notice-ok]')?.addEventListener('click', () => close(true));
   r.querySelector<HTMLElement>('[data-notice-cancel]')?.addEventListener('click', () => close(false));
   // R-AVISO-2: clicar fora do aviso NÃO fecha; só o botão (ou Enter, que aciona o botão em foco)

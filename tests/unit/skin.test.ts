@@ -126,7 +126,9 @@ describe('segunda rodada da pasta (R-LAYOUT-10)', () => {
   });
 
   it('o balão do nome da aba fica por cima de tudo, inclusive das orelhas da subpasta', () => {
-    expect(css).toMatch(/\.game-main-nav \{ z-index: 30; \}/);
+    // sem z-index próprio na lista de abas: os balões (z 40) ficam acima da costura (z 20) e das orelhas
+    expect(css).toMatch(/\.game-main-nav \{ z-index: auto; \}/);
+    expect(css).toMatch(/\.stitch-svg \{[^}]*z-index: 20;/);
   });
 
   it('o chefão virou missão especial dentro de Missões (e não é mais uma aba); Distritos, Tarefas e Eventos são pastas em desenho', () => {
@@ -165,7 +167,7 @@ describe('Ficha mais baixa (R-LAYOUT-11)', () => {
 describe('Ficha compacta, Equipamento intacto (R-LAYOUT-12)', () => {
   const css3 = readFileSync(join(process.cwd(), 'src/web/style.css'), 'utf8').replace(/\r\n/g, '\n');
   it('o Equipamento tem largura fixa (37,8 rem) e os slots seguem 4:3, então o tamanho dos slots não muda', () => {
-    expect(css3).toMatch(/\.profile-layout-grid \{ grid-template-columns: 14\.96rem 17\.6rem 14\.96rem 37\.8rem; \}/);
+    expect(css3).toMatch(/\.profile-layout-grid \{ grid-template-columns: 14\.96rem minmax\(17\.6rem, 1fr\) 14\.96rem 37\.8rem; \}/);
     expect(css3).toMatch(/\.equipped-slots-grid \.gear-slot \{ aspect-ratio: 4 \/ 3; \}/);
     expect(css3).toMatch(/\.equipped-slots-grid \{ grid-template-columns: repeat\(4, minmax\(0, 1fr\)\); \}/);
   });

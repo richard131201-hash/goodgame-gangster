@@ -25,6 +25,7 @@ Jogo de navegador de gângsteres, nostálgico (era Goodgame Gangster), meta de r
 | Nome | **Corrigido (C4):** título da aba e tela de criação dizem "Mobster Rise". Comentários internos e a chave do save ainda têm o nome antigo (jogador não vê) | `index.html` |
 
 ## Banco de dados (2026-11-11)
+- **Costura e respiros (2026-11-12):** a costura das pastas contorna a aba ativa (R-PASTA-1) e a Ficha tem respiros iguais dos dois lados (R-LAYOUT-13). Visto no localhost em tema escuro, com a Ficha e o Mercado Negro (abas e subaba). Não visto: tema bege, conta real, avisos com a costura nova.
 - **Verificado no banco real em 2026-11-11 (nível 2):** projeto Supabase existe; tabela `players` e visão `public_players` existem; `npm run test:rls` passou **15 de 15** com dois usuários de teste (apagados no fim): visitante sem login não lê nada; jogador lê só a própria linha completa; vê os outros só pela visão pública, sem o campo `save`; não consegue alterar, criar nem apagar jogador direto (erro 403); dados intactos; limpeza completa.
 - Chave pública no formato novo (`sb_publishable_`), aceita pelo Supabase. Chave secreta no formato novo (`sb_secret_`), sem prefixo `VITE_`. Valores nunca foram exibidos.
 - Login por e-mail está ligado e a confirmação de e-mail está desligada (só para testes).

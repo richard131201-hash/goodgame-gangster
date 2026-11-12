@@ -73,6 +73,7 @@ import {
 import { ITEM_SLOTS, type ItemSlot } from '../shared/itemRoll.js';
 import { applySkin, readSkin, toggleSkin, FOLDER_HEADERS } from './skin.js';
 import { notify, ask } from './notice.js';
+import { attachStitch } from './stitch.js';
 import { weaponArtImg, sellableInShop } from './weaponArt.js';
 import { positionAmongNpcs, positionInRows, rankLabel } from './rankPosition.js';
 import { BAG_CAPACITY_MAX, BAG_UPGRADE_SLOTS, BIG_BAG_PRICE_GOLD } from '../shared/bag.js';
@@ -2337,6 +2338,23 @@ document.getElementById('run-browser-sim-btn')?.addEventListener('click', () => 
 window.addEventListener('DOMContentLoaded', () => {
   void boot();
 });
+
+// R-PASTA-1: a costura das pastas contorna a aba ativa (pasta principal e subpasta da Mala)
+function initStitches() {
+  const shell = document.querySelector<HTMLElement>('.shell');
+  if (shell) {
+    attachStitch({
+      host: shell,
+      body: () => shell.querySelector<HTMLElement>('.stack > .folder'),
+      top: () => document.getElementById('folder-title'),
+      left: () => shell.querySelector<HTMLElement>('.game-nav-tab.active'),
+      insetRem: 0.5,
+    });
+  }
+  const sub = document.getElementById('sub-folder');
+  if (sub) attachStitch({ host: sub, top: () => sub.querySelector<HTMLElement>('.sub-tab.active'), insetRem: 0.45 });
+}
+initStitches();
 
 // Run immediate in case DOM already loaded
 if (document.readyState === 'complete' || document.readyState === 'interactive') {

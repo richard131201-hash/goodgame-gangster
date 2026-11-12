@@ -3830,7 +3830,7 @@ html[data-skin="bege"] .sub-tab.active { color: #6a3d0a; }
 
 /* Sem as curvas de encaixe: a aba ativa só se liga direto à pasta (pedido do fundador). */
 /* O balão do nome da aba fica por cima de tudo (antes o da Mala cobria o do Ranking). */
-.game-main-nav { z-index: 30; }
+.game-main-nav { z-index: auto; }
 /* 10 abas (Ficha, Missões, Duelo, Mercado Negro, Ranking, Família, Distritos, Tarefas, Eventos, Simulador) com folga para mais */
 .game-main-nav { gap: 0.35rem; }
 .game-nav-tab { height: 3.7rem; }
@@ -4066,7 +4066,7 @@ html[data-skin="bege"] .game-nav-tab .ico-img.ico-ficha, html[data-skin="bege"] 
 
 /* Ficha compacta (R-LAYOUT-12): os 3 cards da esquerda encolhem ~12% e o Equipamento mantém o tamanho dos slots (8,5 x 6,37 rem,
    largura fixa de 37,8 rem); só o respiro em volta do Equipamento e da pasta diminui. A pasta fica uns 2 rem mais baixa. */
-.profile-layout-grid { grid-template-columns: 14.96rem 17.6rem 14.96rem 37.8rem; }
+.profile-layout-grid { grid-template-columns: 14.96rem minmax(17.6rem, 1fr) 14.96rem 37.8rem; }
 #app[data-tab="perfil"] .stack > .folder { padding: 0.6rem 1.2rem 0.7rem; }
 .profile-gear-panel { padding: 0.5rem 0.9rem; }
 .profile-gear-panel .panel-header-banner { padding-bottom: 0.3rem; margin-bottom: 0.4rem; }
@@ -4096,3 +4096,12 @@ html[data-skin="bege"] .game-nav-tab .ico-img.ico-ficha, html[data-skin="bege"] 
   opacity: 0; pointer-events: none; z-index: 50; transition: opacity 0.12s;
 }
 .inv-slot.locked:hover::after, .inv-slot.locked:focus-visible::after { opacity: 1; }
+
+/* ================================================================================================ */
+/* COSTURA QUE CONTORNA A ABA ATIVA (R-PASTA-1): uma linha só, saindo da pasta e dando a volta na aba */
+/* ================================================================================================ */
+.shell { position: relative; isolation: isolate; }
+.sub-folder, .notice-card { position: relative; }
+.stitch-svg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 20; }
+.stitch-svg path { fill: none; stroke: var(--stitch); stroke-width: 0.12rem; stroke-dasharray: 0.4rem 0.26rem; stroke-linecap: butt; }
+.folder.has-stitch::after, .sub-folder.has-stitch::after, .notice-card.has-stitch::after { display: none; }
