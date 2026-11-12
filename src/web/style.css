@@ -4030,3 +4030,26 @@ html[data-skin="bege"] .game-nav-tab .ico-img.ico-ficha, html[data-skin="bege"] 
 /* Icones de arte do topo (Energia, Cash, Ouro) e dos avisos (R-ARTE-3) */
 .res-img { width: 2.5rem; height: 2.5rem; flex: none; object-fit: contain; pointer-events: none; filter: drop-shadow(0 0.1rem 0.12rem rgba(0, 0, 0, 0.45)); }
 .notice-icon .notice-img { width: 3.4rem; height: 3.4rem; object-fit: contain; }
+
+/* Nomes do topo (Energia, Cash, Ouro, Ranking) no mesmo estilo do nome das abas (R-ARTE-4) */
+.hud-header { position: relative; z-index: 40; }
+.res-card { position: relative; }
+.res-card[data-name]::after {
+  content: attr(data-name);
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 0.5rem);
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.25rem 0.7rem;
+  border-radius: 0.3rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 50;
+  transition: opacity 0.12s;
+}
+.res-card[data-name]:hover::after { opacity: 1; }

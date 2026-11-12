@@ -103,3 +103,17 @@ describe('o jogo não usa mais as janelas do navegador (R-AVISO-1)', () => {
     expect(main).toContain("import { notify, ask } from './notice.js'");
   });
 });
+
+describe('aviso só fecha no botão (R-AVISO-2)', () => {
+  const codigo = ler('src/web/notice.ts');
+  it('clicar fora não fecha: não há mais ouvinte no fundo do aviso', () => {
+    expect(codigo).not.toContain("'[data-notice-backdrop]')?.addEventListener");
+  });
+  it('Esc não fecha o aviso; os botões e o Enter fecham', () => {
+    const i = codigo.indexOf("if (e.key === 'Escape')");
+    const bloco = codigo.slice(i, codigo.indexOf("} else if (e.key === 'Enter')", i));
+    expect(bloco).not.toContain('close(');
+    expect(codigo).toContain("'[data-notice-ok]')?.addEventListener('click', () => close(true))");
+    expect(codigo).toContain("'[data-notice-cancel]')?.addEventListener('click', () => close(false))");
+  });
+});

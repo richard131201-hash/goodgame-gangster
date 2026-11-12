@@ -144,7 +144,7 @@ describe('ícones de Missões (chapéu) e Ficha (foto com clipe) (R-ARTE-1)', ()
 describe('ícones de Energia, Cash e Ouro (R-ARTE-3)', () => {
   const html = readFileSync(join(process.cwd(), 'index.html'), 'utf8');
   it('as 3 imagens existem, são WebP com transparência e leves', () => {
-    for (const n of ['energia', 'ouro', 'cash']) {
+    for (const n of ['energia', 'ouro', 'cash', 'podio']) {
       const b = readFileSync(pub(`/assets/icons/${n}.webp`));
       expect(b.subarray(8, 12).toString('latin1'), n).toBe('WEBP');
       expect(b[20] & 0x10, `${n} sem alfa`).toBe(0x10);

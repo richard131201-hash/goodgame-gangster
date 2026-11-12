@@ -74,6 +74,7 @@ import { ITEM_SLOTS, type ItemSlot } from '../shared/itemRoll.js';
 import { applySkin, readSkin, toggleSkin, FOLDER_HEADERS } from './skin.js';
 import { notify, ask } from './notice.js';
 import { weaponArtImg, sellableInShop } from './weaponArt.js';
+import { positionAmongNpcs, positionInRows, rankLabel } from './rankPosition.js';
 import { isGearItem, rollRandomGear, GEAR_ICONS } from '../shared/gear.js';
 import { ITEM_SLOT_LABELS } from '../shared/itemRoll.js';
 
@@ -391,7 +392,8 @@ function updateHUD() {
   updateEnergyHUD();
   document.getElementById('hud-cash')!.textContent = `$${p.cash.toLocaleString()}`;
   document.getElementById('hud-gold')!.textContent = p.gold.toString();
-  document.getElementById('hud-respect')!.textContent = p.respect.toLocaleString();
+  paintHudRank();
+  if (syncEnabled() && !rankingCache) void refreshHudRank();
 
   const caption = document.getElementById('doll-caption');
   if (caption) caption.textContent = `${p.name} · ${p.style} · NÍVEL ${p.level}`.toUpperCase();
@@ -415,7 +417,8 @@ function updateEnergyHUD() {
   const secs = Math.ceil(ms / 1000);
   const clock = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
   el.textContent = `${p.energy} / ${p.maxEnergy}`;
-  el.title = ms > 0 ? `Próxima energia em ${clock}` : 'Energia cheia';
+  const card = el.closest<HTMLElement>('.res-card');
+  if (card) card.dataset.name = ms > 0 ? `Energia · próxima em ${clock}` : 'Energia · cheia';
 }
 
 setInterval(() => {
@@ -1407,6 +1410,7 @@ async function challengeRealRival(opponentId: string, btn?: HTMLButtonElement, p
       }
       realRivalsCache = null;
       rankingCache = null;
+      void refreshHudRank();
     },
     { events: reply.events, firstAttacker: reply.firstAttacker },
   );
@@ -1620,6 +1624,17 @@ document.querySelectorAll('#shop-category-filters .choice-btn').forEach(btn => {
 // ========================================================
 // VIEW 5: RANKING DA CIDADE
 // ========================================================
+/** NPCs do ranking offline (também usados para a posição no topo quando não há servidor). */
+const NPC_RANKING = [
+  { rank: 1, name: 'Don Carmine Falcone', style: 'carrasco', level: 32, family: 'Família Falcone', respect: 4200 },
+  { rank: 2, name: 'Salvatore "A Muralha"', style: 'muralha', level: 28, family: 'Família Corleone', respect: 3500 },
+  { rank: 3, name: 'Lucky Luciano', style: 'malandro', level: 25, family: 'Sindicato Luciano', respect: 2950 },
+  { rank: 4, name: 'Vito "Carcereiro"', style: 'muralha', level: 22, family: 'Família Gambino', respect: 2400 },
+  { rank: 5, name: 'Tony "Garganta de Aço"', style: 'carrasco', level: 19, family: 'Família Corleone', respect: 1980 },
+  { rank: 6, name: 'Gina "Dama de Espadas"', style: 'malandro', level: 16, family: 'Sindicato Luciano', respect: 1600 },
+];
+const mockRankings = NPC_RANKING;
+
 let rankingCache: { at: number; rows: PublicPlayer[]; error: string | null } | null = null;
 
 function renderRankingView() {
@@ -1632,6 +1647,29 @@ function renderRankingView() {
   else paintRealRanking(tbody);
   if (!rankingCache || Date.now() - rankingCache.at > REAL_CACHE_MS) void loadRanking();
 }
+
+/** Posição do jogador no Ranking, mostrada no topo no lugar do Respeito (R-RANK-3). */
+let hudRankPos: number | null = null;
+function computeHudRank(): number | null {
+  if (!syncEnabled()) return positionAmongNpcs(NPC_RANKING.map(n => n.respect), gameState.getPlayer().respect);
+  return rankingCache && !rankingCache.error ? positionInRows(rankingCache.rows, currentUserId) : null;
+}
+function paintHudRank() {
+  hudRankPos = computeHudRank();
+  const el = document.getElementById('hud-respect');
+  if (el) el.textContent = rankLabel(hudRankPos);
+}
+/** Busca o ranking em segundo plano para atualizar a posição do topo (no máximo a cada REAL_CACHE_MS). */
+async function refreshHudRank() {
+  if (!syncEnabled()) return paintHudRank();
+  if (rankingCache && Date.now() - rankingCache.at < REAL_CACHE_MS) return paintHudRank();
+  await loadRanking();
+  paintHudRank();
+}
+
+setInterval(() => {
+  if (gameState.getPlayer().hasCreatedCharacter) void refreshHudRank();
+}, REAL_CACHE_MS);
 
 async function loadRanking() {
   const r = await fetchRanking();
@@ -1681,14 +1719,6 @@ function renderNpcRankingView() {
 
   const player = gameState.getPlayer();
 
-  const mockRankings = [
-    { rank: 1, name: 'Don Carmine Falcone', style: 'carrasco', level: 32, family: 'Família Falcone', respect: 4200 },
-    { rank: 2, name: 'Salvatore "A Muralha"', style: 'muralha', level: 28, family: 'Família Corleone', respect: 3500 },
-    { rank: 3, name: 'Lucky Luciano', style: 'malandro', level: 25, family: 'Sindicato Luciano', respect: 2950 },
-    { rank: 4, name: 'Vito "Carcereiro"', style: 'muralha', level: 22, family: 'Família Gambino', respect: 2400 },
-    { rank: 5, name: 'Tony "Garganta de Aço"', style: 'carrasco', level: 19, family: 'Família Corleone', respect: 1980 },
-    { rank: 6, name: 'Gina "Dama de Espadas"', style: 'malandro', level: 16, family: 'Sindicato Luciano', respect: 1600 },
-  ];
 
   // Posição do jogador: conta quantos NPCs têm mais Respeito (empate favorece o NPC)
   const playerFamily = MAFIA_FAMILIES_LIST.find(f => f.id === player.familyId);

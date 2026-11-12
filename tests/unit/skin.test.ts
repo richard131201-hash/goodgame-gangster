@@ -106,9 +106,9 @@ describe('segunda rodada da pasta (R-LAYOUT-10)', () => {
   it('o HUD mostra só ícone e valor: o texto de Energia, Cash, Ouro e Respeito fica escondido', () => {
     expect(css).toMatch(/\.res-label \{ display: none; \}/);
     for (const id of ['hud-energy', 'hud-cash', 'hud-gold', 'hud-respect']) expect(html).toContain(`id="${id}"`);
-    // Energia, Cash e Ouro usam arte (R-ARTE-3); Respeito segue com ícone de traço
-    expect((html.match(/class="res-img"/g) ?? []).length).toBe(3);
-    expect((html.match(/class="ico res-icon"/g) ?? []).length).toBe(1);
+    // Energia, Cash, Ouro e Ranking usam arte (R-ARTE-3); o Respeito virou o pódio do Ranking (R-ARTE-4)
+    expect((html.match(/class="res-img"/g) ?? []).length).toBe(4);
+    expect((html.match(/class="ico res-icon"/g) ?? []).length).toBe(0);
   });
 
   it('a subpasta do perfil tem as 4 abas, com a Mala primeiro, e só aparece no Perfil', () => {

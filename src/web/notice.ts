@@ -130,9 +130,8 @@ let current: { isAsk: boolean } | null = null;
 function onKey(e: KeyboardEvent) {
   if (!current) return;
   if (e.key === 'Escape') {
-    e.preventDefault();
+    e.preventDefault(); // Esc também não fecha: só o botão fecha
     e.stopPropagation();
-    close(false);
   } else if (e.key === 'Enter') {
     e.preventDefault();
     e.stopPropagation();
@@ -176,9 +175,7 @@ function showNext() {
     </div>`;
   r.querySelector<HTMLElement>('[data-notice-ok]')?.addEventListener('click', () => close(true));
   r.querySelector<HTMLElement>('[data-notice-cancel]')?.addEventListener('click', () => close(false));
-  r.querySelector<HTMLElement>('[data-notice-backdrop]')?.addEventListener('mousedown', e => {
-    if (e.target === e.currentTarget && !item.isAsk) close(true); // clicar fora fecha avisos simples, nunca perguntas
-  });
+  // R-AVISO-2: clicar fora do aviso NÃO fecha; só o botão (ou Enter, que aciona o botão em foco)
   document.addEventListener('keydown', onKey, true);
   r.querySelector<HTMLElement>('[data-notice-ok]')?.focus();
   if (o.autoCloseMs && !item.isAsk) timer = setTimeout(() => close(true), o.autoCloseMs);

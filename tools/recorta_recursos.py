@@ -1,5 +1,5 @@
-# Recorta os icones de recursos do topo (JPG com xadrez gravado): energia (bateria), ouro (barras) e cash (macos de notas). Ver R-ARTE-3.
-# O ouro e o cash ganham uma borda preta nova, fina e uniforme (a original era um rabisco grosso e irregular).
+# Recorta os icones de recursos do topo (JPG com xadrez gravado): energia (bateria), ouro (barras), cash (macos de notas) e podio (ranking). Ver R-ARTE-3 e R-ARTE-4 (podio).
+# O ouro, o cash e o podio ganham uma borda preta nova, fina e uniforme (a original era um rabisco grosso e irregular).
 # Uso: python -I tools/recorta_recursos.py (origens em Downloads, veja FILES).
 import glob, os
 import numpy as np
@@ -13,6 +13,7 @@ FILES = {
     "energia": "Creating_character_energy_icon_*_2K.jpg",
     "ouro": "Create_gold_bars_icon_*_2K.jpg",
     "cash": "Creating_money_icon_for_game_*_2K.jpg",
+    "podio": "Create_minimalist_podium_icon_*_2K.jpg",
 }
 LADO = 256
 
@@ -60,8 +61,8 @@ for nome, padrao in FILES.items():
     img = Image.open(arq).convert("RGB")
     a = np.array(img).astype(np.int16)
     fundo = fundo_xadrez(a)
-    if nome in ("ouro", "cash"):
-        rgb, alfa = borda_nova(img, a, fundo, 75 if nome == "ouro" else 58)
+    if nome in ("ouro", "cash", "podio"):
+        rgb, alfa = borda_nova(img, a, fundo, 75 if nome == "ouro" else 58 if nome == "cash" else 40)
         rgba = np.dstack([rgb, alfa * 255])
     else:
         objeto = maior_bloco(~fundo)
