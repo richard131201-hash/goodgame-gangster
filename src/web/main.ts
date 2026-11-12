@@ -480,19 +480,6 @@ function renderProfileView() {
   // O preço aparece no balão ao passar o mouse (R-ATRIBUTO-1).
   document.querySelectorAll<HTMLElement>('.btn-attr-plus').forEach(btn => btn.classList.toggle('has-free', p.freePoints > 0));
 
-  // Derived stats summary
-  document.getElementById('prof-armor-val')!.textContent = `${(stats.armorReduction * 100).toFixed(0)}%`;
-  document.getElementById('prof-dodge-val')!.textContent = `${(stats.dodgeChance * 100).toFixed(0)}%`;
-
-  const [cMin, cMax] = config.styles[p.style].critBonus;
-  document.getElementById('prof-critbonus-val')!.textContent = `+${Math.round(cMin * 100)}% a +${Math.round(cMax * 100)}%`;
-
-  let passivesStr = '';
-  if (p.style === 'carrasco') passivesStr = 'Golpe de Abertura (+10-100%), Execução (-25% Arm.)';
-  else if (p.style === 'muralha') passivesStr = 'Intimidação (-25%), Casca Grossa (x1.4 Ten.)';
-  else passivesStr = 'Adaptação (+0.2%/1% HP), Instinto (x1.2 Ast.)';
-  document.getElementById('prof-passives-summary')!.textContent = passivesStr;
-
   // 4. Inventory Slots (12 slots)
   renderInventoryGrid();
 }
