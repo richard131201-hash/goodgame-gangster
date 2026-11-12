@@ -1,4 +1,4 @@
-# Recorta as armas (JPG com xadrez gravado) e gera 3 versoes por arma: "comum" (borda preta), "epico" (borda branca + brilho vermelho) e "lendario" (borda branca + brilho roxo). Ver R-ARTE-2.
+# Recorta as armas (JPG com xadrez gravado) e gera 3 versoes por arma em 4:3 (800x600): "comum" (borda preta), "epico" (borda branca + brilho vermelho) e "lendario" (borda branca + brilho roxo). Ver R-ARTE-2, R-SLOT-1.
 # Uso: python -I tools/recorta_armas.py (origens em Downloads, veja FILES).
 import glob, os, sys
 import numpy as np
@@ -16,8 +16,8 @@ FILES = {
     "bar_1918": "Generate_BAR_M1918_weapon_*_2K.jpg",
 }
 VAOS = {"colt_1911": [(1008, 1005, 88)]}
-LADO = 640
-MARGEM = 0.075  # folga em volta para o brilho (igual nas duas versões, para a arma ter o mesmo tamanho)
+LARG, ALT = 800, 600  # imagem 4:3 (R-SLOT-1): cabe direto nos slots 4:3
+MARGEM = 0.06  # folga de cada lado (fração da altura) para o brilho do épico e do lendário; igual nas 3 versões
 
 
 def mascara_arma(path, vaos):
@@ -110,11 +110,11 @@ def camadas(rgb, interno, tipo):
 
 def salvar(out, caixa, nome):
     x0, y0, x1, y1 = caixa
-    rec = out[y0:y1, x0:x1]
+    P = max(x1 - x0, y1 - y0)
+    pad = np.pad(out, ((P, P), (P, P), (0, 0)))  # a caixa 4:3 pode passar da borda da origem: completa com transparente
+    rec = pad[y0 + P:y1 + P, x0 + P:x1 + P]
     img = Image.fromarray(np.uint8(np.clip(np.dstack([rec[..., :3], rec[..., 3] * 255]), 0, 255)), "RGBA")
-    s = LADO / max(img.size)
-    if s < 1:
-        img = img.resize((round(img.width * s), round(img.height * s)), Image.LANCZOS)
+    img = img.resize((LARG, ALT), Image.LANCZOS)
     caminho = os.path.join(OUT, nome + ".webp")
     img.save(caminho, "WEBP", quality=90, method=6)
     return img, os.path.getsize(caminho) // 1024
@@ -128,10 +128,12 @@ for wid, padrao in FILES.items():
         sys.exit(1)
     rgb, interno = mascara_arma(achados[0], VAOS.get(wid, ()))
     ys, xs = np.where(interno)
-    lado = max(xs.max() - xs.min(), ys.max() - ys.min())
-    m = int(lado * MARGEM)
-    h, w = interno.shape
-    caixa = (max(0, xs.min() - m), max(0, ys.min() - m), min(w, xs.max() + m), min(h, ys.max() + m))
+    w0, h0 = xs.max() - xs.min(), ys.max() - ys.min()
+    cx, cy = (xs.max() + xs.min()) // 2, (ys.max() + ys.min()) // 2
+    util = 1 - 2 * MARGEM
+    H = int(max(h0 / util, (w0 / util) * 3 / 4))  # menor caixa 4:3 que cabe a arma com a folga
+    W = int(H * 4 / 3)
+    caixa = (cx - W // 2, cy - H // 2, cx - W // 2 + W, cy - H // 2 + H)
     for tipo in ("comum", "epico", "lendario"):
         out = camadas(rgb, interno, tipo)
         img, kb = salvar(out, caixa, f"{wid}.{tipo}")

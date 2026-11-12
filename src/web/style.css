@@ -3304,8 +3304,8 @@ html, body { height: 100%; overflow: hidden; }
   --gold-text: #d4af37;
   --gold-ink: #1a1203;
   --stamp: #d4af37;
-  --slot: #15100c;
-  --slot-line: #4a3a28;
+  --slot: #2f261e;
+  --slot-line: #5f4b34;
   --good: #5fd28a;
   --bad: #e0584a;
   --photo: #2a2018;
@@ -4001,3 +4001,11 @@ html[data-skin="bege"] .game-nav-tab .ico-img.ico-ficha, html[data-skin="bege"] 
 /* As imagens das armas têm folga em volta (para o brilho do épico): ampliadas para a arma ficar do tamanho de antes */
 .weapon-slot-art .warr { width: 108%; height: 108%; max-width: none; }
 .inv-slot .inv-art { width: 100%; height: 86%; }
+
+/* Imagens das armas agora são 4:3 e ocupam o slot inteiro (a folga do brilho já está dentro da imagem) */
+.weapon-slot { background: var(--slot); }
+.weapon-slot-art .warr { width: 100%; height: 100%; max-width: none; }
+.inv-slot { padding: 0; }
+.inv-slot .inv-art { width: 100%; height: 100%; margin: 0; object-fit: contain; }
+.shop-art { width: 100%; height: 8rem; }
+.wtip-art { width: 11rem; height: 8.25rem; }

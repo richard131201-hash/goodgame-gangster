@@ -90,6 +90,17 @@ describe('molduras das armas no estilo do Goodgame antigo (R-ARTE-2)', () => {
     }
   });
 
+  it('todas as imagens das armas são 4:3 (cabem direto nos slots 4:3) e a arma ocupa quase toda a altura', () => {
+    for (const id of WEAPON_ART_IDS) {
+      for (const f of ['comum', 'epico', 'lendario'] as const) {
+        const b = readFileSync(pub(weaponArtUrl(id, f)!));
+        const largura = 1 + (b[24] | (b[25] << 8) | (b[26] << 16));
+        const altura = 1 + (b[27] | (b[28] << 8) | (b[29] << 16));
+        expect(largura / altura, `${id}.${f}`).toBeCloseTo(4 / 3, 2);
+      }
+    }
+  });
+
   it('a moldura padrão é a comum e hoje nenhuma arma do catálogo nasce épica ou lendária', () => {
     expect(weaponFrame('colt_1911')).toBe('comum');
     expect(weaponFrame('bar_1918')).toBe('comum');
