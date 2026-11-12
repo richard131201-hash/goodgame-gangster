@@ -174,3 +174,23 @@ describe('balões e troca das barras (R-ATRIBUTO-3, R-MALA-6)', () => {
     expect(main).toContain('Preço: <b>');
   });
 });
+
+describe('layout do perfil (R-LAYOUT-7)', () => {
+  const css = readFileSync(join(process.cwd(), 'src', 'web', 'style.css'), 'utf8').replace(/\r\n/g, '\n');
+  const html = readFileSync(join(process.cwd(), 'index.html'), 'utf8').replace(/\r\n/g, '\n');
+
+  it('em cima: boneco, atributos, arma e os 8 itens; embaixo: a Mala sob boneco, atributos e arma', () => {
+    expect(css).toMatch(/grid-template-areas:\s*"doll attrs weapon gear"\s*"mala mala mala \."/);
+  });
+
+  it('a arma, os 8 itens e a Mala são painéis próprios, e a arma e os 8 itens não ficam mais embaixo do boneco', () => {
+    for (const c of ['profile-weapon-panel', 'profile-gear-panel', 'profile-inventory-panel']) expect(html).toContain(c);
+    const doll = html.slice(html.indexOf('profile-doll-panel'), html.indexOf('profile-stats-panel'));
+    expect(doll).not.toContain('slot-equipped-weapon');
+    expect(doll).not.toContain('gear-slots-grid');
+  });
+
+  it('os 8 itens são uma grade de 4 colunas (2 linhas), do tamanho dos slots da Mala', () => {
+    expect(css).toMatch(/\.equipped-slots-grid\s*\{[^}]*grid-template-columns:\s*repeat\(4, 6\.86rem\)/);
+  });
+});

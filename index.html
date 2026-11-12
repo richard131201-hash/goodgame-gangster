@@ -134,20 +134,6 @@
               </div>
             </div>
 
-            <!-- ESPAÇO DA ARMA (abaixo do personagem): receber arma da Mala troca; arrastar para a Mala guarda -->
-            <div class="weapon-slot" id="slot-equipped-weapon">
-              <div class="weapon-slot-head">
-                <span class="slot-badge">ARMA EQUIPADA</span>
-                <button type="button" class="weapon-slot-unequip" id="btn-unequip-weapon">Guardar na Mala</button>
-              </div>
-              <div class="weapon-slot-body" id="equipped-wep-display"></div>
-              <p class="weapon-slot-hint">Arraste uma arma da Mala até aqui para trocar. Arraste esta arma para a Mala para guardá-la.</p>
-            </div>
-
-            <!-- OUTROS EQUIPAMENTOS -->
-            <!-- OS 8 SLOTS DO PERFIL (R-ITEM-2): desenhados pelo main.ts (renderGearSlots) -->
-            <div class="equipped-slots-grid" id="gear-slots-grid"></div>
-
             <button id="open-customizer-modal-btn" class="arena-btn-secondary" style="width: 100%; margin-top: 0.625rem;">
               ✂️ Personalizar Visual do Gangster
             </button>
@@ -215,7 +201,26 @@
             </div>
           </div>
 
-          <!-- RIGHT: INVENTORY / MOCHILA -->
+          <!-- ARMA -->
+          <div class="profile-weapon-panel">
+            <div class="panel-header-banner"><h3>Arma</h3></div>
+            <div class="weapon-slot" id="slot-equipped-weapon">
+              <div class="weapon-slot-head">
+                <span class="slot-badge">ARMA EQUIPADA</span>
+                <button type="button" class="weapon-slot-unequip" id="btn-unequip-weapon">Guardar na Mala</button>
+              </div>
+              <div class="weapon-slot-body" id="equipped-wep-display"></div>
+              <p class="weapon-slot-hint">Arraste uma arma da Mala até aqui para trocar. Arraste esta arma para a Mala para guardá-la.</p>
+            </div>
+          </div>
+
+          <!-- OS 8 ITENS DO PERFIL (quadro vermelho do fundador): desenhados pelo main.ts (renderGearSlots) -->
+          <div class="profile-gear-panel">
+            <div class="panel-header-banner"><h3>Itens do Perfil</h3></div>
+            <div class="equipped-slots-grid" id="gear-slots-grid"></div>
+          </div>
+
+          <!-- MALA (quadro verde do fundador) -->
           <div class="profile-inventory-panel">
             <div class="panel-header-banner">
               <h3>Mala</h3>

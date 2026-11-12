@@ -589,14 +589,14 @@ function renderGearSlots() {
   grid.innerHTML = ITEM_SLOTS.map(slot => {
     const item = gameState.equippedGear(slot);
     if (!item) {
-      return `<div class="gear-slot" data-gear-slot="${slot}"><span class="slot-badge">${ITEM_SLOT_LABELS[slot]}</span><div class="slot-content" style="color: var(--text-muted);">Vazio</div></div>`;
+      return `<div class="gear-slot" data-gear-slot="${slot}" title="${ITEM_SLOT_LABELS[slot]}: vazio"><span class="slot-badge">${ITEM_SLOT_LABELS[slot]}</span><span class="gear-ico ghost">${GEAR_ICONS[slot]}</span><span class="slot-pts"></span></div>`;
     }
     const idx = p.inventory.indexOf(item);
     const pts = (['attack', 'life', 'astucia', 'tenacidade'] as const)
       .filter(k => (item.statsBonus?.[k] ?? 0) > 0)
       .map(k => `+${item.statsBonus![k]} ${short[k]}`)
       .join(' ');
-    return `<div class="gear-slot filled" data-gear-slot="${slot}" data-bag-tip="${idx}" title="Clique para desequipar"><span class="slot-badge">${ITEM_SLOT_LABELS[slot]}</span><div class="slot-content">${item.icon} ${escHtml(item.name)}</div><div class="slot-pts">${pts}</div></div>`;
+    return `<div class="gear-slot filled" data-gear-slot="${slot}" data-bag-tip="${idx}" title="Clique para desequipar"><span class="slot-badge">${ITEM_SLOT_LABELS[slot]}</span><span class="gear-ico">${item.icon}</span><span class="slot-pts">${pts}</span></div>`;
   }).join('');
 }
 
