@@ -4152,3 +4152,47 @@ html[data-skin="bege"] .res-gold-plus { background-color: #d9c690; color: #6a3d0
 .res-card.res-gold { padding: 0.4rem 0.8rem; }
 /* o "+" é um desenho vetorial (cruz perfeita, 4 braços iguais) no centro exato do botão; não é letra nem fundo em pixels */
 .res-gold-plus svg { display: block; width: 0.78rem; height: 0.78rem; shape-rendering: geometricPrecision; }
+
+/* ================================================================================================ */
+/* CENA DA ABA MISSÕES (R-MISSAO-CENA-1, protótipo): fundo + 3 chefões; ao passar o mouse, a missão dele */
+/* ================================================================================================ */
+.mscene {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1916 / 821;
+  max-height: 100%;
+  margin: 0 auto 1rem;
+  background: #2a1d14 url("/assets/scenes/missoes-bg.webp") center / cover no-repeat;
+  border: 0.0625rem solid var(--line);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+.mscene-flag { position: absolute; top: 0.6rem; left: 0.6rem; z-index: 3; padding: 0.1rem 0.6rem; font: 700 0.75rem var(--font-sans); letter-spacing: 0.1rem; color: var(--gold-ink); background: var(--gold); border-radius: 0.3rem; }
+.mscene-boss { position: absolute; bottom: 3%; height: var(--h); transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; cursor: pointer; outline: none; }
+.mscene-boss svg { display: block; flex: 1 1 auto; min-height: 0; width: auto; height: 100%; transition: transform 0.15s, filter 0.15s; transform-origin: bottom center; }
+.mscene-boss:hover svg, .mscene-boss:focus-visible svg, .mscene-boss.open svg { transform: scale(1.05); filter: drop-shadow(0 0 0.6rem rgba(255, 214, 120, 0.85)); }
+.mscene-tag { margin-top: 0.3rem; padding: 0.1rem 0.8rem; font: 600 0.85rem var(--font-sans); color: #f1e3bf; background: rgba(23, 17, 12, 0.85); border: 0.0625rem solid #5a4630; border-radius: 1rem; white-space: nowrap; }
+.mscene-card {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 15rem;
+  margin-bottom: 0.6rem;
+  padding: 0.7rem 0.8rem;
+  text-align: left;
+  color: #1a1203;
+  background: #f1e3bf;
+  border: 0.14rem solid #1a0f08;
+  border-radius: 0.5rem;
+  font: 500 0.95rem/1.35 var(--font-sans);
+  z-index: 5;
+}
+.mscene-card::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -0.5rem; border: 0.5rem solid transparent; border-top-color: #f1e3bf; border-bottom: 0; }
+.mscene-boss:hover .mscene-card, .mscene-boss:focus-visible .mscene-card, .mscene-boss.open .mscene-card { display: block; }
+.mscene-card b { display: block; margin-bottom: 0.15rem; font: 700 1.05rem var(--font-sans); }
+.mscene-rw { display: flex; gap: 0.8rem; margin: 0.4rem 0; font-weight: 700; }
+.mscene-rw i { font-style: normal; }
+.mscene-accept { width: 100%; padding: 0.3rem; font: 700 0.95rem var(--font-sans); color: #1a1203; background: #d4af37; border: 0.1rem solid #1a0f08; border-radius: 0.3rem; cursor: pointer; }
+.mscene-accept:hover { filter: brightness(1.1); }

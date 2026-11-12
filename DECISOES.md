@@ -88,3 +88,4 @@ Mais recente no topo. Cada decisão: data, o que, quem decidiu.
 - **Respiros iguais na Ficha (R-LAYOUT-13, 2026-11-12):** Atributos ocupa o espaço que sobra; Arma e Equipamento vão para a direita; esquerda e direita ficam com o mesmo respiro. *(Fundador)*
 - **Selo "Papel" (R-SELO-1, 2026-11-12):** carimbo com fundo de papel opaco e tinta falhada em todas as pastas e avisos. A costura ficou rente à borda (0,25 rem) e a 1ª aba começa no topo da pasta. *(Fundador)*
 - **Botão "+" do ouro (R-OURO-2, 2026-11-12):** retângulo horizontal com contorno de ouro e brilho; avisa que a compra ainda não está liberada. Costura do tema claro mais escura. *(Fundador)*
+- **Aba Missões vira uma cena com 3 chefões (R-MISSAO-CENA-1, 2026-11-12):** missões sorteadas (leve, média e pesada), uma por chefão, mostradas ao passar o mouse; trocam todas ao aceitar uma. Fundo calmo, sem brilho, estilo pintado simples. Hoje é protótipo visual. *(Fundador)*

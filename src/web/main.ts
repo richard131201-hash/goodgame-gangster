@@ -74,6 +74,7 @@ import { ITEM_SLOTS, type ItemSlot } from '../shared/itemRoll.js';
 import { applySkin, readSkin, toggleSkin, FOLDER_HEADERS } from './skin.js';
 import { notify, ask } from './notice.js';
 import { attachStitch, STITCH_INSET_REM } from './stitch.js';
+import { initMissionScene } from './missionScene.js';
 import { weaponArtImg, sellableInShop } from './weaponArt.js';
 import { positionAmongNpcs, positionInRows, rankLabel } from './rankPosition.js';
 import { BAG_CAPACITY_MAX, BAG_UPGRADE_SLOTS, BIG_BAG_PRICE_GOLD } from '../shared/bag.js';
@@ -2360,6 +2361,7 @@ function initStitches() {
   if (sub) attachStitch({ host: sub, top: () => sub.querySelector<HTMLElement>('.sub-tab.active'), insetRem: STITCH_INSET_REM });
 }
 initStitches();
+initMissionScene();
 
 // Run immediate in case DOM already loaded
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
