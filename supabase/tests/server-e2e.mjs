@@ -97,6 +97,11 @@ async function main() {
   saveA.cash -= 100;
   const ok = await api(A.token, { op: 'save', save: saveA });
   check('save honesto é aceito', ok.status === 200, `status ${ok.status}`);
+  // Regressão do defeito do Kya (2026-11-12): itens iguais do catálogo na Mala (2 uísques) não podem travar o save
+  const comRepetidos = structuredClone(ok.body.save ?? saveA);
+  comRepetidos.inventory.push({ id: 'cons_whisky' }, { id: 'cons_whisky' });
+  const rep = await api(A.token, { op: 'save', save: comRepetidos });
+  check('dois itens iguais do catálogo na Mala são aceitos', rep.status === 200, `status ${rep.status} ${rep.body.error ?? ''}`);
   const cheat = structuredClone(cA.body.save);
   cheat.cash = 99999999;
   const bad = await api(A.token, { op: 'save', save: cheat });
