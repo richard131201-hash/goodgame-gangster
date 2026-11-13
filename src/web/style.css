@@ -4434,7 +4434,7 @@ html[data-ui="v2"] #app[data-tab="perfil"] .hud-family-tab { display: block; pos
 html[data-ui="v2"] #app[data-tab="perfil"] .hud-family-tab.no-family { background: #4a3a20; color: #b8a67e; font-weight: 400; }
 
 /* ---- Ouro um pouco maior; controle único de botões; Ficha sem fundo marrom (R-UI-9) ---- */
-html[data-ui="v2"] .res-card.res-gold { min-width: 11.5rem; }
+html[data-ui="v2"] .res-card.res-gold { min-width: 13rem; }
 html[data-ui="v2"] .hud-system-actions { gap: 0; padding: 0.25rem; background: var(--paper-2); border: 0.0625rem solid var(--line); border-radius: 0.5rem; }
 html[data-ui="v2"] .hud-system-actions .hud-btn-icon { width: 2.4rem; height: 2.4rem; background: none; border: 0; border-radius: 0.35rem; color: var(--glyph); }
 html[data-ui="v2"] .hud-system-actions .hud-btn-icon + .hud-btn-icon { margin-left: 0.3rem; position: relative; }
