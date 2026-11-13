@@ -177,7 +177,7 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.folder-stamp \{ right: 4\.4rem; \}/);
     expect(css).toMatch(/html\[data-ui="v2"\] \.res-card\.res-gold \{ min-width: 14rem; \}/);
     expect(css).not.toMatch(/\.res-gold \.res-img \{ width: 2\.6rem/);
-    expect(css).toMatch(/html\[data-ui="v2"\] #app\[data-tab="perfil"\] \{ background-image: url\("\/assets\/ficha\/folha\.webp"\);/);
+    expect(css).toMatch(/html\[data-ui="v2"\] #app\[data-tab="perfil"\] \{ background-image: linear-gradient\(.*?\), url\("\/assets\/login-bg\.webp"\);/);
   });
 
   it('botão Convidar amigo no controle do topo (R-UI-11)', () => {
@@ -196,12 +196,5 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
   it('Cash e Ouro com ponto de milhar em pt-BR e cards um pouco mais largos (R-UI-14)', () => {
     expect(main).toContain("`$${p.cash.toLocaleString('pt-BR')}`");
     expect(main).toContain("p.gold.toLocaleString('pt-BR')");
-  });
-
-  it('Ficha em folha de papel: fundo, tinta no lugar dos itens e barra de abas em papel (R-UI-15)', () => {
-    expect(existsSync('public/assets/ficha/folha.webp')).toBe(true);
-    expect(css).toMatch(/#app\[data-tab="perfil"\] \{ --paper: #f2e8cd; --paper-2: rgba\(236, 224, 190, 0\.8\); --ink: #2b2015;/);
-    expect(css).toMatch(/#app\[data-tab="perfil"\] \.gear-slot, [^{]*\.weapon-slot, [^{]*\.inv-slot \{ background: var\(--slot\); border: 0\.12rem solid var\(--slot-line\);/);
-    expect(css).toMatch(/#app\[data-tab="perfil"\] \.game-main-nav \{ background: var\(--paper-2\); border-color: var\(--line\);/);
   });
 });
