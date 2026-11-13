@@ -103,6 +103,29 @@ for (y0, x0, y1, x1) in []:
     base.paste(canto.transpose(Image.FLIP_TOP_BOTTOM), (xl, yb), feather.transpose(Image.FLIP_TOP_BOTTOM))
     base.paste(canto.transpose(Image.ROTATE_180), (xr, yb), feather.transpose(Image.ROTATE_180))
 res = np.array(base)
+# Mala: a IA desenhou os "fantasmas" também nas duas primeiras fileiras da Mala; aqui eles são apagados (o papel é liso),
+# para o jogo mostrar o carimbo VAZIO. O equipamento e a arma mantêm o desenho fantasma.
+rng = np.random.default_rng(7)
+MALA_Y = (652, 803)
+MALA_X = (89, 286, 484, 681, 879)
+res = res.copy()
+for y0 in MALA_Y:
+    for x0 in MALA_X:
+        y1, x1 = y0 + 120, x0 + 166
+        pad = 10
+        ys, xs_ = slice(y0 - pad, y1 + pad), slice(x0 - pad, x1 + pad)
+        m = np.zeros((y1 - y0 + 2 * pad, x1 - x0 + 2 * pad), bool)
+        m[pad + 9:-(pad + 9), pad + 9:-(pad + 9)] = True
+        crop = res[ys, xs_].astype(float) / 255
+        # grão do papel medido na moldura (anel sem desenho)
+        anel = crop[pad + 4:pad + 11, pad + 20:-(pad + 20)]
+        grao = float((anel - ndi.gaussian_filter(anel, (0, 3, 0))).std())
+        lisa = inpaint_biharmonic(crop, m, channel_axis=-1)
+        ruido = ndi.gaussian_filter(rng.normal(0, grao, lisa.shape[:2]), 0.7)[..., None]
+        fill = np.clip(lisa + ruido, 0, 1)
+        peso = ndi.gaussian_filter(m.astype(float), 2.0)[..., None]
+        res[ys, xs_] = (np.clip(crop * (1 - peso) + fill * peso, 0, 1) * 255).astype(np.uint8)
+
 Image.fromarray(res).save(OUT + "moldura.webp", "WEBP", quality=88, method=6)
 # recorte de slot vazio (a partir de um slot vazio já sem quinas)
 y0, x0, y1, x1 = 652, 89, 772, 255
