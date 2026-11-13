@@ -223,9 +223,9 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
 
   it('seção C (Mala) com a folha de 20 molduras e o cadeado que abre ao passar o mouse (R-UI-18)', () => {
     for (const n of ['c-mala', 'c-cadeado-fechado', 'c-cadeado-aberto']) expect(existsSync(`public/assets/ficha/${n}.webp`)).toBe(true);
-    expect(css).toMatch(/#app\[data-tab="perfil"\] \.inventory-slots-grid \{ position: relative; isolation: isolate; box-sizing: border-box; aspect-ratio: 1750 \/ 1160;/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.inventory-slots-grid \{ position: relative; isolation: isolate; box-sizing: border-box; aspect-ratio: 1719 \/ 1079;/);
     expect(css).toMatch(/\.inventory-slots-grid::after \{ content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: url\("\/assets\/ficha\/c-mala\.webp"\)/);
-    expect(css).toMatch(/\.inv-slot\.locked::before \{ content: ""; position: absolute; left: 36\.86%; top: 23\.95%; width: 26\.6%; height: 50%; background: url\("\/assets\/ficha\/c-cadeado-aberto\.webp"\)/);
+    expect(css).toMatch(/\.inv-slot\.locked::before \{ content: ""; position: absolute; left: 30\.64%; top: 9\.91%; width: 38\.38%; height: 73\.42%; background: url\("\/assets\/ficha\/c-cadeado-aberto\.webp"\)/);
     expect(css).toMatch(/\.inv-slot\.empty::after \{ display: none; \}/);
     expect(css).toContain('@keyframes lock-pop');
   });
