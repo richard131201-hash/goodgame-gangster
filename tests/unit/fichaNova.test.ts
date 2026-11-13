@@ -171,4 +171,12 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.stack \{ grid-template-columns: 30rem 14rem 45\.2rem; background: none; border: 0; border-radius: 0; \}/);
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.stack::after \{ display: none; \}/);
   });
+
+  it('controle e carimbo alinhados à borda do conteúdo, ouro só mais largo e fundo de teste na Ficha (R-UI-10)', () => {
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-system-actions \{ margin-right: 3\.1rem; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.folder-stamp \{ right: 4\.4rem; \}/);
+    expect(css).toMatch(/html\[data-ui="v2"\] \.res-card\.res-gold \{ min-width: 10\.5rem; \}/);
+    expect(css).not.toMatch(/\.res-gold \.res-img \{ width: 2\.6rem/);
+    expect(css).toMatch(/html\[data-ui="v2"\] #app\[data-tab="perfil"\] \{ background-image: linear-gradient\(.*?\), url\("\/assets\/scenes\/missoes-bg\.webp"\);/);
+  });
 });
