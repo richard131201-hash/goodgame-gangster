@@ -4410,8 +4410,8 @@ html[data-ui="v2"] #app[data-tab="perfil"] .weapon-slot-body .warr { width: 100%
 
 /* ---- Cash com espaço para 99.999.999; nome em papel que sai de trás do card; carimbo inclinado para baixo (R-UI-6) ---- */
 html[data-ui="v2"] .res-card.res-cash { min-width: 15rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] .hud-player-info { left: 15.9rem; top: 8.8rem; width: 16.2rem; height: 6.5rem; box-sizing: border-box; padding: 0.8rem 1rem 0.7rem 3.2rem; display: flex; flex-direction: column; justify-content: center; gap: 0.5rem; background: linear-gradient(#f0e4c5, #e2d2aa); border-radius: 0.15rem; box-shadow: 0.15rem 0.3rem 0.7rem rgba(0, 0, 0, 0.5); transform: rotate(-1deg); }
+html[data-ui="v2"] #app[data-tab="perfil"] .hud-player-info { left: 15.9rem; top: 8.8rem; width: 16.2rem; height: 6.5rem; box-sizing: border-box; padding: 0.8rem 1rem 0.7rem 3.2rem; display: flex; flex-direction: column; justify-content: center; gap: 0.5rem; background: linear-gradient(#cdb98c, #b9a276); border-radius: 0.15rem; box-shadow: 0.15rem 0.3rem 0.7rem rgba(0, 0, 0, 0.5); transform: rotate(-1deg); }
 html[data-ui="v2"] #app[data-tab="perfil"] .hud-player-info .hud-player-name { color: #2b2015; font-size: 1.5rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .hud-player-info .hud-xp-track { background: rgba(43, 32, 21, 0.18); border: 0.0625rem solid rgba(43, 32, 21, 0.45); }
 html[data-ui="v2"] #app[data-tab="perfil"] .hud-player-info .hud-xp-text { color: #2b2015; }
-html[data-ui="v2"] #app[data-tab="perfil"] .folder-stamp { transform: rotate(9deg); top: -0.3rem; right: 1.6rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .folder-stamp { transform: rotate(9deg); top: 1rem; right: 1.6rem; }
