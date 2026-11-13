@@ -74,7 +74,7 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
 
   it('simetria (R-UI-4): coluna central de 100 rem, conteúdo da Ficha centralizado com slots menores, card maior na Ficha', () => {
     expect(css).toMatch(/html\[data-ui="v2"\] \.hud-header, html\[data-ui="v2"\] \.shell \{ width: 100%; max-width: 100rem; margin-left: auto; margin-right: auto; \}/);
-    expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-avatar-thumb \{ width: 13\.5rem; height: 15\.2rem; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-avatar-thumb \{ left: 8\.8rem; top: 1\.4rem; width: 13\.8rem; height: 16rem; \}/);
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.stack \{ grid-template-columns: 30rem 14rem 36rem; grid-template-rows: auto auto; justify-content: center;/);
     expect(css).toMatch(/\.profile-stats-panel\.compact \{ margin-top: 0; height: auto; align-self: end; padding: 0 0\.7rem;/);
     expect(css).toMatch(/\.attr-compact-list \{ height: auto; grid-template-rows: repeat\(4, 2\.3rem\); \}/);
@@ -96,9 +96,9 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
   });
 
   it('Ficha: card maior; nome, nível e XP ao lado do card, dentro da pasta; atributos descem até perto da Mala', () => {
-    expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-player-info \{ left: 18\.4rem; top: 11\.4rem; \}/);
-    expect(css).toMatch(/#app\[data-tab="perfil"\] \.folder-tab \{ left: 15\.9rem; \}/);
-    expect(css).toMatch(/#app\[data-tab="perfil"\] \.avatar-edit-btn \{ left: 12\.1rem; top: 5\.9rem; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-player-info \{ left: 25rem; top: 11\.4rem; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.folder-tab \{ left: 23\.6rem; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.avatar-edit-btn \{ left: 20\.1rem; top: 7\.9rem; \}/);
   });
 
   it('Mala com título, brasão em caixa própria acima da arma (R-UI-5)', () => {
@@ -107,5 +107,9 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/\.inventory-slots-grid::before \{ content: "MALA"; grid-column: 1 \/ -1;/);
     expect(css).toMatch(/\.weapon-box \{ display: contents; \}/);
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.profile-weapon-panel \{ display: flex; flex-direction: column; gap: 0\.9rem;/);
+  });
+
+  it('títulos padronizados (Arma, Equipamento, Mala): mesma fonte, tamanho, espaçamento e fio pontilhado', () => {
+    expect(css).toMatch(/\.inventory-slots-grid::before \{[^}]*border-bottom: 0\.0723rem dotted var\(--line\);[^}]*font-size: 1\.1rem;[^}]*letter-spacing: 0\.05rem; text-transform: uppercase;/);
   });
 });

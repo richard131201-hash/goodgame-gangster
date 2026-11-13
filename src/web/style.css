@@ -4344,10 +4344,10 @@ html[data-ui="v2"] #app { zoom: 0.86; max-width: calc(104.5rem / 0.86); height: 
 
 /* ---- SIMETRIA (R-UI-4): coluna central de 100 rem (topo, pasta e barra alinhados); na Ficha o conteúdo é centralizado na pasta, com slots menores ---- */
 html[data-ui="v2"] .hud-header, html[data-ui="v2"] .shell { width: 100%; max-width: 100rem; margin-left: auto; margin-right: auto; }
-html[data-ui="v2"] #app[data-tab="perfil"] .hud-avatar-thumb { width: 13.5rem; height: 15.2rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] .hud-player-info { left: 18.4rem; top: 11.4rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] .folder-tab { left: 15.9rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] .avatar-edit-btn { left: 12.1rem; top: 5.9rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .hud-avatar-thumb { left: 8.8rem; top: 1.4rem; width: 13.8rem; height: 16rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .hud-player-info { left: 25rem; top: 11.4rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .folder-tab { left: 23.6rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .avatar-edit-btn { left: 20.1rem; top: 7.9rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .stack { grid-template-columns: 30rem 14rem 36rem; grid-template-rows: auto auto; justify-content: center; align-content: center; column-gap: 1.2rem; row-gap: 0.9rem; padding: 1.4rem 1.5rem 1.2rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact { margin-top: 0; height: auto; align-self: end; padding: 0 0.7rem; position: relative; overflow: visible; display: flex; flex-direction: column; justify-content: center; }
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-weapon-panel { width: 14rem; }
@@ -4380,4 +4380,4 @@ html[data-ui="v2"] #app[data-tab="perfil"] .btn-attr-plus { width: 3.6rem; heigh
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-weapon-panel { display: flex; flex-direction: column; gap: 0.9rem; padding: 0; background: none; border: 0; overflow: visible; }
 html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box { display: block; padding: 0.875rem; background: var(--paper-2); border: 0.0625rem solid var(--line); border-radius: 0.5rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .inventory-slots-grid { grid-template-rows: 2.2rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] .inventory-slots-grid::before { content: "MALA"; grid-column: 1 / -1; align-self: start; padding-bottom: 0.4rem; border-bottom: 0.0625rem solid var(--line); font-family: var(--font-type); font-size: 0.9375rem; color: var(--ink); letter-spacing: 0.03rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inventory-slots-grid::before { content: "MALA"; grid-column: 1 / -1; align-self: start; padding-bottom: 0.3rem; border-bottom: 0.0723rem dotted var(--line); font-family: var(--font-type); font-size: 1.1rem; font-weight: 400; color: var(--ink); letter-spacing: 0.05rem; text-transform: uppercase; }
