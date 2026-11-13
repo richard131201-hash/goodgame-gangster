@@ -78,7 +78,7 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.stack \{ grid-template-columns: 30rem 14rem 36rem; grid-template-rows: max-content max-content; justify-content: center;/);
     expect(css).toMatch(/\.profile-stats-panel\.compact \{ margin-top: 0; height: auto; align-self: end; padding: 0 0\.7rem;/);
     expect(css).toMatch(/\.attr-compact-list \{ height: auto; grid-template-rows: repeat\(4, 2\.3rem\); \}/);
-    expect(css).toMatch(/\.equipped-slots-grid \{[^}]*grid-auto-rows: 6\.6rem;/);
+    expect(css).toMatch(/\.equipped-slots-grid \{[^}]*grid-template-rows: repeat\(2, minmax\(0, 1fr\)\);/); // os slots do Equipamento preenchem a altura do painel
     expect(css).toMatch(/\.inventory-slots-grid \{[^}]*grid-auto-rows: 6\.6rem;/);
   });
 

@@ -4352,7 +4352,7 @@ html[data-ui="v2"] #app[data-tab="perfil"] .stack { grid-template-columns: 30rem
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact { margin-top: 0; height: auto; align-self: end; padding: 0 0.7rem; position: relative; overflow: visible; display: flex; flex-direction: column; justify-content: center; }
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-weapon-panel { width: 14rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-gear-panel { height: auto; overflow: visible; }
-html[data-ui="v2"] #app[data-tab="perfil"] .equipped-slots-grid { flex: 0 0 auto; grid-template-columns: repeat(4, 1fr); grid-template-rows: none; grid-auto-rows: 6.6rem; gap: 0.8rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .equipped-slots-grid { flex: 1 1 auto; min-height: 0; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 0.8rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .inventory-slots-grid { grid-template-rows: none; grid-auto-rows: 6.6rem; gap: 0.5rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .duel-free { height: 20.8rem; }
 
