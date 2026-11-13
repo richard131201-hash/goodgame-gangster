@@ -63,7 +63,7 @@ wgt = np.clip(np.minimum(ramp_y[:, None], ramp_x[None, :]), 0, 1)[..., None]
 clean[ry0:ry1, rx0:rx1] = patch * wgt + clean[ry0:ry1, rx0:rx1] * (1 - wgt)
 
 # --- corta papel liso do topo para a proporção do painel -------------------------------------------------------------
-CUT = (260, 380)
+CUT = (260, 262)
 F = 36
 ramp = np.linspace(0, 1, F)[:, None, None]
 blend = clean[CUT[0] - F:CUT[0]] * (1 - ramp) + clean[CUT[1] - F:CUT[1]] * ramp
