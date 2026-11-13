@@ -227,7 +227,8 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/\.inventory-slots-grid::after \{ content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: url\("\/assets\/ficha\/c-mala\.webp"\)/);
     expect(css).toMatch(/\.inv-slot\.locked::before \{ content: ""; position: absolute; left: 30\.64%; top: 9\.91%; width: 38\.38%; height: 73\.42%; background: url\("\/assets\/ficha\/c-cadeado-aberto\.webp"\)/);
     expect(css).toMatch(/\.inv-slot\.empty::after \{ display: none; \}/);
-    expect(css).toContain('@keyframes lock-pop');
+    expect(css).not.toContain('@keyframes lock-pop');
+    expect(css).not.toMatch(/\.inv-slot\.locked:not\(\.locked-soon\):hover::before[^}]*animation/);
   });
 
   it('Mala maior, em proporção, até perto da barra de abas; a área de duelo cede o espaço (R-UI-18)', () => {
@@ -260,5 +261,17 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
   it('coluna da arma cabe na altura do Equipamento e o título ARMA respira (R-UI-19)', () => {
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.profile-weapon-panel \{ gap: 0\.4rem; \}/);
     expect(css).toMatch(/\.weapon-box \.panel-header-banner h3 \{ font-size: 1\.1rem; \}/);
+  });
+
+  it('mouse do jogo: normal, clicar e arrastar, desenhados na identidade (R-UI-20)', () => {
+    for (const n of ['normal', 'pointer', 'grab']) expect(existsSync(`public/assets/cursors/${n}.svg`)).toBe(true);
+    expect(css).toMatch(/html\[data-ui="v2"\] \{ --cur-normal: url\("\/assets\/cursors\/normal\.svg"\) 5 3, auto; --cur-pointer: url\("\/assets\/cursors\/pointer\.svg"\) 12 3, pointer; --cur-grab: url\("\/assets\/cursors\/grab\.svg"\) 16 14, grab; \}/);
+    expect(css).toMatch(/html\[data-ui="v2"\] body \{ cursor: var\(--cur-normal\); \}/);
+    expect(css).not.toMatch(/cursor: pointer;/);
+    expect(css).toMatch(/cursor: var\(--cur-pointer, pointer\)/);
+  });
+
+  it('cadeado abre instantaneamente, sem transição (R-UI-18)', () => {
+    expect(css).toMatch(/\.inv-slot\.locked, [^{]*\.inv-slot\.locked::before \{ transition: none; \}/);
   });
 });
