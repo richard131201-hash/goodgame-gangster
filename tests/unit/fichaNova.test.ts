@@ -150,4 +150,13 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/html\[data-ui="v2"\] \.hud-xp-track \{ flex: 1; min-width: 0; height: 1\.25rem; border-radius: 0\.3rem; \}/);
     expect(css).toMatch(/html\[data-ui="v2"\] \.hud-lvl-circle \{ position: relative; flex: none; width: 2\.7rem; height: 2\.7rem;/);
   });
+
+  it('aba da família no topo do papel, com "Sem família" quando não há (R-UI-8)', () => {
+    const html = readFileSync('index.html', 'utf8');
+    expect(html).toMatch(/<div class="hud-player-info">\s*<span class="hud-family-tab no-family" id="hud-family"[^>]*>SEM FAMÍLIA<\/span>/);
+    expect(main).toContain("getElementById('hud-family')");
+    expect(main).toContain("'Sem família'");
+    expect(css).toMatch(/\.hud-family-tab \{ display: none; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-family-tab \{ display: block; position: absolute; left: 1\.2rem; top: -1\.5rem;/);
+  });
 });

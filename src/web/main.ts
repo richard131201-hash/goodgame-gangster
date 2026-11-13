@@ -387,6 +387,12 @@ function updateHUD() {
   if (!p.hasCreatedCharacter) return;
 
   document.getElementById('hud-name')!.textContent = p.name;
+  const famTab = document.getElementById('hud-family');
+  if (famTab) {
+    const hudFam = p.familyId ? MAFIA_FAMILIES_LIST.find(f => f.id === p.familyId) : undefined;
+    famTab.textContent = (hudFam ? hudFam.name : 'Sem família').toUpperCase();
+    famTab.classList.toggle('no-family', !hudFam);
+  }
   document.getElementById('class-icon-use')?.setAttribute('href', `#cls-${p.style}`);
   const clsLbl = document.getElementById('class-icon-lbl');
   if (clsLbl) clsLbl.textContent = p.style.toUpperCase();
