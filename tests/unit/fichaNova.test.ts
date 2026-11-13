@@ -6,13 +6,13 @@ const css = readFileSync('src/web/style.css', 'utf8');
 const main = readFileSync('src/web/main.ts', 'utf8');
 
 describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
-  it('só liga com ?ficha=nova; sem isso, a Ficha antiga continua', () => {
-    expect(chooseFicha('', null)).toBe('antiga');
-    expect(chooseFicha('?ficha=nova', null)).toBe('nova');
-    expect(chooseFicha('', 'nova')).toBe('nova'); // fica guardado no navegador
-    expect(chooseFicha('?ficha=antiga', 'nova')).toBe('antiga'); // desliga
-    expect(chooseFicha('?ficha=qualquer', 'nova')).toBe('nova'); // valor desconhecido não muda
-    expect(chooseFicha('?x=1', 'lixo')).toBe('antiga');
+  it('a Ficha nova é a padrão; a antiga só volta com ?ficha=antiga', () => {
+    expect(chooseFicha('', null)).toBe('nova');
+    expect(chooseFicha('', 'lixo')).toBe('nova');
+    expect(chooseFicha('?ficha=antiga', null)).toBe('antiga');
+    expect(chooseFicha('', 'antiga')).toBe('antiga'); // escolha guardada de quem comparou
+    expect(chooseFicha('?ficha=nova', 'antiga')).toBe('nova'); // religa
+    expect(chooseFicha('?ficha=qualquer', 'antiga')).toBe('antiga'); // valor desconhecido não muda
   });
 
   it('as imagens da moldura existem e o jogo liga o modo de teste', () => {
