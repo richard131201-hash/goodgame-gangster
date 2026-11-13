@@ -187,4 +187,9 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(main).toContain("getElementById('invite-friend-btn')");
     expect(main).toContain('navigator.clipboard');
   });
+
+  it('no Ouro, o + fica colado na direita e a largura extra é para os dígitos (R-UI-13)', () => {
+    expect(css).toMatch(/\.res-card\.res-gold \.res-details \{ flex: 1 1 auto; min-width: 0; \}/);
+    expect(css).toMatch(/\.res-card\.res-gold \.res-gold-plus \{ margin-left: auto; \}/);
+  });
 });
