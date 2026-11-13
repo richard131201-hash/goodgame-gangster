@@ -4196,3 +4196,55 @@ html[data-skin="bege"] .res-gold-plus { background-color: #d9c690; color: #6a3d0
 .mscene-rw i { font-style: normal; }
 .mscene-accept { width: 100%; padding: 0.3rem; font: 700 0.95rem var(--font-sans); color: #1a1203; background: #d4af37; border: 0.1rem solid #1a0f08; border-radius: 0.3rem; cursor: pointer; }
 .mscene-accept:hover { filter: brightness(1.1); }
+
+/* ================================================================================================ */
+/* FICHA NOVA, EM TESTE (R-FICHA-ARTE-1): moldura desenhada por IA (2000 x 1116) com os dados por cima.  */
+/* Só liga com ?ficha=nova. Medidas em % da moldura (px da imagem / 20 na horizontal, / 11,16 na vertical). */
+/* ================================================================================================ */
+html[data-ficha="nova"] #app[data-tab="perfil"] .stack { position: relative; display: block; aspect-ratio: 2000 / 1116; align-self: start; background: url("/assets/ficha/moldura.webp") center / 100% 100% no-repeat; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .folder, html[data-ficha="nova"] #app[data-tab="perfil"] .game-main-content, html[data-ficha="nova"] #app[data-tab="perfil"] #view-perfil, html[data-ficha="nova"] #app[data-tab="perfil"] .profile-layout-grid, html[data-ficha="nova"] #app[data-tab="perfil"] .sub-folder, html[data-ficha="nova"] #app[data-tab="perfil"] .sub-sheet, html[data-ficha="nova"] #app[data-tab="perfil"] .sub-pane[data-pane="mala"].active, html[data-ficha="nova"] #app[data-tab="perfil"] .profile-inventory-panel { display: contents; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .stitch-svg, html[data-ficha="nova"] #app[data-tab="perfil"] .doll-clip, html[data-ficha="nova"] #app[data-tab="perfil"] .profile-gear-panel .panel-header-banner, html[data-ficha="nova"] #app[data-tab="perfil"] .profile-weapon-panel .panel-header-banner h3, html[data-ficha="nova"] #app[data-tab="perfil"] .profile-stats-panel .panel-header-banner h3, html[data-ficha="nova"] #app[data-tab="perfil"] .attr-c-arrow, html[data-ficha="nova"] #app[data-tab="perfil"] .gear-slot .slot-badge, html[data-ficha="nova"] #app[data-tab="perfil"] .gear-slot .gear-ico.ghost, html[data-ficha="nova"] #app[data-tab="perfil"] .inv-slot.locked svg, html[data-ficha="nova"] #app[data-tab="perfil"] .inv-slot.empty::after { display: none !important; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .folder-tab { position: absolute; left: 2.5%; top: 0.9%; width: 24.25%; height: 4.3%; transform: none; display: flex; align-items: center; justify-content: center; padding: 0; background: none; border: 0; color: #d9b86a; }
+/* retrato */
+html[data-ficha="nova"] #app[data-tab="perfil"] .profile-doll-panel { position: absolute; left: 3.5%; top: 10.57%; width: 14.4%; height: 29.57%; padding: 0; background: none; border: 0; box-shadow: none; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .profile-paperdoll-wrapper { position: absolute; left: 8.7%; top: 5.2%; width: 79.9%; height: 87.9%; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .profile-avatar-frame { width: 100%; height: 100%; background: none; border: 0; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .doll-caption { position: absolute; left: 0; top: 102%; width: 100%; color: #f1e3bf; text-align: center; }
+/* atributos: o caderno e os botões dourados vêm da imagem */
+html[data-ficha="nova"] #app[data-tab="perfil"] .profile-stats-panel.compact { position: absolute; left: 20%; top: 11.92%; width: 19.65%; height: 28.58%; padding: 0; background: none; border: 0; box-shadow: none; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .profile-stats-panel .panel-header-banner { position: absolute; top: -11%; right: 0; margin: 0; padding: 0; border: 0; background: none; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .profile-stats-panel .free-points-badge { color: #f1e3bf; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .attr-compact-list { position: absolute; left: 3.8%; top: 0; width: 95.4%; height: 76.5%; margin: 0; border: 0; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .attr-c-row { position: relative; display: block; height: 25%; padding: 0; border: 0; background: none; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .attr-c-name { position: absolute; left: 2%; top: 50%; transform: translateY(-50%); font-size: 0.85rem; color: #3b2a18; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .attr-c-pts { position: absolute; right: 28%; top: 50%; transform: translateY(-50%); font-size: 1.15rem; color: #5a3a10; text-align: right; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .btn-attr-plus { position: absolute; left: 74.4%; top: 50%; width: 22.1%; height: 55.7%; transform: translateY(-50%); background: none; border: 0; box-shadow: none; color: #3a2410; font-size: 1.3rem; line-height: 1; }
+/* arma */
+html[data-ficha="nova"] #app[data-tab="perfil"] .profile-weapon-panel { position: absolute; left: 42.15%; top: 12.37%; width: 13.6%; height: 18.73%; padding: 0; background: none; border: 0; box-shadow: none; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .profile-weapon-panel .weapon-slot { position: absolute; inset: 0; background: none; border: 0; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .profile-weapon-panel .weapon-slot:has(img)::before { content: ""; position: absolute; inset: 7% 6%; background: url("/assets/ficha/slot-vazio.webp") center / 100% 100% no-repeat; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .profile-weapon-panel .weapon-slot-body { position: relative; }
+/* equipamento: o desenho fantasma (da imagem) some quando há item, coberto por um recorte de slot vazio */
+html[data-ficha="nova"] #app[data-tab="perfil"] .profile-gear-panel { position: absolute; left: 58.6%; top: 12.54%; width: 37.9%; height: 25.45%; padding: 0; background: none; border: 0; box-shadow: none; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .equipped-slots-grid { height: 100%; grid-template-columns: repeat(4, 1fr); gap: 3.5% 1.19%; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .gear-slot { position: relative; background: none; border: 0; padding: 0; justify-content: center; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .gear-slot.filled::before { content: ""; position: absolute; inset: 7.3% 6.5%; background: url("/assets/ficha/slot-vazio.webp") center / 100% 100% no-repeat; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .gear-slot.filled .gear-ico { position: relative; width: 52%; height: 52%; color: #3b2a18; transform: rotate(-3deg); filter: drop-shadow(0 0.1rem 0.12rem rgba(0, 0, 0, 0.35)); }
+/* subpasta: abas em texto, Mala e detalhes sobre a imagem */
+html[data-ficha="nova"] #app[data-tab="perfil"] .sub-tabs { position: absolute; left: 0; top: 0; bottom: auto; width: 100%; height: 100%; display: block; pointer-events: none; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .sub-tab { position: absolute; top: 47.76%; height: 4.12%; padding: 0; background: none; border: 0; border-radius: 0; margin: 0; opacity: 1; color: #d9c8a0; pointer-events: auto; display: flex; align-items: center; justify-content: center; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .sub-tab.active { background: none; border: 0; margin: 0; padding: 0; color: #f1d36a; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .sub-tab[data-pane="mala"] { left: 2.5%; width: 11.25%; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .sub-tab[data-pane="familia"] { left: 14.4%; width: 11.2%; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .sub-tab[data-pane="conquistas"] { left: 26.25%; width: 13.7%; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .sub-tab[data-pane="honra"] { left: 40.6%; width: 11.2%; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .inventory-slots-grid { position: absolute; left: 3.9%; top: 57.53%; width: 48.9%; height: 39.7%; display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(3, 1fr); gap: 2.3% 1.03%; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .inv-slot { position: relative; width: auto; height: auto; aspect-ratio: auto; background: none; border: 0; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .inv-slot:nth-child(n+11):not(.locked)::before { content: ""; position: absolute; inset: 7% 5.9%; background: url("/assets/ficha/slot-vazio.webp") center / 100% 100% no-repeat; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .inv-slot[data-inv-idx] > * { position: relative; filter: drop-shadow(0 0.1rem 0.12rem rgba(0, 0, 0, 0.4)); }
+html[data-ficha="nova"] #app[data-tab="perfil"] .inv-item-details-box { position: absolute; left: 55.35%; top: 57.53%; width: 40.65%; height: 39.25%; padding: 3.2% 2.4% 2%; box-sizing: border-box; background: none; border: 0; box-shadow: none; color: #3b2a18; overflow: auto; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .sub-pane.active:not([data-pane="mala"]) { position: absolute; left: 3%; top: 54.5%; width: 94%; height: 42.5%; box-sizing: border-box; padding: 2%; overflow: auto; background: url("/assets/ficha/papel.webp") center / 100% 100% no-repeat; border-radius: 0.5rem; color: #3b2a18; }
+html[data-ficha="nova"] #app[data-tab="perfil"] .sub-pane.active:not([data-pane="mala"]) * { color: #3b2a18; }
+/* a moldura cabe na altura disponível (não corta a última fileira da Mala) e fica centralizada */
+html[data-ficha="nova"] #app[data-tab="perfil"] .shell { grid-template-rows: minmax(0, 1fr); }
+html[data-ficha="nova"] #app[data-tab="perfil"] .stack { height: 100%; width: auto; max-width: 100%; justify-self: center; }

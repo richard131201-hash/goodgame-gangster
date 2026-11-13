@@ -75,6 +75,7 @@ import { applySkin, readSkin, toggleSkin, FOLDER_HEADERS } from './skin.js';
 import { notify, ask } from './notice.js';
 import { attachStitch, STITCH_INSET_REM } from './stitch.js';
 import { initMissionScene } from './missionScene.js';
+import { initFichaNova } from './fichaNova.js';
 import { weaponArtImg, sellableInShop } from './weaponArt.js';
 import { positionAmongNpcs, positionInRows, rankLabel } from './rankPosition.js';
 import { BAG_CAPACITY_MAX, BAG_UPGRADE_SLOTS, BIG_BAG_PRICE_GOLD } from '../shared/bag.js';
@@ -461,6 +462,7 @@ document.getElementById('audio-toggle-btn')?.addEventListener('click', () => {
 
 // TEMA DA PASTA (couro e dourado / bege)
 applySkin(readSkin());
+initFichaNova();
 document.getElementById('skin-toggle-btn')?.addEventListener('click', () => {
   toggleSkin();
 });
