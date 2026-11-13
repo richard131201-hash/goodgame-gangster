@@ -134,4 +134,10 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.weapon-slot \{ aspect-ratio: 4 \/ 3; height: auto; box-sizing: border-box; \}/);
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.duel-free \{ height: auto; align-self: stretch; \}/);
   });
+
+  it('cash com espaço para 99.999.999, nome em papel atrás do card e carimbo inclinado para baixo (R-UI-6)', () => {
+    expect(css).toMatch(/html\[data-ui="v2"\] \.res-card\.res-cash \{ min-width: 15rem; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-player-info \{ left: 15\.9rem; top: 8\.8rem; width: 16\.2rem; height: 6\.5rem;[^}]*background: linear-gradient\(#f0e4c5, #e2d2aa\);/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.folder-stamp \{ transform: rotate\(9deg\); top: -0\.3rem; right: 1\.6rem; \}/);
+  });
 });
