@@ -46,21 +46,24 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/\.inv-slot\.empty::after \{ color: #6b4a22;/);
   });
 
-  it('Estilo 2 (R-UI-2): topo com retrato e energia comprida, Ficha em 3 colunas sem abas, barra com rótulos, área livre de duelo', () => {
+  it('Estilo 2 (R-UI-2): topo estilo GGG, Ficha com atributos embaixo do card, Mala horizontal, barra com rótulos, área livre de duelo', () => {
     const html = readFileSync('index.html', 'utf8');
     for (const id of ['hud-energy-fill', 'hud-energy-timer', 'duel-free']) expect(html).toContain(`id="${id}"`);
     expect((html.match(/data-label="/g) ?? []).length).toBe(10);
-    expect(css).toMatch(/html\[data-ui="v2"\] \.hud-header \{ display: grid;/);
-    expect(css).toMatch(/html\[data-ui="v2"\] #app\[data-tab="perfil"\] \.stack \{[^}]*grid-template-columns: 300fr 960fr 840fr;/);
-    // sem abas na Mala e sem o painel de detalhes (saíram por ora)
-    expect(css).toMatch(/\.sub-tabs, [^{]*\.inv-item-details-box \{ display: none !important; \}/);
-    // atributos ao lado do retrato (coluna 2) e arma embaixo do retrato (coluna 1, linha 2)
-    expect(css).toMatch(/\.profile-stats-panel\.compact \{ grid-column: 2; grid-row: 1;/);
-    expect(css).toMatch(/\.profile-weapon-panel \{ grid-column: 1; grid-row: 2;/);
-    expect(css).toMatch(/\.inventory-slots-grid \{ grid-column: 2; grid-row: 2; display: grid; grid-template-columns: repeat\(5,/);
-    // o perfil no canto (foto pequena, nível e XP) vale nas outras abas; na Ficha a foto sai, porque o retrato já está no card
-    expect(css).toMatch(/html\[data-ui="v2"\] #app\[data-tab="perfil"\] \.hud-avatar-thumb \{ display: none; \}/);
-    expect(css).toMatch(/html\[data-ui="v2"\] \.hud-avatar-thumb \{ width: 5rem; height: 5\.7rem;/);
+    // card grande no canto, sem faixa de fundo; nome, nível e XP ao lado do card; recursos no centro
+    expect(css).toMatch(/html\[data-ui="v2"\] \.hud-header \{[^}]*display: grid;[^}]*background: none;/);
+    expect(css).toMatch(/html\[data-ui="v2"\] \.hud-avatar-thumb \{ position: absolute; left: 1\.1rem; top: 0\.2rem; width: 8\.4rem; height: 9\.2rem;/);
+    expect(css).toMatch(/html\[data-ui="v2"\] \.hud-player-info \{ position: absolute; left: 10\.2rem;/);
+    expect(css).toMatch(/html\[data-ui="v2"\] \.hud-resources \{ grid-column: 2; justify-self: center;/);
+    // Ficha: 3 colunas (atributos | arma | equipamento) e Mala horizontal + área livre; sem abas nem detalhes do item
+    expect(css).toMatch(/html\[data-ui="v2"\] #app\[data-tab="perfil"\] \.stack \{[^}]*grid-template-columns: 560fr 340fr 840fr;/);
+    expect(css).toMatch(/\.sub-tabs, [^{]*\.inv-item-details-box[^{]*\{ display: none !important; \}/);
+    expect(css).toMatch(/\.profile-stats-panel\.compact \{ grid-column: 1; grid-row: 1; margin-top: 2\.8rem;/);
+    expect(css).toMatch(/\.profile-weapon-panel \{ grid-column: 2; grid-row: 1;/);
+    expect(css).toMatch(/\.inventory-slots-grid \{ grid-column: 1 \/ 3; grid-row: 2; display: grid; grid-template-columns: repeat\(5,/);
+    // o card do retrato sai da Ficha (a foto está no topo), mas o botão de personalizar fica sobre o card
+    expect(css).toMatch(/\.profile-doll-panel, [^{]*\.profile-avatar-frame \{ display: contents; \}/);
+    expect(css).toMatch(/\.avatar-edit-btn \{ position: absolute;/);
     expect(main).toContain("setProperty('--xp'");
     expect(main).toContain("getElementById('hud-energy-fill')");
   });

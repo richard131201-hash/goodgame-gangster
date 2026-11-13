@@ -28,16 +28,17 @@ class Canvas:
     def retrato(self, x, y):
         self.title(x, y - 32, "RETRATO"); self.box("R", x, y, *SZ["R"], BLUE, (20, 40, 60), "foto do avatar + nome/nível", 20)
 
-    def atributos(self, x, y, w=None):
-        self.title(x, y - 32, "ATRIBUTOS"); w0, h = SZ["A"]; w = w or w0
+    def atributos(self, x, y, w=None, h=None):
+        self.title(x, y - 32, "ATRIBUTOS"); w0, h0 = SZ["A"]; w = w or w0; h = h or h0
         self.box("A", x, y, w, h, GREEN, (24, 40, 30), "")
+        pitch = (h - 20) / 4
         for i, n in enumerate(["Ataque", "Vida", "Astúcia", "Tenacidade"]):
-            yy = y + 16 + i * 74
-            self.d.rounded_rectangle((x + 14, yy, x + w - 14, yy + 62), radius=10, outline=GREEN, width=3)
-            self.d.text((x + 26, yy + 18), n + "          (valor)    [+]", font=F(22), fill=GREEN)
+            yy = int(y + 10 + i * pitch)
+            self.d.rounded_rectangle((x + 12, yy, x + w - 12, int(yy + pitch - 8)), radius=10, outline=GREEN, width=3)
+            self.d.text((x + 24, int(yy + pitch / 2 - 18)), n + "      (valor)    [+]", font=F(20), fill=GREEN)
 
-    def arma(self, x, y):
-        self.title(x, y - 32, "ARMA"); self.box("W", x, y, *SZ["W"], RED, (60, 30, 28), "slot da arma 4:3", 20)
+    def arma(self, x, y, size=None):
+        self.title(x, y - 32, "ARMA"); self.box("W", x, y, *(size or SZ["W"]), RED, (60, 30, 28), "slot da arma 4:3", 20)
 
     def livre(self, x, y):
         self.title(x, y - 32, "ÁREA LIVRE")
@@ -50,8 +51,8 @@ class Canvas:
         self.d.text((x + 24, y + h // 2), "equipamento de duelo: consumíveis, coletes, bombas...", font=F(24), fill=(170, 170, 176))
         self.d.text((x + 24, y + h // 2 + 40), f"tamanho fixo: {w} x {h} px", font=F(22), fill=(140, 140, 146))
 
-    def equip(self, x, y, cols, rows, nomes):
-        w, h = SZ["SLOT_E"]
+    def equip(self, x, y, cols, rows, nomes, slot=None):
+        w, h = slot or SZ["SLOT_E"]
         self.title(x, y - 32, "EQUIPAMENTO")
         for i, n in enumerate(nomes):
             c, r = (i % cols, i // cols) if cols * rows == 8 else (0, i)
@@ -197,4 +198,25 @@ c = Canvas("OPÇÃO C3 · 3 colunas: retrato/arma · atributos/Mala · equipamen
 c.retrato(30, 64); c.atributos(360, 64, 960); c.equip(1350, 64, 4, 2, NOMES)
 c.arma(30, 473); c.mala(360, 473, 5, 3, False, (184, 138)); c.livre(1350, 473)
 c.salvar("C3")
+
+# C4 (topo estilo GGG): sem o card do retrato na Ficha (a foto fica grande no canto do topo); atributos e Mala à esquerda;
+# equipamento e arma em cima à direita; área livre embaixo à direita
+c = Canvas("OPÇÃO C4 · sem retrato (a foto fica no topo) · atributos e Mala à esquerda · equipamento, arma e área livre à direita")
+c.atributos(30, 110, 990); c.mala(30, 500, 5, 3, False)
+c.equip(1050, 64, 4, 2, NOMES); c.arma(1846, 64); c.livre(1050, 500)
+c.salvar("C4")
+
+# C5 (revisado pelo fundador): atributos e ícones menores, tudo mais bem distribuído; sem retrato; Mala horizontal
+c = Canvas("OPÇÃO C5 · atributos compactos, slots menores · arma e atributos em cima à esquerda, Mala embaixo · equipamento e área livre à direita")
+c.arma(30, 110, (240, 180)); c.atributos(300, 64, 640, 320)
+c.mala(30, 470, 5, 3, False, (172, 129))
+c.equip(980, 64, 4, 2, NOMES, (172, 129)); c.livre(980, 470)
+c.salvar("C5")
+
+# C6 (pedido do fundador): atributos embaixo do card do personagem (que sobe para o canto do topo), arma e equipamento ao lado,
+# Mala horizontal embaixo, área livre do equipamento de duelo
+c = Canvas("OPÇÃO C6 · atributos embaixo do card do personagem · arma e equipamento ao lado · Mala e área livre embaixo")
+c.atributos(30, 110, 560, 320); c.arma(630, 64, (240, 180)); c.equip(910, 64, 4, 2, NOMES, (172, 129))
+c.mala(30, 500, 5, 3, False, (172, 129)); c.livre(970, 500)
+c.salvar("C6")
 print("ok")

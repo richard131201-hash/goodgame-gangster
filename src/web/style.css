@@ -4288,26 +4288,16 @@ html[data-ficha="nova"] #app[data-tab="perfil"] .inv-slot.empty::after { color: 
 /* ================================================================================================ */
 .res-bar, .res-sub, .duel-free { display: none; }
 
-/* ---- topo: perfil pequeno no canto (foto, nível, XP), recursos no centro com a energia comprida, botões à direita ---- */
-html[data-ui="v2"] .hud-header { display: grid; grid-template-columns: minmax(16rem, 22rem) minmax(0, 1fr) auto; grid-template-rows: auto auto; column-gap: 1.2rem; row-gap: 0.5rem; height: auto; min-height: 8.2rem; align-items: center; padding: 0.7rem 1.1rem; }
-html[data-ui="v2"] .hud-player-widget { grid-column: 1; grid-row: 1 / 3; display: flex; align-items: center; gap: 0.9rem; min-width: 0; }
-html[data-ui="v2"] .hud-avatar-thumb { width: 5rem; height: 5.7rem; border-radius: 0.5rem; margin: 0; flex: 0 0 auto; }
+/* ---- topo estilo GGG: card grande no canto, nome/classe/nível/XP ao lado, recursos no centro, botões no canto direito (sem faixa de fundo) ---- */
+html[data-ui="v2"] .hud-header { position: relative; z-index: 40; display: grid; grid-template-columns: 21rem minmax(0, 1fr) auto; align-items: center; height: 4.8rem; min-height: 0; padding: 0.2rem 1.1rem; margin-bottom: 0.2rem; background: none; border: 0; box-shadow: none; }
+html[data-ui="v2"] .hud-player-widget { display: contents; }
+html[data-ui="v2"] .hud-avatar-thumb { position: absolute; left: 1.1rem; top: 0.2rem; width: 8.4rem; height: 9.2rem; margin: 0; border-radius: 0.6rem; z-index: 46; box-shadow: 0 0.3rem 0.9rem rgba(0, 0, 0, 0.55); }
 html[data-ui="v2"] .hud-avatar-thumb svg { width: 100% !important; height: 100% !important; margin: 0; }
-html[data-ui="v2"] #app[data-tab="perfil"] .hud-avatar-thumb { display: none; }
+html[data-ui="v2"] .hud-player-info { position: absolute; left: 10.2rem; top: 0.35rem; width: 19rem; z-index: 41; }
 html[data-ui="v2"] .hud-player-name { font-size: 1.6rem; }
-html[data-ui="v2"] .hud-resources { grid-column: 2; grid-row: 1 / 3; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6rem; margin: 0; width: 100%; }
-html[data-ui="v2"] .res-gold { grid-column: 1; grid-row: 1; }
-html[data-ui="v2"] .res-cash { grid-column: 2; grid-row: 1; }
-html[data-ui="v2"] .res-respect { grid-column: 3; grid-row: 1; }
-html[data-ui="v2"] .res-energy { grid-column: 1 / -1; grid-row: 2; }
-html[data-ui="v2"] .res-card { min-width: 0; }
-html[data-ui="v2"] .res-energy .res-details { flex: 1 1 auto; display: flex; flex-direction: row; align-items: center; gap: 0.9rem; min-width: 0; }
-html[data-ui="v2"] .res-energy .res-bar { display: block; order: 1; flex: 1 1 auto; height: 1.5rem; background: var(--slot); border: 0.0625rem solid var(--slot-line); border-radius: 0.4rem; overflow: hidden; }
-html[data-ui="v2"] .res-bar-fill { height: 100%; width: 100%; background: var(--good); }
-html[data-ui="v2"] .res-energy .res-val { order: 2; white-space: nowrap; }
-html[data-ui="v2"] .res-energy .res-sub { display: block; order: 3; font-size: 0.95rem; color: var(--soft); white-space: nowrap; }
-html[data-ui="v2"] .res-energy .res-label { order: 0; }
-html[data-ui="v2"] .hud-system-actions { grid-column: 3; grid-row: 1 / 3; align-self: center; }
+html[data-ui="v2"] .hud-resources { grid-column: 2; justify-self: center; display: flex; gap: 0.6rem; margin: 0; }
+html[data-ui="v2"] .hud-system-actions { grid-column: 3; align-self: center; }
+html[data-ui="v2"] .folder-tab { left: 11rem; }
 
 /* ---- barra inferior larga, com o nome embaixo de cada ícone ---- */
 html[data-ui="v2"] .shell { padding-bottom: 4.9rem; }
@@ -4319,29 +4309,32 @@ html[data-ui="v2"] .game-nav-tab::before { content: attr(data-label); position: 
 html[data-ui="v2"] .game-nav-tab[aria-selected="true"]::before { color: var(--gold-text); }
 html[data-ui="v2"] .game-nav-tab::after { display: none; }
 
-/* ---- Ficha: 3 colunas x 2 linhas, tudo em uma pasta só ---- */
+/* ---- Ficha: atributos embaixo do card do topo; arma e equipamento ao lado; Mala horizontal e área livre embaixo ---- */
 html[data-ui="v2"] #app[data-tab="perfil"] .shell { padding-top: 2rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] .stack { position: relative; display: grid; grid-template-columns: 300fr 960fr 840fr; grid-template-rows: minmax(0, 1fr) minmax(0, 1.25fr); gap: 0.9rem 1.2rem; height: 100%; align-self: stretch; padding: 1.3rem 1.5rem 1.2rem; background: var(--cover); border: 0.1rem solid var(--cover-edge); border-radius: 0 0.9rem 0.9rem 0.9rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .stack { position: relative; display: grid; grid-template-columns: 560fr 340fr 840fr; grid-template-rows: minmax(0, 350fr) minmax(0, 430fr); gap: 0.9rem 1.2rem; height: 100%; align-self: stretch; padding: 1.3rem 1.5rem 1.2rem; background: var(--cover); border: 0.1rem solid var(--cover-edge); border-radius: 0 0.9rem 0.9rem 0.9rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .stack::after { content: ""; position: absolute; inset: 0.25rem; border: 0.06rem dashed var(--stitch); border-radius: 0.65rem; pointer-events: none; opacity: 0.85; }
-html[data-ui="v2"] #app[data-tab="perfil"] .folder, html[data-ui="v2"] #app[data-tab="perfil"] .game-main-content, html[data-ui="v2"] #app[data-tab="perfil"] #view-perfil, html[data-ui="v2"] #app[data-tab="perfil"] .profile-layout-grid, html[data-ui="v2"] #app[data-tab="perfil"] .sub-folder, html[data-ui="v2"] #app[data-tab="perfil"] .sub-sheet, html[data-ui="v2"] #app[data-tab="perfil"] .sub-pane[data-pane="mala"].active, html[data-ui="v2"] #app[data-tab="perfil"] .profile-inventory-panel { display: contents; }
-html[data-ui="v2"] #app[data-tab="perfil"] .stitch-svg, html[data-ui="v2"] #app[data-tab="perfil"] .sub-tabs, html[data-ui="v2"] #app[data-tab="perfil"] .sub-pane:not([data-pane="mala"]), html[data-ui="v2"] #app[data-tab="perfil"] .inv-item-details-box { display: none !important; }
+html[data-ui="v2"] #app[data-tab="perfil"] .folder, html[data-ui="v2"] #app[data-tab="perfil"] .game-main-content, html[data-ui="v2"] #app[data-tab="perfil"] #view-perfil, html[data-ui="v2"] #app[data-tab="perfil"] .profile-layout-grid, html[data-ui="v2"] #app[data-tab="perfil"] .sub-folder, html[data-ui="v2"] #app[data-tab="perfil"] .sub-sheet, html[data-ui="v2"] #app[data-tab="perfil"] .sub-pane[data-pane="mala"].active, html[data-ui="v2"] #app[data-tab="perfil"] .profile-inventory-panel, html[data-ui="v2"] #app[data-tab="perfil"] .profile-doll-panel, html[data-ui="v2"] #app[data-tab="perfil"] .profile-paperdoll-wrapper, html[data-ui="v2"] #app[data-tab="perfil"] .profile-avatar-frame { display: contents; }
+html[data-ui="v2"] #app[data-tab="perfil"] .stitch-svg, html[data-ui="v2"] #app[data-tab="perfil"] .sub-tabs, html[data-ui="v2"] #app[data-tab="perfil"] .sub-pane:not([data-pane="mala"]), html[data-ui="v2"] #app[data-tab="perfil"] .inv-item-details-box, html[data-ui="v2"] #app[data-tab="perfil"] .doll-clip, html[data-ui="v2"] #app[data-tab="perfil"] .doll-caption, html[data-ui="v2"] #app[data-tab="perfil"] .avatar-svg-container, html[data-ui="v2"] #app[data-tab="perfil"] .avatar-weapon-holder, html[data-ui="v2"] #app[data-tab="perfil"] .profile-avatar-frame::after { display: none !important; }
 html[data-ui="v2"] #app[data-tab="perfil"] .folder-tab { z-index: 3; }
-html[data-ui="v2"] #app[data-tab="perfil"] .profile-doll-panel { grid-column: 1; grid-row: 1; min-height: 0; }
-html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact { grid-column: 2; grid-row: 1; min-height: 0; }
-html[data-ui="v2"] #app[data-tab="perfil"] .profile-gear-panel { grid-column: 3; grid-row: 1; min-height: 0; }
-html[data-ui="v2"] #app[data-tab="perfil"] .profile-weapon-panel { grid-column: 1; grid-row: 2; align-self: start; min-height: 0; }
-html[data-ui="v2"] #app[data-tab="perfil"] .inventory-slots-grid { grid-column: 2; grid-row: 2; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 0.6rem; min-height: 0; }
+/* o botão de personalizar o visual fica sobre o card grande do topo */
+html[data-ui="v2"] #app[data-tab="perfil"] .avatar-edit-btn { position: absolute; left: 7.2rem; top: 0.1rem; z-index: 60; }
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact { grid-column: 1; grid-row: 1; margin-top: 2.8rem; min-height: 0; overflow: hidden; }
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-weapon-panel { grid-column: 2; grid-row: 1; align-self: start; min-height: 0; overflow: hidden; }
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-gear-panel { grid-column: 3; grid-row: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+html[data-ui="v2"] #app[data-tab="perfil"] .equipped-slots-grid { flex: 1 1 auto; min-height: 0; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, minmax(0, 1fr)); }
+html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot { min-height: 0; height: auto; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inventory-slots-grid { grid-column: 1 / 3; grid-row: 2; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 0.6rem; min-height: 0; }
 html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot { aspect-ratio: auto; width: auto; height: auto; }
 html[data-ui="v2"] #app[data-tab="perfil"] .duel-free { grid-column: 3; grid-row: 2; display: flex; flex-direction: column; justify-content: center; gap: 0.6rem; padding: 1.4rem; min-height: 0; text-align: center; background: repeating-linear-gradient(135deg, transparent 0 0.7rem, rgba(255, 255, 255, 0.03) 0.7rem 1.4rem), var(--paper-2); border: 0.15rem dashed var(--slot-line); border-radius: 0.6rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .duel-free h3 { margin: 0; font-family: var(--font-type); font-weight: 400; font-size: 1.5rem; color: var(--gold-text); }
 html[data-ui="v2"] #app[data-tab="perfil"] .duel-free p { margin: 0; font-size: 1.05rem; color: var(--soft); }
-/* atributos largos: linhas altas, fonte maior */
-html[data-ui="v2"] #app[data-tab="perfil"] .attr-compact-list { display: grid; grid-template-rows: repeat(4, minmax(0, 1fr)); height: calc(100% - 2.6rem); }
-html[data-ui="v2"] #app[data-tab="perfil"] .attr-c-row { height: auto; grid-template-columns: 1fr 10rem 1rem 3.6rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] .attr-c-name { font-size: 1.25rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] .attr-c-pts { font-size: 1.8rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] .btn-attr-plus { width: 3.6rem; height: 2rem; font-size: 1.5rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] .profile-gear-panel { display: flex; flex-direction: column; overflow: hidden; }
-html[data-ui="v2"] #app[data-tab="perfil"] .equipped-slots-grid { flex: 1 1 auto; min-height: 0; grid-template-rows: repeat(2, minmax(0, 1fr)); }
-html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot { min-height: 0; height: auto; }
-html[data-ui="v2"] #app[data-tab="perfil"] .profile-doll-panel, html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact, html[data-ui="v2"] #app[data-tab="perfil"] .profile-weapon-panel { overflow: hidden; }
+/* atributos compactos */
+html[data-ui="v2"] #app[data-tab="perfil"] .attr-compact-list { display: grid; grid-template-rows: repeat(4, minmax(0, 1fr)); height: calc(100% - 2.4rem); }
+html[data-ui="v2"] #app[data-tab="perfil"] .attr-c-row { height: auto; grid-template-columns: 1fr 7rem 1rem 3rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .attr-c-name { font-size: 1.1rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .attr-c-pts { font-size: 1.5rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .btn-attr-plus { width: 3rem; height: 1.7rem; font-size: 1.3rem; }
+html[data-ui="v2"] .shell { isolation: auto; }
+html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot { padding: 0.2rem; gap: 0.1rem; aspect-ratio: auto; }
+html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot .gear-ico { width: 2.5rem; height: 2.5rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot .slot-badge { font-size: 0.62rem; }
