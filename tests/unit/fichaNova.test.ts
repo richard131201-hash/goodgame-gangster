@@ -136,7 +136,7 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
   });
 
   it('cash com espaço para 99.999.999, nome em papel atrás do card e carimbo inclinado para baixo (R-UI-6)', () => {
-    expect(css).toMatch(/html\[data-ui="v2"\] \.res-card\.res-cash \{ min-width: 15rem; \}/);
+    expect(css).toMatch(/html\[data-ui="v2"\] \.res-card\.res-cash \{ min-width: 12\.5rem; \}/);
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-player-info \{ left: 15\.9rem; top: 8\.8rem; width: 16\.2rem; height: 6\.5rem;[^}]*background: linear-gradient\(#cdb98c, #b9a276\);/);
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.folder-stamp \{ transform: rotate\(9deg\); top: 1rem; right: 1\.6rem; \}/);
   });
@@ -158,5 +158,17 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(main).toContain("'Sem família'");
     expect(css).toMatch(/\.hud-family-tab \{ display: none; \}/);
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-family-tab \{ display: block; position: absolute; left: 1\.2rem; top: -1\.5rem;/);
+  });
+
+  it('controle único de botões do topo, ouro maior e Ficha sem fundo marrom (R-UI-9)', () => {
+    const html = readFileSync('index.html', 'utf8');
+    expect(html).toMatch(/<div class="hud-system-actions">(?:\s*<button[^>]*class="hud-btn-icon[^"]*"[^>]*>[\s\S]*?<\/button>){4}\s*<\/div>/);
+    expect(html).not.toContain('hud-btn-outline');
+    expect(css).toMatch(/html\[data-ui="v2"\] \.hud-system-actions \{ gap: 0; padding: 0\.25rem; background: var\(--paper-2\);/);
+    expect(css).toMatch(/html\[data-ui="v2"\] \.hud-system-actions \.hud-btn-icon \{ width: 2\.4rem; height: 2\.4rem;/);
+    expect(css).toMatch(/html\[data-ui="v2"\] \.res-card\.res-gold \{ min-width: 10\.5rem;/);
+    // metades iguais (30 + 14 + 1,2 = 45,2) e sem fundo/borda/costura da pasta na Ficha
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.stack \{ grid-template-columns: 30rem 14rem 45\.2rem; background: none; border: 0; border-radius: 0; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.stack::after \{ display: none; \}/);
   });
 });
