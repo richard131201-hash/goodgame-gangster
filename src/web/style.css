@@ -4531,3 +4531,9 @@ html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.locked:not(.locked-soon):ho
 html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.locked:not(.locked-soon):hover::before, html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.locked:not(.locked-soon):focus-visible::before { opacity: 1; filter: drop-shadow(0 0 0.35rem rgba(212, 175, 55, 0.9)); animation: lock-pop 0.35s ease-out; }
 @keyframes lock-pop { 0% { transform: scale(0.9) rotate(-4deg); } 60% { transform: scale(1.1) rotate(3deg); } 100% { transform: scale(1) rotate(0); } }
 @media (prefers-reduced-motion: reduce) { html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.locked:not(.locked-soon):hover::before { animation: none; } }
+
+/* Mala maior (R-UI-18): cresce em proporção até perto da barra de abas; o espaço vem da área de duelo (direita). --ms é a escala sobre o tamanho base (45,2 rem). */
+html[data-ui="v2"] #app[data-tab="perfil"] .inventory-slots-grid { --ms: 1.09; width: calc(100% + 4.07rem); padding: calc(2.6rem * var(--ms)) calc(3.36rem * var(--ms)) calc(1.42rem * var(--ms)) calc(1.29rem * var(--ms)); column-gap: calc(0.34rem * var(--ms)); row-gap: calc(0.34rem * var(--ms)); }
+html[data-ui="v2"] #app[data-tab="perfil"] .inventory-slots-grid::before { top: calc(0.8rem * var(--ms)); left: calc(1.35rem * var(--ms)); }
+html[data-ui="v2"] #app[data-tab="perfil"] .duel-free { width: calc(100% - 4.07rem); justify-self: end; }
+html[data-ui="v2"] #app[data-tab="perfil"] .stack { align-content: start; padding-top: 1.97rem; }

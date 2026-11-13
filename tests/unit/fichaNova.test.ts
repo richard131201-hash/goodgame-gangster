@@ -229,4 +229,10 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/\.inv-slot\.empty::after \{ display: none; \}/);
     expect(css).toContain('@keyframes lock-pop');
   });
+
+  it('Mala maior, em proporção, até perto da barra de abas; a área de duelo cede o espaço (R-UI-18)', () => {
+    expect(css).toMatch(/\.inventory-slots-grid \{ --ms: 1\.09; width: calc\(100% \+ 4\.07rem\);/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.duel-free \{ width: calc\(100% - 4\.07rem\); justify-self: end; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.stack \{ align-content: start; padding-top: 1\.97rem; \}/);
+  });
 });
