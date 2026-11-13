@@ -481,6 +481,15 @@ document.getElementById('skin-toggle-btn')?.addEventListener('click', () => {
   toggleSkin();
 });
 
+// CONVIDAR AMIGO: por enquanto só copia o link do jogo (sem recompensa; a regra de convite ainda não existe)
+document.getElementById('invite-friend-btn')?.addEventListener('click', () => {
+  const link = window.location.origin;
+  const done = () => void notify({ kind: 'info', title: 'Convite', message: `Link do jogo copiado! Envie para seus amigos: ${link}` });
+  const fallback = () => void notify({ kind: 'info', title: 'Convite', message: `Envie este link para seus amigos: ${link}` });
+  if (navigator.clipboard?.writeText) navigator.clipboard.writeText(link).then(done, fallback);
+  else fallback();
+});
+
 // NEW CHARACTER BUTTON
 document.getElementById('new-character-btn')?.addEventListener('click', () => {
   if (syncEnabled()) {
