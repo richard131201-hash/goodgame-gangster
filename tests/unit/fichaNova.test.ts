@@ -56,7 +56,7 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/html\[data-ui="v2"\] \.hud-player-info \{ position: absolute; left: 10\.2rem;/);
     expect(css).toMatch(/html\[data-ui="v2"\] \.hud-resources \{ grid-column: 2; justify-self: center;/);
     // Ficha: 3 colunas (atributos | arma | equipamento) e Mala horizontal + área livre; sem abas nem detalhes do item
-    expect(css).toMatch(/html\[data-ui="v2"\] #app\[data-tab="perfil"\] \.stack \{[^}]*grid-template-columns: 560fr 340fr 840fr;/);
+    expect(css).toMatch(/html\[data-ui="v2"\] #app\[data-tab="perfil"\] \.stack \{[^}]*grid-template-columns: 560fr 340fr 840fr 320fr;/);
     expect(css).toMatch(/\.sub-tabs, [^{]*\.inv-item-details-box[^{]*\{ display: none !important; \}/);
     expect(css).toMatch(/\.profile-stats-panel\.compact \{ grid-column: 1; grid-row: 1; margin-top: 2\.8rem;/);
     expect(css).toMatch(/\.profile-weapon-panel \{ grid-column: 2; grid-row: 1;/);
@@ -66,5 +66,10 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/\.avatar-edit-btn \{ position: absolute;/);
     expect(main).toContain("setProperty('--xp'");
     expect(main).toContain("getElementById('hud-energy-fill')");
+  });
+
+  it('tamanho (R-UI-3): no Estilo 2 o jogo todo fica menor em proporção (zoom) e o palco se alarga na mesma medida', () => {
+    expect(css).toMatch(/html\[data-ui="v2"\] #app \{ zoom: 0\.86; max-width: calc\(104\.5rem \/ 0\.86\); height: calc\(var\(--stage-w\) \* 9 \/ 16 \/ 0\.86\); \}/);
+    expect(css).toContain('grid-template-columns: 560fr 340fr 840fr 320fr;');
   });
 });
