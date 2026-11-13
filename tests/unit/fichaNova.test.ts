@@ -70,6 +70,14 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
 
   it('tamanho (R-UI-3): no Estilo 2 o jogo todo fica menor em proporção (zoom) e o palco se alarga na mesma medida', () => {
     expect(css).toMatch(/html\[data-ui="v2"\] #app \{ zoom: 0\.86; max-width: calc\(104\.5rem \/ 0\.86\); height: calc\(var\(--stage-w\) \* 9 \/ 16 \/ 0\.86\); \}/);
-    expect(css).toContain('grid-template-columns: 560fr 340fr 840fr 320fr;');
+  });
+
+  it('simetria (R-UI-4): coluna central de 100 rem, conteúdo da Ficha centralizado com slots menores, card maior na Ficha', () => {
+    expect(css).toMatch(/html\[data-ui="v2"\] \.hud-header, html\[data-ui="v2"\] \.shell \{ width: 100%; max-width: 100rem; margin-left: auto; margin-right: auto; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-avatar-thumb \{ width: 11\.2rem; height: 12\.6rem; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.stack \{ grid-template-columns: 30rem 14rem 36rem; grid-template-rows: auto auto; justify-content: center;/);
+    expect(css).toMatch(/\.profile-stats-panel\.compact \{ margin-top: 6\.2rem; height: 14\.4rem; \}/);
+    expect(css).toMatch(/\.equipped-slots-grid \{[^}]*grid-auto-rows: 6\.6rem;/);
+    expect(css).toMatch(/\.inventory-slots-grid \{[^}]*grid-auto-rows: 6\.6rem;/);
   });
 });
