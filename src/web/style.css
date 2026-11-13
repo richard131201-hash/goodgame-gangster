@@ -4344,12 +4344,12 @@ html[data-ui="v2"] #app { zoom: 0.86; max-width: calc(104.5rem / 0.86); height: 
 
 /* ---- SIMETRIA (R-UI-4): coluna central de 100 rem (topo, pasta e barra alinhados); na Ficha o conteúdo é centralizado na pasta, com slots menores ---- */
 html[data-ui="v2"] .hud-header, html[data-ui="v2"] .shell { width: 100%; max-width: 100rem; margin-left: auto; margin-right: auto; }
-html[data-ui="v2"] #app[data-tab="perfil"] .hud-avatar-thumb { width: 11.2rem; height: 12.6rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] .hud-player-info { left: 12.5rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] .folder-tab { left: 13.6rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] .avatar-edit-btn { left: 9.7rem; top: 3.2rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .hud-avatar-thumb { width: 13.5rem; height: 15.2rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .hud-player-info { left: 15.9rem; top: 8.6rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .folder-tab { left: 15.9rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .avatar-edit-btn { left: 12.1rem; top: 5.9rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .stack { grid-template-columns: 30rem 14rem 36rem; grid-template-rows: auto auto; justify-content: center; align-content: center; column-gap: 1.2rem; row-gap: 0.9rem; padding: 1.4rem 1.5rem 1.2rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact { margin-top: 6.2rem; height: auto; align-self: start; padding: 0 0.7rem; position: relative; overflow: visible; display: flex; flex-direction: column; justify-content: center; }
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact { margin-top: 0; height: auto; align-self: end; padding: 0 0.7rem; position: relative; overflow: visible; display: flex; flex-direction: column; justify-content: center; }
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-weapon-panel { width: 14rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-gear-panel { height: auto; overflow: visible; }
 html[data-ui="v2"] #app[data-tab="perfil"] .equipped-slots-grid { flex: 0 0 auto; grid-template-columns: repeat(4, 1fr); grid-template-rows: none; grid-auto-rows: 6.6rem; gap: 0.8rem; }
