@@ -87,9 +87,9 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(html).toMatch(/<div class="profile-weapon-panel">\s*<div class="defense-crest" id="defense-crest"/);
     expect(html).toContain('id="defense-val"');
     expect(css).toMatch(/\.defense-crest, \.inv-slot\.locked-soon \{ display: none; \}/);
-    expect(css).toMatch(/#app\[data-tab="perfil"\] \.defense-crest \{ position: relative; display: block; box-sizing: border-box; width: 100%; height: 6\.6rem;/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.defense-crest \{ position: relative; display: grid; grid-template-columns: 1fr 1fr; box-sizing: border-box; width: 100%; height: 6\.6rem;/);
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.inv-slot\.locked-soon \{ display: flex;/);
-    expect(css).toMatch(/#app\[data-tab="perfil"\] \.duel-free \{ height: 30\.6rem; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.duel-free \{ height: 31\.8rem; \}/);
     // a 4ª fileira é só desenho: o clique de compra não vale para ela
     expect(main).toContain('const BAG_DISPLAY_SLOTS = 20;');
     expect(main).toContain(".inv-slot.locked:not(.locked-soon)");
@@ -111,5 +111,14 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
 
   it('títulos padronizados (Arma, Equipamento, Mala): mesma fonte, tamanho, espaçamento e fio pontilhado', () => {
     expect(css).toMatch(/\.inventory-slots-grid::before \{[^}]*border-bottom: 0\.0723rem dotted var\(--line\);[^}]*font-size: 1\.1rem;[^}]*letter-spacing: 0\.05rem; text-transform: uppercase;/);
+  });
+
+  it('brasão em 2 metades (classe | defesa) e a Mala em painel igual ao do Equipamento', () => {
+    const html = readFileSync('index.html', 'utf8');
+    expect(html).toContain('id="class-icon-use"');
+    for (const c of ['carrasco', 'malandro', 'muralha']) expect(html).toContain(`id="cls-${c}"`);
+    expect(css).toMatch(/\.crest-class \{ border-right: 0\.0723rem dotted var\(--line\);/);
+    expect(css).toMatch(/\.inventory-slots-grid \{ box-sizing: border-box; padding: 0\.5rem 0\.9rem; background: var\(--paper-2\); border: 0\.0723rem solid var\(--line\);/);
+    expect(main).toContain("getElementById('class-icon-use')");
   });
 });

@@ -49,6 +49,9 @@
       <symbol id="g-pet" viewBox="0 0 24 24"><path d="M4 11l2.5-6 3.5 3h4l3.5-3L20 11v5a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4zM9 12h.01M15 12h.01M10 16h4"/></symbol>
       <symbol id="g-relicia" viewBox="0 0 24 24"><circle cx="12" cy="15" r="5.5"/><path d="M9.5 7.5L12 3.5l2.5 4-2.5 2z"/></symbol>
       <symbol id="g-veiculo" viewBox="0 0 24 24"><path d="M2.5 16l1.8-6.5h15.4L21.5 16v3h-19zM6 10l1.5-3.5h9L18 10"/><circle cx="7" cy="19" r="1.8"/><circle cx="17" cy="19" r="1.8"/></symbol>
+      <symbol id="cls-carrasco" viewBox="0 0 24 24"><path d="M5 21 15 8M12 4c3-1.500 6-.500 8 2.500-2.500-.500-4.500.500-6 2.500z"/></symbol>
+      <symbol id="cls-malandro" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="9" cy="15" r="1"/><circle cx="15" cy="15" r="1"/></symbol>
+      <symbol id="cls-muralha" viewBox="0 0 24 24"><path d="M5 21V9l2-1V5h3v2h4V5h3v3l2 1v12zM10 21v-5h4v5"/></symbol>
     </defs>
   </svg>
 
@@ -202,10 +205,16 @@
 
           <!-- ARMA -->
           <div class="profile-weapon-panel">
-            <div class="defense-crest" id="defense-crest" title="Defesa: reduz o dano recebido (valor provisório; a regra ainda será definida)">
-              <svg viewBox="0 0 62 72" aria-hidden="true"><path d="M31 2 4 10v26c0 17 11 27 27 34 16-7 27-17 27-34V10z" /><path class="dc-in" d="M31 8 9 14.500v21C9 49 18 57 31 63c13-6 22-14 22-27.500v-21z" /></svg>
-              <span class="dc-val" id="defense-val">10%</span>
-              <span class="dc-lbl">DEFESA</span>
+            <div class="defense-crest" id="defense-crest">
+              <div class="crest-half crest-class" id="crest-class" title="Classe do personagem">
+                <svg class="cc-ico" viewBox="0 0 24 24" aria-hidden="true"><use id="class-icon-use" href="#cls-malandro"/></svg>
+                <span class="cc-lbl" id="class-icon-lbl">MALANDRO</span>
+              </div>
+              <div class="crest-half crest-def" title="Defesa: reduz o dano recebido (valor provisório; a regra ainda será definida)">
+                <svg viewBox="0 0 62 72" aria-hidden="true"><path d="M31 2 4 10v26c0 17 11 27 27 34 16-7 27-17 27-34V10z" /><path class="dc-in" d="M31 8 9 14.500v21C9 49 18 57 31 63c13-6 22-14 22-27.500v-21z" /></svg>
+                <span class="dc-val" id="defense-val">10%</span>
+                <span class="dc-lbl">DEFESA</span>
+              </div>
             </div>
             <div class="weapon-box">
               <div class="panel-header-banner"><h3>Arma</h3></div>
