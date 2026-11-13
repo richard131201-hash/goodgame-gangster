@@ -203,7 +203,7 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-avatar-thumb \{ box-sizing: border-box; padding: 1\.7rem 1\.5rem 3\.3rem 2\.1rem;/);
     expect(css).toMatch(/\.hud-player-info::before \{ left: 0; right: 0; top: -1\.9rem; bottom: 0; background-image: url\("\/assets\/ficha\/a-nota\.webp"\); \}/);
     expect(css).toMatch(/\.defense-crest::before \{ inset: 0; background-image: url\("\/assets\/ficha\/a-placa\.webp"\); \}/);
-    expect(css).toMatch(/\.weapon-box \{ position: relative; padding: 0; background: none; border: 0; border-radius: 0; aspect-ratio: 588 \/ 522; \}/);
+    expect(css).toMatch(/\.weapon-box \{ position: relative; padding: 0; background: none; border: 0; border-radius: 0; aspect-ratio: 1840 \/ 1709; \}/);
     expect(css).toMatch(/\.profile-stats-panel\.compact \{ aspect-ratio: 1262 \/ 426; background: none; border: 0; padding: 0; \}/);
   });
 
@@ -247,5 +247,13 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.inventory-slots-grid \{ grid-template-columns: repeat\(5, minmax\(0, 1fr\)\); grid-template-rows: repeat\(4, minmax\(0, 1fr\)\); \}/);
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.inv-slot > \.inv-art, [^{]*\.inv-slot > img \{ width: 100%; height: 100%;/);
     expect(css).not.toMatch(/\.inv-slot\[data-inv-idx\]:hover > \*/);
+  });
+
+  it('folha da Arma com a pistola de placeholder, que some com arma equipada (R-UI-19)', () => {
+    for (const n of ['a-arma', 'a-arma-vazia']) expect(existsSync(`public/assets/ficha/${n}.webp`)).toBe(true);
+    expect(css).toMatch(/\.weapon-box \{ position: relative; padding: 0; background: none; border: 0; border-radius: 0; aspect-ratio: 1840 \/ 1709; \}/);
+    expect(css).toMatch(/\.weapon-box \.weapon-slot \{ position: absolute; left: 7\.17%; right: 7\.17%; top: 15\.68%; bottom: 9\.6%;/);
+    expect(css).toMatch(/\.weapon-slot-art\.empty-weapon \{ background: url\("\/assets\/ficha\/a-arma-vazia\.webp"\) 51% 40\.7% \/ 68\.02% 56\.3% no-repeat;/);
+    expect(css).toMatch(/\.weapon-slot-art\.empty-weapon > \* \{ display: none; \}/);
   });
 });

@@ -4477,11 +4477,11 @@ html[data-ui="v2"] #app[data-tab="perfil"] .cc-lbl, html[data-ui="v2"] #app[data
 html[data-ui="v2"] #app[data-tab="perfil"] .crest-def .dc-val { top: 2.1rem; color: #3a2a14; }
 html[data-ui="v2"] #app[data-tab="perfil"] .crest-def .dc-lbl { top: 4.1rem; }
 /* arma: o lugar do item é a moldura de tinta da folha */
-html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box { position: relative; padding: 0; background: none; border: 0; border-radius: 0; aspect-ratio: 588 / 522; }
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box { position: relative; padding: 0; background: none; border: 0; border-radius: 0; aspect-ratio: 1840 / 1709; }
 html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box::before { inset: 0; background-image: url("/assets/ficha/a-arma.webp"); }
 html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box .panel-header-banner { position: absolute; top: 0.55rem; left: 1rem; margin: 0; padding: 0; border: 0; }
 html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box .panel-header-banner h3 { color: #3a2a14; }
-html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box .weapon-slot { position: absolute; left: 9%; right: 6%; top: 20%; bottom: 7%; width: auto; height: auto; aspect-ratio: auto; background: none; border: 0; outline: 0; }
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box .weapon-slot { position: absolute; left: 7.17%; right: 7.17%; top: 15.68%; bottom: 9.6%; width: auto; height: auto; aspect-ratio: auto; background: none; border: 0; outline: 0; }
 /* atributos: cartão rígido com 4 linhas; o + fica dentro do contorno desenhado */
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact { aspect-ratio: 1262 / 426; background: none; border: 0; padding: 0; }
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact::before { inset: 0; background-image: url("/assets/ficha/a-cartao.webp"); }
@@ -4546,3 +4546,9 @@ html[data-ui="v2"] #app[data-tab="perfil"] .stack { align-content: start; paddin
 html[data-ui="v2"] #app[data-tab="perfil"] .inventory-slots-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: repeat(4, minmax(0, 1fr)); }
 html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot { min-width: 0; min-height: 0; box-sizing: border-box; align-items: center; justify-content: center; }
 html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot > .inv-art, html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot > img { width: 100%; height: 100%; max-width: 100%; max-height: 100%; margin: 0; object-fit: contain; }
+
+/* placeholder da arma: pistola desenhada (sprite) no miolo da moldura; some quando há arma equipada (R-UI-19) */
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-slot-body { width: 100%; height: 100%; display: block; }
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-slot-art { flex: none; width: 100%; height: 100%; }
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-slot-art.empty-weapon { background: url("/assets/ficha/a-arma-vazia.webp") 51% 40.7% / 68.02% 56.3% no-repeat; opacity: 1; }
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-slot-art.empty-weapon > * { display: none; }
