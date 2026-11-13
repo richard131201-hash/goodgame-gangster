@@ -206,4 +206,11 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/\.weapon-box \{ position: relative; padding: 0; background: none; border: 0; border-radius: 0; aspect-ratio: 588 \/ 522; \}/);
     expect(css).toMatch(/\.profile-stats-panel\.compact \{ aspect-ratio: 1262 \/ 426; background: none; border: 0; padding: 0; \}/);
   });
+
+  it('seção B (equipamento) com a folha de 8 molduras e o desenho fantasma de cada item (R-UI-17)', () => {
+    expect(existsSync('public/assets/ficha/b-equipamento.webp')).toBe(true);
+    expect(css).toMatch(/\.profile-gear-panel::before \{ content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: url\("\/assets\/ficha\/b-equipamento\.webp"\) 0 0 \/ 100% 100% no-repeat;/);
+    expect(css).toMatch(/\.equipped-slots-grid \{ position: absolute; left: 2\.5%; right: 2\.25%; top: 11\.1%; bottom: 4\.9%; display: grid; grid-template-columns: repeat\(4, 1fr\); grid-template-rows: 40\.4fr 39fr; column-gap: 2\.35%; row-gap: 4\.6%; \}/);
+    expect(css).toMatch(/\.gear-slot \.gear-ico\.ghost \{ display: none; \}/);
+  });
 });
