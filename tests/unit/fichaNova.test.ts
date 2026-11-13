@@ -214,4 +214,10 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/\.gear-slot \.gear-ico\.ghost \{ display: none; \}/);
     expect(css).toMatch(/\.gear-slot \.slot-badge \{ display: none; \}/);
   });
+
+  it('equipamento na proporção exata da folha e mais respiro para a seção de baixo (R-UI-17)', () => {
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.profile-gear-panel \{ aspect-ratio: 2000 \/ 927; align-self: start; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.profile-weapon-panel \{ align-self: stretch; justify-content: space-between; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.stack \{ row-gap: 1\.3rem; \}/);
+  });
 });

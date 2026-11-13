@@ -4507,3 +4507,7 @@ html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot.filled { border: 0; }
 html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot.filled::before { content: ""; position: absolute; inset: 9% 8%; background: #efe2c4; }
 html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot.filled > * { position: relative; }
 html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot.filled .gear-ico { color: #5b4524; }
+/* Equipamento na proporção exata da folha (sem esticar): fica um pouco mais alto, com a coluna da arma se distribuindo e mais respiro para a seção de baixo */
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-gear-panel { aspect-ratio: 2000 / 927; align-self: start; }
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-weapon-panel { align-self: stretch; justify-content: space-between; }
+html[data-ui="v2"] #app[data-tab="perfil"] .stack { row-gap: 1.3rem; }
