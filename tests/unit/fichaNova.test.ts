@@ -34,4 +34,11 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/\.gear-slot\.filled::before \{[^}]*slot-vazio\.webp/);
     expect(css).toMatch(/\.inv-slot:nth-child\(n\+11\):not\(\.locked\)::before \{[^}]*slot-vazio\.webp/);
   });
+
+  it('atributos: a seta fica no lugar (invisível) para o jogo alternar valor e efeito; o clipe e o VAZIO voltam', () => {
+    expect(css).toMatch(/\.attr-c-arrow \{ display: block; visibility: hidden; position: absolute;/);
+    expect(css).not.toMatch(/\.attr-c-arrow[^{]*\{[^}]*display: none/);
+    expect(css).toMatch(/\.doll-clip \{ display: block; position: absolute;[^}]*z-index: 7;/);
+    expect(css).toMatch(/\.inv-slot\.empty::after \{ color: #6b4a22;/);
+  });
 });
