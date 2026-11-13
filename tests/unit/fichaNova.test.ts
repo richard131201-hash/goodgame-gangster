@@ -157,7 +157,7 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(main).toContain("getElementById('hud-family')");
     expect(main).toContain("'Sem família'");
     expect(css).toMatch(/\.hud-family-tab \{ display: none; \}/);
-    expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-family-tab \{ display: block; position: absolute; left: 1\.2rem; top: -1\.5rem;/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-family-tab \{ display: block; position: absolute; left: 3\.2rem; top: -2rem; box-sizing: border-box; min-width: 10rem;/);
   });
 
   it('controle único de botões do topo, ouro maior e Ficha sem fundo marrom (R-UI-9)', () => {

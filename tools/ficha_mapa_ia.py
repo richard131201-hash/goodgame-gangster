@@ -10,7 +10,7 @@ S = 1  # já em alta resolução
 # (x%, y%, w%, h%) medidos no jogo
 CARD = (12.39, 3.51, 11.36, 23.41)
 PAPER = (21.89, 14.13, 13.42, 9.92)
-FAMTAB = (22.86, 12.17, 4.90, 2.35)
+FAMTAB = (24.52, 11.20, 8.20, 2.93)
 STATS = (12.31, 29.07, 24.69, 13.64)
 ROWS_Y = [29.16, 32.52, 35.89, 39.25]
 ROW_H = 3.36
@@ -107,9 +107,10 @@ def colored():
         if sub:
             d.text(((x0 + x1) / 2, (y0 + y1) / 2), sub, font=font(size), fill=outline, anchor="mm")
 
-    box(CARD, "#4aa3ff", "#12263c", "1 RETRATO (foto do avatar, quadro de madeira)", sub="vazio")
+    # o papel do nome e a aba da família ficam ATRÁS do retrato (o retrato cobre a ponta esquerda deles)
     box(FAMTAB, "#e0b84a", "#3a2a14", None, width=4)
-    box(PAPER, "#e8d9a8", "#3a3220", "2 PAPEL do nome (nota de papel)", size=22)
+    box(PAPER, "#e8d9a8", "#3a3220", "2 PAPEL do nome (nota de papel, ATRAS do retrato)", size=22)
+    box(CARD, "#4aa3ff", "#12263c", "1 RETRATO (por CIMA do papel do nome)", sub="vazio")
     box(STATS, "#3ddc84", "#12281c", None)
     names = ["Ataque", "Vida", "Astucia", "Tenacidade"]
     for n, y in zip(names, ROWS_Y):

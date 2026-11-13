@@ -4430,7 +4430,7 @@ html[data-ui="v2"] .hud-xp-text { left: calc(50% + 0.45rem); }
 
 /* ---- Aba da família no topo do papel do nome (R-UI-8) ---- */
 .hud-family-tab { display: none; }
-html[data-ui="v2"] #app[data-tab="perfil"] .hud-family-tab { display: block; position: absolute; left: 1.2rem; top: -1.5rem; box-sizing: border-box; max-width: calc(100% - 2.4rem); height: 1.5rem; padding: 0 0.8rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; background: #5b4524; color: #f1e3bd; font: 700 0.8rem/1.5rem var(--font-sans); letter-spacing: 0.04rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .hud-family-tab { display: block; position: absolute; left: 3.2rem; top: -2rem; box-sizing: border-box; min-width: 10rem; max-width: calc(100% - 3.8rem); height: 2rem; padding: 0 1rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: center; background: #5b4524; color: #f1e3bd; font: 700 0.95rem/2rem var(--font-sans); letter-spacing: 0.04rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .hud-family-tab.no-family { background: #4a3a20; color: #b8a67e; font-weight: 400; }
 
 /* ---- Ouro um pouco maior; controle único de botões; Ficha sem fundo marrom (R-UI-9) ---- */
