@@ -75,7 +75,7 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
   it('simetria (R-UI-4): coluna central de 100 rem, conteúdo da Ficha centralizado com slots menores, card maior na Ficha', () => {
     expect(css).toMatch(/html\[data-ui="v2"\] \.hud-header, html\[data-ui="v2"\] \.shell \{ width: 100%; max-width: 100rem; margin-left: auto; margin-right: auto; \}/);
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-avatar-thumb \{ left: 8\.8rem; top: 1\.4rem; width: 13\.8rem; height: 16rem; \}/);
-    expect(css).toMatch(/#app\[data-tab="perfil"\] \.stack \{ grid-template-columns: 30rem 14rem 36rem; grid-template-rows: auto auto; justify-content: center;/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.stack \{ grid-template-columns: 30rem 14rem 36rem; grid-template-rows: max-content max-content; justify-content: center;/);
     expect(css).toMatch(/\.profile-stats-panel\.compact \{ margin-top: 0; height: auto; align-self: end; padding: 0 0\.7rem;/);
     expect(css).toMatch(/\.attr-compact-list \{ height: auto; grid-template-rows: repeat\(4, 2\.3rem\); \}/);
     expect(css).toMatch(/\.equipped-slots-grid \{[^}]*grid-auto-rows: 6\.6rem;/);
@@ -97,8 +97,8 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
 
   it('Ficha: card maior; nome, nível e XP ao lado do card, dentro da pasta; atributos descem até perto da Mala', () => {
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-player-info \{ left: 25rem; top: 11\.4rem; \}/);
-    expect(css).toMatch(/#app\[data-tab="perfil"\] \.folder-tab \{ left: 23\.6rem; \}/);
-    expect(css).toMatch(/#app\[data-tab="perfil"\] \.avatar-edit-btn \{ left: 20\.1rem; top: 7\.9rem; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.folder-tab \{ display: none; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.avatar-edit-btn \{ left: 20\.1rem; top: 9\.3rem; \}/);
   });
 
   it('Mala com título, brasão em caixa própria acima da arma (R-UI-5)', () => {
@@ -120,5 +120,10 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/\.crest-class \{ border-right: 0\.0723rem dotted var\(--line\);/);
     expect(css).toMatch(/\.inventory-slots-grid \{ box-sizing: border-box; padding: 0\.5rem 0\.9rem; background: var\(--paper-2\); border: 0\.0723rem solid var\(--line\);/);
     expect(main).toContain("getElementById('class-icon-use')");
+  });
+
+  it('Ficha sem o título da pasta (layout sobe) e título da Arma com respiro menor', () => {
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.shell \{ padding-top: 0\.6rem; \}/);
+    expect(css).toMatch(/\.weapon-box \.panel-header-banner \{ padding-bottom: 0\.2rem; margin-bottom: 0\.4rem; \}/);
   });
 });

@@ -4310,7 +4310,7 @@ html[data-ui="v2"] .game-nav-tab[aria-selected="true"]::before { color: var(--go
 html[data-ui="v2"] .game-nav-tab::after { display: none; }
 
 /* ---- Ficha: atributos embaixo do card do topo; arma e equipamento ao lado; Mala horizontal e área livre embaixo ---- */
-html[data-ui="v2"] #app[data-tab="perfil"] .shell { padding-top: 2rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .shell { padding-top: 0.6rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .stack { position: relative; display: grid; grid-template-columns: 560fr 340fr 840fr 320fr; grid-template-rows: minmax(0, 350fr) minmax(0, 430fr); gap: 0.9rem 1.2rem; height: 100%; align-self: stretch; padding: 1.3rem 1.5rem 1.2rem; background: var(--cover); border: 0.1rem solid var(--cover-edge); border-radius: 0 0.9rem 0.9rem 0.9rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .stack::after { content: ""; position: absolute; inset: 0.25rem; border: 0.06rem dashed var(--stitch); border-radius: 0.65rem; pointer-events: none; opacity: 0.85; }
 html[data-ui="v2"] #app[data-tab="perfil"] .folder, html[data-ui="v2"] #app[data-tab="perfil"] .game-main-content, html[data-ui="v2"] #app[data-tab="perfil"] #view-perfil, html[data-ui="v2"] #app[data-tab="perfil"] .profile-layout-grid, html[data-ui="v2"] #app[data-tab="perfil"] .sub-folder, html[data-ui="v2"] #app[data-tab="perfil"] .sub-sheet, html[data-ui="v2"] #app[data-tab="perfil"] .sub-pane[data-pane="mala"].active, html[data-ui="v2"] #app[data-tab="perfil"] .profile-inventory-panel, html[data-ui="v2"] #app[data-tab="perfil"] .profile-doll-panel, html[data-ui="v2"] #app[data-tab="perfil"] .profile-paperdoll-wrapper, html[data-ui="v2"] #app[data-tab="perfil"] .profile-avatar-frame { display: contents; }
@@ -4346,9 +4346,9 @@ html[data-ui="v2"] #app { zoom: 0.86; max-width: calc(104.5rem / 0.86); height: 
 html[data-ui="v2"] .hud-header, html[data-ui="v2"] .shell { width: 100%; max-width: 100rem; margin-left: auto; margin-right: auto; }
 html[data-ui="v2"] #app[data-tab="perfil"] .hud-avatar-thumb { left: 8.8rem; top: 1.4rem; width: 13.8rem; height: 16rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .hud-player-info { left: 25rem; top: 11.4rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] .folder-tab { left: 23.6rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] .avatar-edit-btn { left: 20.1rem; top: 7.9rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] .stack { grid-template-columns: 30rem 14rem 36rem; grid-template-rows: auto auto; justify-content: center; align-content: center; column-gap: 1.2rem; row-gap: 0.9rem; padding: 1.4rem 1.5rem 1.2rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .folder-tab { display: none; }
+html[data-ui="v2"] #app[data-tab="perfil"] .avatar-edit-btn { left: 20.1rem; top: 9.3rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .stack { grid-template-columns: 30rem 14rem 36rem; grid-template-rows: max-content max-content; justify-content: center; align-content: center; column-gap: 1.2rem; row-gap: 0.9rem; padding: 1.4rem 1.5rem 1.2rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact { margin-top: 0; height: auto; align-self: end; padding: 0 0.7rem; position: relative; overflow: visible; display: flex; flex-direction: column; justify-content: center; }
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-weapon-panel { width: 14rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-gear-panel { height: auto; overflow: visible; }
@@ -4389,3 +4389,6 @@ html[data-ui="v2"] #app[data-tab="perfil"] .crest-def svg .dc-in { fill: none; s
 html[data-ui="v2"] #app[data-tab="perfil"] .crest-def .dc-val { position: absolute; left: 0; right: 0; top: 1.1rem; text-align: center; font: 400 1.7rem/1 var(--font-num); color: var(--gold-text); }
 html[data-ui="v2"] #app[data-tab="perfil"] .crest-def .dc-lbl { position: absolute; left: 0; right: 0; top: 3.4rem; text-align: center; font: 700 0.55rem/1 var(--font-sans); letter-spacing: 0.08rem; color: var(--soft); }
 html[data-ui="v2"] #app[data-tab="perfil"] .inventory-slots-grid { box-sizing: border-box; padding: 0.5rem 0.9rem; background: var(--paper-2); border: 0.0723rem solid var(--line); border-radius: 0.5rem; }
+/* título da Arma com respiro menor, para a caixa caber perfeita na coluna */
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box { padding: 0.6rem 0.875rem 0.75rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box .panel-header-banner { padding-bottom: 0.2rem; margin-bottom: 0.4rem; }
