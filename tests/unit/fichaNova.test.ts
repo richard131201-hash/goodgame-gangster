@@ -235,4 +235,11 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.duel-free \{ width: calc\(100% - 4\.07rem\); justify-self: end; \}/);
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.stack \{ align-content: start; padding-top: 1\.97rem; \}/);
   });
+
+  it('itens da Mala sem fundo: colados em cima da folha, com sombra; malinha só nos vazios (R-UI-18)', () => {
+    expect(existsSync('public/assets/ficha/c-mala-vazia.webp')).toBe(true);
+    expect(css).toMatch(/\.inv-slot\.empty \{ background: url\("\/assets\/ficha\/c-mala-vazia\.webp"\) 49\.3% 59\.5% \/ 51\.52% 62\.16% no-repeat; \}/);
+    expect(css).toMatch(/\.inv-slot\[data-inv-idx\] > \* \{ position: relative; transform: rotate\(var\(--tilt, -2deg\)\); filter: drop-shadow\(0 0 0\.07rem/);
+    expect(css).not.toMatch(/\.inv-slot\[data-inv-idx\]::before \{ content: ""; position: absolute; inset: 6% 5\.5%; background: #efe2c4;/);
+  });
 });

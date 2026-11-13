@@ -37,6 +37,30 @@ for r in (2, 3):
             meta = ((px0 - x0) / FW * 100, (py0 - y0) / FH * 100, (xb - xa) / FW * 100, (yb - ya) / FH * 100, py0 + (yb - ya))
         clean[reg] = inpaint_biharmonic(clean[reg] / 255.0, dark, channel_axis=-1) * 255.0
 
+# malinhas dos slots vazios: saem da folha e viram um sprite (assim o item colado não fica sobre o desenho)
+suit_sprite = None
+for r in (0, 1):
+    for c in range(5):
+        x0, y0 = X0S[c], Y0S[r]
+        cx, cy = x0 + FW // 2, y0 + FH // 2
+        toneL = np.median(A[y0 + 22:y0 + 46, x0 + 22:x0 + FW - 22].reshape(-1, 3), axis=0)
+        reg = (slice(cy - 75, cy + 75), slice(cx - 100, cx + 100))
+        sub = A[reg]
+        d = toneL.mean() - sub.mean(axis=2)
+        if r == 0 and c == 2:
+            alpha = np.clip(d / (toneL.mean() - 110), 0, 1)
+            alpha[alpha < 0.06] = 0
+            ys, xs = np.where(alpha > 0.12)
+            ya, yb, xa, xb = ys.min() - 3, ys.max() + 4, xs.min() - 3, xs.max() + 4
+            inkc = np.array([0.38, 0.30, 0.24]) * 255
+            rgba = np.dstack([np.broadcast_to(inkc, sub.shape[:2] + (3,)), alpha * 255])[ya:yb, xa:xb].astype(np.uint8)
+            suit_sprite = Image.fromarray(rgba, "RGBA")
+            sm = ((cx - 100 + xa - x0) / FW * 100, (cy - 75 + ya - y0) / FH * 100, (xb - xa) / FW * 100, (yb - ya) / FH * 100)
+        mask = ndi.binary_dilation(d > 22, iterations=6)
+        clean[reg] = inpaint_biharmonic(clean[reg] / 255.0, mask, channel_axis=-1) * 255.0
+suit_sprite.save("public/assets/ficha/c-mala-vazia.webp", "WEBP", quality=92, method=6)
+print("malinha: left %.2f%% top %.2f%% w %.2f%% h %.2f%%" % sm)
+
 sprite_closed.save("public/assets/ficha/c-cadeado-fechado.webp", "WEBP", quality=92, method=6)
 # cadeado aberto aprovado (do meio da 1ª fileira de cadeados da 1ª versão), escalado para o corpo do novo cadeado
 old_closed = Image.open("docs/arte/secaoMala/sprite_fechado_v1.png")
