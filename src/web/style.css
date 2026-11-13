@@ -4444,4 +4444,4 @@ html[data-ui="v2"] #app[data-tab="perfil"] .stack::after { display: none; }
 /* ---- Ficha: controle alinhado à borda do conteúdo, carimbo idem, e fundo de teste (R-UI-10) ---- */
 html[data-ui="v2"] #app[data-tab="perfil"] .hud-system-actions { margin-right: 3.1rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .folder-stamp { right: 4.4rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] { background-image: linear-gradient(rgba(20, 13, 8, 0.4), rgba(20, 13, 8, 0.4)), url("/assets/scenes/missoes-bg.webp"); background-size: cover; background-position: center; background-repeat: no-repeat; }
+html[data-ui="v2"] #app[data-tab="perfil"] { background-image: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url("/assets/login-bg.webp"); background-size: cover; background-position: center; background-repeat: no-repeat; }

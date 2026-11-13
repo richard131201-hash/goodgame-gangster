@@ -177,6 +177,6 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.folder-stamp \{ right: 4\.4rem; \}/);
     expect(css).toMatch(/html\[data-ui="v2"\] \.res-card\.res-gold \{ min-width: 10\.5rem; \}/);
     expect(css).not.toMatch(/\.res-gold \.res-img \{ width: 2\.6rem/);
-    expect(css).toMatch(/html\[data-ui="v2"\] #app\[data-tab="perfil"\] \{ background-image: linear-gradient\(.*?\), url\("\/assets\/scenes\/missoes-bg\.webp"\);/);
+    expect(css).toMatch(/html\[data-ui="v2"\] #app\[data-tab="perfil"\] \{ background-image: linear-gradient\(.*?\), url\("\/assets\/login-bg\.webp"\);/);
   });
 });
