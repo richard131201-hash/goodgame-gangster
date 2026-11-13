@@ -4495,13 +4495,13 @@ html[data-ui="v2"] #app[data-tab="perfil"] .btn-attr-plus { width: 3.1rem; heigh
 /* ================================================================================================ */
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-gear-panel { position: relative; isolation: isolate; padding: 0; background: none; border: 0; box-shadow: none; overflow: visible; }
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-gear-panel::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: url("/assets/ficha/b-equipamento.webp") 0 0 / 100% 100% no-repeat; filter: drop-shadow(0 0.25rem 0.45rem rgba(0, 0, 0, 0.5)); }
-html[data-ui="v2"] #app[data-tab="perfil"] .profile-gear-panel .panel-header-banner { position: absolute; top: 0.5rem; left: 1.5rem; margin: 0; padding: 0; border: 0; }
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-gear-panel .panel-header-banner { position: absolute; top: 0.95rem; left: 1.5rem; margin: 0; padding: 0; border: 0; }
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-gear-panel .panel-header-banner h3 { color: #3a2a14; }
 /* as 8 molduras da arte (medidas na imagem: 4 colunas x 2 linhas) */
-html[data-ui="v2"] #app[data-tab="perfil"] .equipped-slots-grid { position: absolute; left: 2.5%; right: 2.25%; top: 11.1%; bottom: 4.9%; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: 40.4fr 39fr; column-gap: 2.35%; row-gap: 4.6%; }
-html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot { position: relative; aspect-ratio: auto; background: none; border: 0; border-radius: 0; outline: 0; justify-content: flex-start; padding: 0.7rem 0.2rem 0.2rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .equipped-slots-grid { position: absolute; left: 2.5%; right: 2.25%; top: 15.2%; bottom: 3.8%; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: 39.3fr 37.8fr; column-gap: 2.35%; row-gap: 3.9%; }
+html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot { position: relative; aspect-ratio: auto; background: none; border: 0; border-radius: 0; outline: 0; justify-content: center; align-items: center; padding: 0; }
 html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot .gear-ico.ghost { display: none; }
-html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot .slot-badge { color: #7a6a4a; }
+html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot .slot-badge { display: none; }
 /* item equipado: um retalho de papel cobre o desenho fantasma da arte */
 html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot.filled { border: 0; }
 html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot.filled::before { content: ""; position: absolute; inset: 9% 8%; background: #efe2c4; }

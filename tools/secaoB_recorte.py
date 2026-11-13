@@ -9,7 +9,7 @@ src = np.array(Image.open("docs/arte/secaoB/original.jpg").convert("RGB")).astyp
 H, W, _ = src.shape
 
 # faixas de papel liso que saem (y0, y1): título muito alto, vão entre as fileiras e margem de baixo
-CUTS = [(50, 207), (640, 668), (1062, 1086)]
+CUTS = [(50, 167), (636, 672), (1058, 1094)]
 FEATHER = 22
 
 
