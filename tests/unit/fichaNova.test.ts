@@ -242,4 +242,10 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/\.inv-slot\[data-inv-idx\] > \* \{ position: relative; transform: rotate\(var\(--tilt, -2deg\)\); filter: drop-shadow\(0 0 0\.07rem/);
     expect(css).not.toMatch(/\.inv-slot\[data-inv-idx\]::before \{ content: ""; position: absolute; inset: 6% 5\.5%; background: #efe2c4;/);
   });
+
+  it('Mala com linhas e colunas fixas (não mexe com itens), item centralizado e sem movimento ao passar o mouse (R-UI-18)', () => {
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.inventory-slots-grid \{ grid-template-columns: repeat\(5, minmax\(0, 1fr\)\); grid-template-rows: repeat\(4, minmax\(0, 1fr\)\); \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.inv-slot > \.inv-art, [^{]*\.inv-slot > img \{ width: 100%; height: 100%;/);
+    expect(css).not.toMatch(/\.inv-slot\[data-inv-idx\]:hover > \*/);
+  });
 });
