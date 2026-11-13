@@ -4415,3 +4415,11 @@ html[data-ui="v2"] #app[data-tab="perfil"] .hud-player-info .hud-player-name { c
 html[data-ui="v2"] #app[data-tab="perfil"] .hud-player-info .hud-xp-track { background: rgba(43, 32, 21, 0.18); border: 0.0625rem solid rgba(43, 32, 21, 0.45); }
 html[data-ui="v2"] #app[data-tab="perfil"] .hud-player-info .hud-xp-text { color: #2b2015; }
 html[data-ui="v2"] #app[data-tab="perfil"] .folder-stamp { transform: rotate(9deg); top: 1rem; right: 1.6rem; }
+
+/* ---- Nome só com o nome; XP retangular; nível em selo (R-UI-7) ---- */
+html[data-ui="v2"] .hud-xp-box { gap: 0; }
+html[data-ui="v2"] .hud-lvl-circle { position: relative; flex: none; width: 2.7rem; height: 2.7rem; margin-right: -0.9rem; z-index: 1; display: flex; align-items: center; justify-content: center; border-radius: 0; background: none; filter: drop-shadow(0 0.1rem 0.15rem rgba(0, 0, 0, 0.45)); }
+html[data-ui="v2"] .seal-bg { position: absolute; inset: 0; width: 100%; height: 100%; }
+html[data-ui="v2"] .seal-num { position: relative; font: 400 1.25rem/1 var(--font-num); color: #2b1d05; }
+html[data-ui="v2"] .hud-xp-track { flex: 1; min-width: 0; height: 1.25rem; border-radius: 0.3rem; }
+html[data-ui="v2"] .hud-xp-text { left: calc(50% + 0.45rem); }

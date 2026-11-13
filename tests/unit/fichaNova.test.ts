@@ -140,4 +140,14 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-player-info \{ left: 15\.9rem; top: 8\.8rem; width: 16\.2rem; height: 6\.5rem;[^}]*background: linear-gradient\(#cdb98c, #b9a276\);/);
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.folder-stamp \{ transform: rotate\(9deg\); top: 1rem; right: 1\.6rem; \}/);
   });
+
+  it('papel só com o nome, XP retangular e nível em selo (R-UI-7)', () => {
+    const html = readFileSync('index.html', 'utf8');
+    expect(html).not.toContain('id="hud-style-badge"');
+    expect(html).toContain('id="seal-nivel"');
+    expect(html).toMatch(/<div class="hud-lvl-circle" title="Nível">\s*<svg class="seal-bg"[^>]*><use href="#seal-nivel"\/><\/svg>\s*<span class="seal-num" id="hud-lvl">/);
+    expect(main).not.toContain("getElementById('hud-style-badge')");
+    expect(css).toMatch(/html\[data-ui="v2"\] \.hud-xp-track \{ flex: 1; min-width: 0; height: 1\.25rem; border-radius: 0\.3rem; \}/);
+    expect(css).toMatch(/html\[data-ui="v2"\] \.hud-lvl-circle \{ position: relative; flex: none; width: 2\.7rem; height: 2\.7rem;/);
+  });
 });

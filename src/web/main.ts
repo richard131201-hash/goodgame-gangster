@@ -387,9 +387,6 @@ function updateHUD() {
   if (!p.hasCreatedCharacter) return;
 
   document.getElementById('hud-name')!.textContent = p.name;
-  const badge = document.getElementById('hud-style-badge')!;
-  badge.textContent = p.style.toUpperCase();
-  badge.className = `gg-style-badge badge-${p.style}`;
   document.getElementById('class-icon-use')?.setAttribute('href', `#cls-${p.style}`);
   const clsLbl = document.getElementById('class-icon-lbl');
   if (clsLbl) clsLbl.textContent = p.style.toUpperCase();
