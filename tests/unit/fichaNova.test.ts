@@ -87,17 +87,25 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(html).toMatch(/<div class="profile-weapon-panel">\s*<div class="defense-crest" id="defense-crest"/);
     expect(html).toContain('id="defense-val"');
     expect(css).toMatch(/\.defense-crest, \.inv-slot\.locked-soon \{ display: none; \}/);
-    expect(css).toMatch(/#app\[data-tab="perfil"\] \.defense-crest \{ position: relative; display: block; width: 6\.3rem; height: 7\.2rem;/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.defense-crest \{ position: relative; display: block; box-sizing: border-box; width: 100%; height: 6\.6rem;/);
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.inv-slot\.locked-soon \{ display: flex;/);
-    expect(css).toMatch(/#app\[data-tab="perfil"\] \.duel-free \{ height: 27\.9rem; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.duel-free \{ height: 30\.6rem; \}/);
     // a 4ª fileira é só desenho: o clique de compra não vale para ela
     expect(main).toContain('const BAG_DISPLAY_SLOTS = 20;');
     expect(main).toContain(".inv-slot.locked:not(.locked-soon)");
   });
 
   it('Ficha: card maior; nome, nível e XP ao lado do card, dentro da pasta; atributos descem até perto da Mala', () => {
-    expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-player-info \{ left: 15\.9rem; top: 8\.6rem; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-player-info \{ left: 18\.4rem; top: 11\.4rem; \}/);
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.folder-tab \{ left: 15\.9rem; \}/);
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.avatar-edit-btn \{ left: 12\.1rem; top: 5\.9rem; \}/);
+  });
+
+  it('Mala com título, brasão em caixa própria acima da arma (R-UI-5)', () => {
+    const html = readFileSync('index.html', 'utf8');
+    expect(html).toMatch(/<div class="weapon-box">\s*<div class="panel-header-banner"><h3>Arma<\/h3><\/div>/);
+    expect(css).toMatch(/\.inventory-slots-grid::before \{ content: "MALA"; grid-column: 1 \/ -1;/);
+    expect(css).toMatch(/\.weapon-box \{ display: contents; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.profile-weapon-panel \{ display: flex; flex-direction: column; gap: 0\.9rem;/);
   });
 });
