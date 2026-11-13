@@ -126,4 +126,12 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.shell \{ padding-top: 0\.6rem; \}/);
     expect(css).toMatch(/\.weapon-box \.panel-header-banner \{ padding-bottom: 0\.2rem; margin-bottom: 0\.4rem; \}/);
   });
+
+  it('todos os slots são 4:3 (equipamento, Mala e arma) e a área livre acompanha a altura da Mala', () => {
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.stack \{ grid-template-columns: 30rem 14rem 45rem; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.gear-slot \{ aspect-ratio: 4 \/ 3; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.inv-slot \{ aspect-ratio: 4 \/ 3; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.weapon-slot \{ aspect-ratio: 4 \/ 3; height: auto; box-sizing: border-box; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.duel-free \{ height: auto; align-self: stretch; \}/);
+  });
 });

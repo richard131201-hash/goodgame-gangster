@@ -4392,3 +4392,18 @@ html[data-ui="v2"] #app[data-tab="perfil"] .inventory-slots-grid { box-sizing: b
 /* título da Arma com respiro menor, para a caixa caber perfeita na coluna */
 html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box { padding: 0.6rem 0.875rem 0.75rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box .panel-header-banner { padding-bottom: 0.2rem; margin-bottom: 0.4rem; }
+
+/* ---- TODOS os slots são 4:3 (R-SLOT-1): equipamento, Mala e arma; a coluna do Equipamento/área livre é mais larga (45 rem) para os slots crescerem ---- */
+html[data-ui="v2"] #app[data-tab="perfil"] .stack { grid-template-columns: 30rem 14rem 45rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .hud-avatar-thumb { left: 4.3rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .hud-player-info { left: 20.5rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .avatar-edit-btn { left: 15.6rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot { aspect-ratio: 4 / 3; }
+html[data-ui="v2"] #app[data-tab="perfil"] .equipped-slots-grid { flex: 0 0 auto; grid-template-rows: none; grid-auto-rows: auto; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot { aspect-ratio: 4 / 3; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inventory-slots-grid { grid-template-rows: 2.2rem; grid-auto-rows: auto; }
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-slot { aspect-ratio: 4 / 3; height: auto; box-sizing: border-box; }
+html[data-ui="v2"] #app[data-tab="perfil"] .duel-free { height: auto; align-self: stretch; }
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-slot { min-height: 0; overflow: hidden; }
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-slot-body { height: 100%; width: 100%; }
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-slot-body .warr { width: 100%; height: 100%; object-fit: contain; }
