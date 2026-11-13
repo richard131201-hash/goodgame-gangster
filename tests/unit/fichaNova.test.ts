@@ -58,6 +58,9 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/\.profile-stats-panel\.compact \{ grid-column: 2; grid-row: 1;/);
     expect(css).toMatch(/\.profile-weapon-panel \{ grid-column: 1; grid-row: 2;/);
     expect(css).toMatch(/\.inventory-slots-grid \{ grid-column: 2; grid-row: 2; display: grid; grid-template-columns: repeat\(5,/);
+    // o perfil no canto (foto pequena, nível e XP) vale nas outras abas; na Ficha a foto sai, porque o retrato já está no card
+    expect(css).toMatch(/html\[data-ui="v2"\] #app\[data-tab="perfil"\] \.hud-avatar-thumb \{ display: none; \}/);
+    expect(css).toMatch(/html\[data-ui="v2"\] \.hud-avatar-thumb \{ width: 5rem; height: 5\.7rem;/);
     expect(main).toContain("setProperty('--xp'");
     expect(main).toContain("getElementById('hud-energy-fill')");
   });

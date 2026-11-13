@@ -4288,18 +4288,14 @@ html[data-ficha="nova"] #app[data-tab="perfil"] .inv-slot.empty::after { color: 
 /* ================================================================================================ */
 .res-bar, .res-sub, .duel-free { display: none; }
 
-/* ---- topo: retrato grande, XP vertical, nome, recursos e energia comprida ---- */
-html[data-ui="v2"] .hud-header { display: grid; grid-template-columns: 9.4rem 1.7rem 19rem minmax(0, 1fr) auto; grid-template-rows: auto auto; column-gap: 1rem; row-gap: 0.6rem; height: auto; min-height: 10.6rem; align-items: start; padding: 0.7rem 1.1rem; }
-html[data-ui="v2"] .hud-player-widget, html[data-ui="v2"] .hud-player-info { display: contents; }
-html[data-ui="v2"] .hud-avatar-thumb { grid-column: 1; grid-row: 1 / 3; width: 100%; height: 100%; border-radius: 0.5rem; margin: 0; }
+/* ---- topo: perfil pequeno no canto (foto, nível, XP), recursos no centro com a energia comprida, botões à direita ---- */
+html[data-ui="v2"] .hud-header { display: grid; grid-template-columns: minmax(16rem, 22rem) minmax(0, 1fr) auto; grid-template-rows: auto auto; column-gap: 1.2rem; row-gap: 0.5rem; height: auto; min-height: 8.2rem; align-items: center; padding: 0.7rem 1.1rem; }
+html[data-ui="v2"] .hud-player-widget { grid-column: 1; grid-row: 1 / 3; display: flex; align-items: center; gap: 0.9rem; min-width: 0; }
+html[data-ui="v2"] .hud-avatar-thumb { width: 5rem; height: 5.7rem; border-radius: 0.5rem; margin: 0; flex: 0 0 auto; }
 html[data-ui="v2"] .hud-avatar-thumb svg { width: 100% !important; height: 100% !important; margin: 0; }
-html[data-ui="v2"] .hud-xp-box { grid-column: 2; grid-row: 1 / 3; display: flex; flex-direction: column-reverse; align-items: center; gap: 0.4rem; margin: 0; height: 100%; }
-html[data-ui="v2"] .hud-xp-track { position: relative; flex: 1 1 auto; width: 1.2rem; min-height: 0; overflow: hidden; }
-html[data-ui="v2"] .hud-xp-fill { position: absolute; left: 0; bottom: 0; width: 100% !important; height: var(--xp, 0%); }
-html[data-ui="v2"] .hud-xp-text { display: none; }
-html[data-ui="v2"] .hud-name-row { grid-column: 3; grid-row: 1; align-self: center; display: flex; align-items: center; gap: 0.6rem; padding: 0.35rem 0.9rem; background: var(--paper-2); border: 0.0625rem solid var(--line); border-radius: 0.5rem; }
-html[data-ui="v2"] .hud-player-name { font-size: 1.7rem; }
-html[data-ui="v2"] .hud-resources { grid-column: 4; grid-row: 1 / 3; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6rem; margin: 0; width: 100%; }
+html[data-ui="v2"] #app[data-tab="perfil"] .hud-avatar-thumb { display: none; }
+html[data-ui="v2"] .hud-player-name { font-size: 1.6rem; }
+html[data-ui="v2"] .hud-resources { grid-column: 2; grid-row: 1 / 3; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6rem; margin: 0; width: 100%; }
 html[data-ui="v2"] .res-gold { grid-column: 1; grid-row: 1; }
 html[data-ui="v2"] .res-cash { grid-column: 2; grid-row: 1; }
 html[data-ui="v2"] .res-respect { grid-column: 3; grid-row: 1; }
@@ -4311,7 +4307,7 @@ html[data-ui="v2"] .res-bar-fill { height: 100%; width: 100%; background: var(--
 html[data-ui="v2"] .res-energy .res-val { order: 2; white-space: nowrap; }
 html[data-ui="v2"] .res-energy .res-sub { display: block; order: 3; font-size: 0.95rem; color: var(--soft); white-space: nowrap; }
 html[data-ui="v2"] .res-energy .res-label { order: 0; }
-html[data-ui="v2"] .hud-system-actions { grid-column: 5; grid-row: 1; align-self: start; }
+html[data-ui="v2"] .hud-system-actions { grid-column: 3; grid-row: 1 / 3; align-self: center; }
 
 /* ---- barra inferior larga, com o nome embaixo de cada ícone ---- */
 html[data-ui="v2"] .shell { padding-bottom: 4.9rem; }
