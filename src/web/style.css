@@ -4511,3 +4511,23 @@ html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot.filled .gear-ico { color: 
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-gear-panel { aspect-ratio: 2000 / 927; align-self: start; }
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-weapon-panel { align-self: stretch; justify-content: space-between; }
 html[data-ui="v2"] #app[data-tab="perfil"] .stack { row-gap: 1.3rem; }
+
+/* ================================================================================================ */
+/* SEÇÃO C (MALA) COM A FOLHA DE 20 MOLDURAS (R-UI-18): malinha fraca nos vazios; cadeado fechado nos bloqueados, que abre ao passar o mouse */
+/* ================================================================================================ */
+html[data-ui="v2"] #app[data-tab="perfil"] .inventory-slots-grid { position: relative; isolation: isolate; box-sizing: border-box; aspect-ratio: 1750 / 1160; height: auto; padding: 2.94rem 1.65rem 1.44rem 1.7rem; background: none; border: 0; border-radius: 0; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(4, 1fr); grid-auto-rows: auto; column-gap: 0.37rem; row-gap: 0.32rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inventory-slots-grid::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: url("/assets/ficha/c-mala.webp") 0 0 / 100% 100% no-repeat; filter: drop-shadow(0 0.25rem 0.45rem rgba(0, 0, 0, 0.5)); }
+html[data-ui="v2"] #app[data-tab="perfil"] .inventory-slots-grid::before { position: absolute; top: 0.85rem; left: 1.7rem; grid-column: auto; padding: 0; border: 0; color: #3a2a14; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot { position: relative; aspect-ratio: auto; height: auto; background: none; border: 0; border-radius: 0; outline: 0; padding: 0.4rem 0.45rem; box-shadow: none; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.empty::after { display: none; }
+/* item na Mala: um retalho de papel cobre a malinha desenhada */
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot[data-inv-idx]::before { content: ""; position: absolute; inset: 6% 5.5%; background: #efe2c4; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot[data-inv-idx] > * { position: relative; }
+/* cadeado fechado (desenhado em sprite) e, ao passar o mouse, o aberto */
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.locked { cursor: pointer; background: url("/assets/ficha/c-cadeado-fechado.webp") 50.2% 50.4% / 26.6% 47.48% no-repeat; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.locked .ico { display: none; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.locked::before { content: ""; position: absolute; left: 36.86%; top: 23.95%; width: 26.6%; height: 50%; background: url("/assets/ficha/c-cadeado-aberto.webp") 0 0 / 100% 100% no-repeat; opacity: 0; pointer-events: none; transform-origin: 50% 92%; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.locked:not(.locked-soon):hover, html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.locked:not(.locked-soon):focus-visible { background-image: none; outline: none; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.locked:not(.locked-soon):hover::before, html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.locked:not(.locked-soon):focus-visible::before { opacity: 1; filter: drop-shadow(0 0 0.35rem rgba(212, 175, 55, 0.9)); animation: lock-pop 0.35s ease-out; }
+@keyframes lock-pop { 0% { transform: scale(0.9) rotate(-4deg); } 60% { transform: scale(1.1) rotate(3deg); } 100% { transform: scale(1) rotate(0); } }
+@media (prefers-reduced-motion: reduce) { html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.locked:not(.locked-soon):hover::before { animation: none; } }
