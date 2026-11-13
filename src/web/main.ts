@@ -75,7 +75,7 @@ import { applySkin, readSkin, toggleSkin, FOLDER_HEADERS } from './skin.js';
 import { notify, ask } from './notice.js';
 import { attachStitch, STITCH_INSET_REM } from './stitch.js';
 import { initMissionScene } from './missionScene.js';
-import { initFichaNova } from './fichaNova.js';
+import { initUi } from './fichaNova.js';
 import { weaponArtImg, sellableInShop } from './weaponArt.js';
 import { positionAmongNpcs, positionInRows, rankLabel } from './rankPosition.js';
 import { BAG_CAPACITY_MAX, BAG_UPGRADE_SLOTS, BIG_BAG_PRICE_GOLD } from '../shared/bag.js';
@@ -391,6 +391,7 @@ function updateHUD() {
   document.getElementById('hud-lvl')!.textContent = p.level.toString();
   const xpPct = Math.min(100, (p.xp / p.xpToNextLevel) * 100);
   document.getElementById('hud-xp-fill')!.style.width = `${xpPct}%`;
+  document.getElementById('hud-xp-fill')!.closest<HTMLElement>('.hud-xp-box')?.style.setProperty('--xp', `${xpPct}%`);
   document.getElementById('hud-xp-text')!.textContent = `${p.xp} / ${p.xpToNextLevel} XP`;
 
   updateEnergyHUD();
@@ -421,6 +422,10 @@ function updateEnergyHUD() {
   const secs = Math.ceil(ms / 1000);
   const clock = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
   el.textContent = `${p.energy} / ${p.maxEnergy}`;
+  const fill = document.getElementById('hud-energy-fill');
+  if (fill) fill.style.width = `${Math.min(100, (p.energy / p.maxEnergy) * 100)}%`;
+  const tm = document.getElementById('hud-energy-timer');
+  if (tm) tm.textContent = ms > 0 ? `próxima em ${clock}` : 'cheia';
   const card = el.closest<HTMLElement>('.res-card');
   if (card) card.dataset.name = ms > 0 ? `Energia · próxima em ${clock}` : 'Energia · cheia';
 }
@@ -462,7 +467,7 @@ document.getElementById('audio-toggle-btn')?.addEventListener('click', () => {
 
 // TEMA DA PASTA (couro e dourado / bege)
 applySkin(readSkin());
-initFichaNova();
+initUi();
 document.getElementById('skin-toggle-btn')?.addEventListener('click', () => {
   toggleSkin();
 });

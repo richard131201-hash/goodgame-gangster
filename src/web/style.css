@@ -4281,3 +4281,71 @@ html[data-ficha="nova"] #app[data-tab="perfil"] .inv-slot.empty::after { color: 
 .game-nav-tab.active { width: 4.3rem; border-color: var(--cover-edge); transform: translateY(-0.4rem); box-shadow: inset 0 -0.2rem 0 var(--gold); }
 .game-nav-tab::after { left: 50%; top: auto; bottom: calc(100% + 0.7rem); transform: translateX(-50%); }
 .game-nav-tab.active::after { bottom: calc(100% + 0.9rem); }
+
+/* ================================================================================================ */
+/* ESTILO 2 (R-UI-2): topo estilo GGG, Ficha em 3 colunas sem abas, barra inferior com rótulos. Em código, sem arte de IA. */
+/* Só vale com html[data-ui="v2"] (padrão). Com ?ui=ia ou ?ui=antiga, nada daqui vale.                                  */
+/* ================================================================================================ */
+.res-bar, .res-sub, .duel-free { display: none; }
+
+/* ---- topo: retrato grande, XP vertical, nome, recursos e energia comprida ---- */
+html[data-ui="v2"] .hud-header { display: grid; grid-template-columns: 9.4rem 1.7rem 19rem minmax(0, 1fr) auto; grid-template-rows: auto auto; column-gap: 1rem; row-gap: 0.6rem; height: auto; min-height: 10.6rem; align-items: start; padding: 0.7rem 1.1rem; }
+html[data-ui="v2"] .hud-player-widget, html[data-ui="v2"] .hud-player-info { display: contents; }
+html[data-ui="v2"] .hud-avatar-thumb { grid-column: 1; grid-row: 1 / 3; width: 100%; height: 100%; border-radius: 0.5rem; margin: 0; }
+html[data-ui="v2"] .hud-avatar-thumb svg { width: 100% !important; height: 100% !important; margin: 0; }
+html[data-ui="v2"] .hud-xp-box { grid-column: 2; grid-row: 1 / 3; display: flex; flex-direction: column-reverse; align-items: center; gap: 0.4rem; margin: 0; height: 100%; }
+html[data-ui="v2"] .hud-xp-track { position: relative; flex: 1 1 auto; width: 1.2rem; min-height: 0; overflow: hidden; }
+html[data-ui="v2"] .hud-xp-fill { position: absolute; left: 0; bottom: 0; width: 100% !important; height: var(--xp, 0%); }
+html[data-ui="v2"] .hud-xp-text { display: none; }
+html[data-ui="v2"] .hud-name-row { grid-column: 3; grid-row: 1; align-self: center; display: flex; align-items: center; gap: 0.6rem; padding: 0.35rem 0.9rem; background: var(--paper-2); border: 0.0625rem solid var(--line); border-radius: 0.5rem; }
+html[data-ui="v2"] .hud-player-name { font-size: 1.7rem; }
+html[data-ui="v2"] .hud-resources { grid-column: 4; grid-row: 1 / 3; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6rem; margin: 0; width: 100%; }
+html[data-ui="v2"] .res-gold { grid-column: 1; grid-row: 1; }
+html[data-ui="v2"] .res-cash { grid-column: 2; grid-row: 1; }
+html[data-ui="v2"] .res-respect { grid-column: 3; grid-row: 1; }
+html[data-ui="v2"] .res-energy { grid-column: 1 / -1; grid-row: 2; }
+html[data-ui="v2"] .res-card { min-width: 0; }
+html[data-ui="v2"] .res-energy .res-details { flex: 1 1 auto; display: flex; flex-direction: row; align-items: center; gap: 0.9rem; min-width: 0; }
+html[data-ui="v2"] .res-energy .res-bar { display: block; order: 1; flex: 1 1 auto; height: 1.5rem; background: var(--slot); border: 0.0625rem solid var(--slot-line); border-radius: 0.4rem; overflow: hidden; }
+html[data-ui="v2"] .res-bar-fill { height: 100%; width: 100%; background: var(--good); }
+html[data-ui="v2"] .res-energy .res-val { order: 2; white-space: nowrap; }
+html[data-ui="v2"] .res-energy .res-sub { display: block; order: 3; font-size: 0.95rem; color: var(--soft); white-space: nowrap; }
+html[data-ui="v2"] .res-energy .res-label { order: 0; }
+html[data-ui="v2"] .hud-system-actions { grid-column: 5; grid-row: 1; align-self: start; }
+
+/* ---- barra inferior larga, com o nome embaixo de cada ícone ---- */
+html[data-ui="v2"] .shell { padding-bottom: 4.9rem; }
+html[data-ui="v2"] .game-main-nav { gap: 0.35rem; padding: 0.5rem 0.8rem 0.45rem; }
+html[data-ui="v2"] .game-nav-tab { width: 6.4rem; height: 4.3rem; }
+html[data-ui="v2"] .game-nav-tab.active { width: 6.4rem; }
+html[data-ui="v2"] .game-nav-tab .ico, html[data-ui="v2"] .game-nav-tab .ico-img { margin-bottom: 0.95rem; }
+html[data-ui="v2"] .game-nav-tab::before { content: attr(data-label); position: absolute; left: 0; right: 0; bottom: 0.4rem; text-align: center; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.02rem; color: var(--soft); }
+html[data-ui="v2"] .game-nav-tab[aria-selected="true"]::before { color: var(--gold-text); }
+html[data-ui="v2"] .game-nav-tab::after { display: none; }
+
+/* ---- Ficha: 3 colunas x 2 linhas, tudo em uma pasta só ---- */
+html[data-ui="v2"] #app[data-tab="perfil"] .shell { padding-top: 2rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .stack { position: relative; display: grid; grid-template-columns: 300fr 960fr 840fr; grid-template-rows: minmax(0, 1fr) minmax(0, 1.25fr); gap: 0.9rem 1.2rem; height: 100%; align-self: stretch; padding: 1.3rem 1.5rem 1.2rem; background: var(--cover); border: 0.1rem solid var(--cover-edge); border-radius: 0 0.9rem 0.9rem 0.9rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .stack::after { content: ""; position: absolute; inset: 0.25rem; border: 0.06rem dashed var(--stitch); border-radius: 0.65rem; pointer-events: none; opacity: 0.85; }
+html[data-ui="v2"] #app[data-tab="perfil"] .folder, html[data-ui="v2"] #app[data-tab="perfil"] .game-main-content, html[data-ui="v2"] #app[data-tab="perfil"] #view-perfil, html[data-ui="v2"] #app[data-tab="perfil"] .profile-layout-grid, html[data-ui="v2"] #app[data-tab="perfil"] .sub-folder, html[data-ui="v2"] #app[data-tab="perfil"] .sub-sheet, html[data-ui="v2"] #app[data-tab="perfil"] .sub-pane[data-pane="mala"].active, html[data-ui="v2"] #app[data-tab="perfil"] .profile-inventory-panel { display: contents; }
+html[data-ui="v2"] #app[data-tab="perfil"] .stitch-svg, html[data-ui="v2"] #app[data-tab="perfil"] .sub-tabs, html[data-ui="v2"] #app[data-tab="perfil"] .sub-pane:not([data-pane="mala"]), html[data-ui="v2"] #app[data-tab="perfil"] .inv-item-details-box { display: none !important; }
+html[data-ui="v2"] #app[data-tab="perfil"] .folder-tab { z-index: 3; }
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-doll-panel { grid-column: 1; grid-row: 1; min-height: 0; }
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact { grid-column: 2; grid-row: 1; min-height: 0; }
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-gear-panel { grid-column: 3; grid-row: 1; min-height: 0; }
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-weapon-panel { grid-column: 1; grid-row: 2; align-self: start; min-height: 0; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inventory-slots-grid { grid-column: 2; grid-row: 2; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 0.6rem; min-height: 0; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot { aspect-ratio: auto; width: auto; height: auto; }
+html[data-ui="v2"] #app[data-tab="perfil"] .duel-free { grid-column: 3; grid-row: 2; display: flex; flex-direction: column; justify-content: center; gap: 0.6rem; padding: 1.4rem; min-height: 0; text-align: center; background: repeating-linear-gradient(135deg, transparent 0 0.7rem, rgba(255, 255, 255, 0.03) 0.7rem 1.4rem), var(--paper-2); border: 0.15rem dashed var(--slot-line); border-radius: 0.6rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .duel-free h3 { margin: 0; font-family: var(--font-type); font-weight: 400; font-size: 1.5rem; color: var(--gold-text); }
+html[data-ui="v2"] #app[data-tab="perfil"] .duel-free p { margin: 0; font-size: 1.05rem; color: var(--soft); }
+/* atributos largos: linhas altas, fonte maior */
+html[data-ui="v2"] #app[data-tab="perfil"] .attr-compact-list { display: grid; grid-template-rows: repeat(4, minmax(0, 1fr)); height: calc(100% - 2.6rem); }
+html[data-ui="v2"] #app[data-tab="perfil"] .attr-c-row { height: auto; grid-template-columns: 1fr 10rem 1rem 3.6rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .attr-c-name { font-size: 1.25rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .attr-c-pts { font-size: 1.8rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .btn-attr-plus { width: 3.6rem; height: 2rem; font-size: 1.5rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-gear-panel { display: flex; flex-direction: column; overflow: hidden; }
+html[data-ui="v2"] #app[data-tab="perfil"] .equipped-slots-grid { flex: 1 1 auto; min-height: 0; grid-template-rows: repeat(2, minmax(0, 1fr)); }
+html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot { min-height: 0; height: auto; }
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-doll-panel, html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact, html[data-ui="v2"] #app[data-tab="perfil"] .profile-weapon-panel { overflow: hidden; }

@@ -82,6 +82,8 @@
           <div class="res-details">
             <span class="res-label">ENERGIA</span>
             <span class="res-val" id="hud-energy">100 / 100</span>
+            <div class="res-bar" aria-hidden="true"><div class="res-bar-fill" id="hud-energy-fill"></div></div>
+            <span class="res-sub" id="hud-energy-timer"></span>
           </div>
           <button id="quick-refill-energy-btn" class="res-plus-btn" title="Recarregar Energia">+</button>
         </div>
@@ -121,16 +123,16 @@
     <!-- CASCA: abas de ícone à esquerda + a pasta (R-LAYOUT-9) -->
     <div class="shell">
     <nav class="game-main-nav" role="tablist" aria-label="Seções do jogo">
-      <button class="game-nav-tab active" role="tab" aria-selected="true" data-tab="perfil" data-name="Ficha" aria-label="Ficha"><img class="ico-img ico-ficha" src="/assets/icons/ficha.webp" alt="" draggable="false"></button>
-      <button class="game-nav-tab" role="tab" aria-selected="false" data-tab="missoes" data-name="Missões" aria-label="Missões"><img class="ico-img" src="/assets/icons/chapeu.webp" alt="" draggable="false"></button>
-      <button class="game-nav-tab" role="tab" aria-selected="false" data-tab="duelos" data-name="Duelo" aria-label="Duelo"><img class="ico-img ico-ficha" src="/assets/icons/duelos.webp" alt="" draggable="false"></button>
-      <button class="game-nav-tab" role="tab" aria-selected="false" data-tab="loja" data-name="Mercado Negro" aria-label="Mercado Negro"><svg class="ico" aria-hidden="true"><use href="#i-store"/></svg></button>
-      <button class="game-nav-tab" role="tab" aria-selected="false" data-tab="ranking" data-name="Ranking" aria-label="Ranking"><svg class="ico" aria-hidden="true"><use href="#i-trophy"/></svg></button>
-      <button class="game-nav-tab" role="tab" aria-selected="false" data-tab="familia" data-name="Família" aria-label="Família"><svg class="ico" aria-hidden="true"><use href="#i-family"/></svg></button>
-      <button class="game-nav-tab" role="tab" aria-selected="false" data-tab="distritos" data-name="Distritos" aria-label="Distritos"><svg class="ico" aria-hidden="true"><use href="#i-map"/></svg></button>
-      <button class="game-nav-tab" role="tab" aria-selected="false" data-tab="tarefas" data-name="Tarefas" aria-label="Tarefas"><svg class="ico" aria-hidden="true"><use href="#i-tasks"/></svg></button>
-      <button class="game-nav-tab" role="tab" aria-selected="false" data-tab="eventos" data-name="Eventos" aria-label="Eventos"><svg class="ico" aria-hidden="true"><use href="#i-calendar"/></svg></button>
-      <button class="game-nav-tab" role="tab" aria-selected="false" data-tab="simulador" data-name="Simulador" aria-label="Simulador"><svg class="ico" aria-hidden="true"><use href="#i-chart"/></svg></button>
+      <button class="game-nav-tab active" role="tab" aria-selected="true" data-tab="perfil" data-name="Ficha" data-label="Ficha" aria-label="Ficha"><img class="ico-img ico-ficha" src="/assets/icons/ficha.webp" alt="" draggable="false"></button>
+      <button class="game-nav-tab" role="tab" aria-selected="false" data-tab="missoes" data-name="Missões" data-label="Missões" aria-label="Missões"><img class="ico-img" src="/assets/icons/chapeu.webp" alt="" draggable="false"></button>
+      <button class="game-nav-tab" role="tab" aria-selected="false" data-tab="duelos" data-name="Duelo" data-label="Duelo" aria-label="Duelo"><img class="ico-img ico-ficha" src="/assets/icons/duelos.webp" alt="" draggable="false"></button>
+      <button class="game-nav-tab" role="tab" aria-selected="false" data-tab="loja" data-name="Mercado Negro" data-label="Mercado" aria-label="Mercado Negro"><svg class="ico" aria-hidden="true"><use href="#i-store"/></svg></button>
+      <button class="game-nav-tab" role="tab" aria-selected="false" data-tab="ranking" data-name="Ranking" data-label="Ranking" aria-label="Ranking"><svg class="ico" aria-hidden="true"><use href="#i-trophy"/></svg></button>
+      <button class="game-nav-tab" role="tab" aria-selected="false" data-tab="familia" data-name="Família" data-label="Família" aria-label="Família"><svg class="ico" aria-hidden="true"><use href="#i-family"/></svg></button>
+      <button class="game-nav-tab" role="tab" aria-selected="false" data-tab="distritos" data-name="Distritos" data-label="Distritos" aria-label="Distritos"><svg class="ico" aria-hidden="true"><use href="#i-map"/></svg></button>
+      <button class="game-nav-tab" role="tab" aria-selected="false" data-tab="tarefas" data-name="Tarefas" data-label="Tarefas" aria-label="Tarefas"><svg class="ico" aria-hidden="true"><use href="#i-tasks"/></svg></button>
+      <button class="game-nav-tab" role="tab" aria-selected="false" data-tab="eventos" data-name="Eventos" data-label="Eventos" aria-label="Eventos"><svg class="ico" aria-hidden="true"><use href="#i-calendar"/></svg></button>
+      <button class="game-nav-tab" role="tab" aria-selected="false" data-tab="simulador" data-name="Simulador" data-label="Simulador" aria-label="Simulador"><svg class="ico" aria-hidden="true"><use href="#i-chart"/></svg></button>
     </nav>
 
     <div class="stack">
@@ -456,6 +458,7 @@
         <div class="sub-pane" data-pane="conquistas" id="pane-conquistas"></div>
         <div class="sub-pane" data-pane="honra" id="pane-honra"></div>
       </div>
+      <div class="duel-free" id="duel-free"><h3>Equipamento de duelo</h3><p>Área reservada: consumíveis, coletes, bombas e outros itens para os duelos. Em breve.</p></div>
     </div>
     </div>
     </div>
