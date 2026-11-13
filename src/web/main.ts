@@ -404,8 +404,8 @@ function updateHUD() {
   document.getElementById('hud-xp-text')!.textContent = `${p.xp} / ${p.xpToNextLevel} XP`;
 
   updateEnergyHUD();
-  document.getElementById('hud-cash')!.textContent = `$${p.cash.toLocaleString()}`;
-  document.getElementById('hud-gold')!.textContent = p.gold.toString();
+  document.getElementById('hud-cash')!.textContent = `$${p.cash.toLocaleString('pt-BR')}`;
+  document.getElementById('hud-gold')!.textContent = p.gold.toLocaleString('pt-BR');
   paintHudRank();
   if (syncEnabled() && !rankingCache) void refreshHudRank();
 

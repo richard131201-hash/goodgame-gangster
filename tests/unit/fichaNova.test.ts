@@ -136,7 +136,7 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
   });
 
   it('cash com espaço para 99.999.999, nome em papel atrás do card e carimbo inclinado para baixo (R-UI-6)', () => {
-    expect(css).toMatch(/html\[data-ui="v2"\] \.res-card\.res-cash \{ min-width: 12\.5rem; \}/);
+    expect(css).toMatch(/html\[data-ui="v2"\] \.res-card\.res-cash \{ min-width: 13\.5rem; \}/);
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-player-info \{ left: 15\.9rem; top: 8\.8rem; width: 16\.2rem; height: 6\.5rem;[^}]*background: linear-gradient\(#cdb98c, #b9a276\);/);
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.folder-stamp \{ transform: rotate\(9deg\); top: 1rem; right: 1\.6rem; \}/);
   });
@@ -166,7 +166,7 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(html).not.toContain('hud-btn-outline');
     expect(css).toMatch(/html\[data-ui="v2"\] \.hud-system-actions \{ gap: 0; padding: 0\.25rem; background: var\(--paper-2\);/);
     expect(css).toMatch(/html\[data-ui="v2"\] \.hud-system-actions \.hud-btn-icon \{ width: 2\.4rem; height: 2\.4rem;/);
-    expect(css).toMatch(/html\[data-ui="v2"\] \.res-card\.res-gold \{ min-width: 13rem;/);
+    expect(css).toMatch(/html\[data-ui="v2"\] \.res-card\.res-gold \{ min-width: 14rem;/);
     // metades iguais (30 + 14 + 1,2 = 45,2) e sem fundo/borda/costura da pasta na Ficha
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.stack \{ grid-template-columns: 30rem 14rem 45\.2rem; background: none; border: 0; border-radius: 0; \}/);
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.stack::after \{ display: none; \}/);
@@ -175,7 +175,7 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
   it('controle e carimbo alinhados à borda do conteúdo, ouro só mais largo e fundo de teste na Ficha (R-UI-10)', () => {
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-system-actions \{ margin-right: 3\.1rem; \}/);
     expect(css).toMatch(/#app\[data-tab="perfil"\] \.folder-stamp \{ right: 4\.4rem; \}/);
-    expect(css).toMatch(/html\[data-ui="v2"\] \.res-card\.res-gold \{ min-width: 13rem; \}/);
+    expect(css).toMatch(/html\[data-ui="v2"\] \.res-card\.res-gold \{ min-width: 14rem; \}/);
     expect(css).not.toMatch(/\.res-gold \.res-img \{ width: 2\.6rem/);
     expect(css).toMatch(/html\[data-ui="v2"\] #app\[data-tab="perfil"\] \{ background-image: linear-gradient\(.*?\), url\("\/assets\/login-bg\.webp"\);/);
   });
@@ -191,5 +191,10 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
   it('no Ouro, o + fica colado na direita e a largura extra é para os dígitos (R-UI-13)', () => {
     expect(css).toMatch(/\.res-card\.res-gold \.res-details \{ flex: 1 1 auto; min-width: 0; \}/);
     expect(css).toMatch(/\.res-card\.res-gold \.res-gold-plus \{ margin-left: auto; \}/);
+  });
+
+  it('Cash e Ouro com ponto de milhar em pt-BR e cards um pouco mais largos (R-UI-14)', () => {
+    expect(main).toContain("`$${p.cash.toLocaleString('pt-BR')}`");
+    expect(main).toContain("p.gold.toLocaleString('pt-BR')");
   });
 });
