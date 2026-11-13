@@ -4453,3 +4453,39 @@ html[data-ui="v2"] #app[data-tab="perfil"] { background-image: linear-gradient(r
 /* Ouro: a largura extra é para caber mais dígitos; o "+" fica colado na direita (R-UI-13) */
 html[data-ui="v2"] .res-card.res-gold .res-details { flex: 1 1 auto; min-width: 0; }
 html[data-ui="v2"] .res-card.res-gold .res-gold-plus { margin-left: auto; }
+
+/* ================================================================================================ */
+/* SEÇÃO A COM A ARTE DE FOLHAS (R-UI-16): retrato, nota do nome, classe/defesa, arma e atributos são peças de papel/cartão */
+/* ================================================================================================ */
+html[data-ui="v2"] #app[data-tab="perfil"] .hud-avatar-thumb, html[data-ui="v2"] #app[data-tab="perfil"] .hud-player-info, html[data-ui="v2"] #app[data-tab="perfil"] .defense-crest, html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box, html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact { isolation: isolate; }
+html[data-ui="v2"] #app[data-tab="perfil"] .hud-avatar-thumb::before, html[data-ui="v2"] #app[data-tab="perfil"] .hud-player-info::before, html[data-ui="v2"] #app[data-tab="perfil"] .defense-crest::before, html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box::before, html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact::before { content: ""; position: absolute; z-index: -1; pointer-events: none; background-repeat: no-repeat; background-size: 100% 100%; filter: drop-shadow(0 0.25rem 0.45rem rgba(0, 0, 0, 0.5)); }
+/* retrato: a foto fica dentro da moldura de tinta da folha */
+html[data-ui="v2"] #app[data-tab="perfil"] .hud-avatar-thumb { box-sizing: border-box; padding: 1.7rem 1.5rem 3.3rem 2.1rem; border: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible; }
+html[data-ui="v2"] #app[data-tab="perfil"] .hud-avatar-thumb::before { inset: 0; background-image: url("/assets/ficha/a-retrato.webp"); }
+/* nota do nome com a aba da família (atrás do retrato) */
+html[data-ui="v2"] #app[data-tab="perfil"] .hud-player-info { height: 7.2rem; background: none; box-shadow: none; border-radius: 0; }
+html[data-ui="v2"] #app[data-tab="perfil"] .hud-player-info::before { left: 0; right: 0; top: -1.9rem; bottom: 0; background-image: url("/assets/ficha/a-nota.webp"); }
+html[data-ui="v2"] #app[data-tab="perfil"] .hud-family-tab { left: 2.5rem; top: -1.75rem; min-width: 0; width: 9.8rem; height: 1.6rem; padding: 0; background: none; color: #3a2a14; font: 700 0.9rem/1.6rem var(--font-sans); }
+html[data-ui="v2"] #app[data-tab="perfil"] .hud-family-tab.no-family { background: none; color: #7a6a4a; font-weight: 600; }
+/* classe | defesa na placa de papel */
+html[data-ui="v2"] #app[data-tab="perfil"] .defense-crest { background: none; border: 0; border-radius: 0; }
+html[data-ui="v2"] #app[data-tab="perfil"] .defense-crest::before { inset: 0; background-image: url("/assets/ficha/a-placa.webp"); }
+html[data-ui="v2"] #app[data-tab="perfil"] .crest-class { border-right: 0; }
+html[data-ui="v2"] #app[data-tab="perfil"] .crest-def svg { display: none; }
+html[data-ui="v2"] #app[data-tab="perfil"] .cc-ico { stroke: #5b4524; }
+html[data-ui="v2"] #app[data-tab="perfil"] .cc-lbl, html[data-ui="v2"] #app[data-tab="perfil"] .crest-def .dc-lbl { color: #5b4524; }
+html[data-ui="v2"] #app[data-tab="perfil"] .crest-def .dc-val { top: 2.1rem; color: #3a2a14; }
+html[data-ui="v2"] #app[data-tab="perfil"] .crest-def .dc-lbl { top: 4.1rem; }
+/* arma: o lugar do item é a moldura de tinta da folha */
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box { position: relative; padding: 0; background: none; border: 0; border-radius: 0; aspect-ratio: 588 / 522; }
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box::before { inset: 0; background-image: url("/assets/ficha/a-arma.webp"); }
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box .panel-header-banner { position: absolute; top: 0.55rem; left: 1rem; margin: 0; padding: 0; border: 0; }
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box .panel-header-banner h3 { color: #3a2a14; }
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box .weapon-slot { position: absolute; left: 9%; right: 6%; top: 20%; bottom: 7%; width: auto; height: auto; aspect-ratio: auto; background: none; border: 0; outline: 0; }
+/* atributos: cartão rígido com 4 linhas; o + fica dentro do contorno desenhado */
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact { aspect-ratio: 1262 / 426; background: none; border: 0; padding: 0; }
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact::before { inset: 0; background-image: url("/assets/ficha/a-cartao.webp"); }
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact .attr-compact-list { position: absolute; left: 4%; right: 4.2%; top: 5.5%; bottom: 10%; height: auto; display: grid; grid-template-rows: repeat(4, 1fr); }
+html[data-ui="v2"] #app[data-tab="perfil"] .attr-c-row { border: 0; grid-template-columns: 1fr 5rem 0.7rem 3.6rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .attr-c-name, html[data-ui="v2"] #app[data-tab="perfil"] .attr-c-pts { color: #2b2015; }
+html[data-ui="v2"] #app[data-tab="perfil"] .btn-attr-plus { width: 3.1rem; height: 1.3rem; justify-self: center; }

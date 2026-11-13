@@ -197,4 +197,13 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(main).toContain("`$${p.cash.toLocaleString('pt-BR')}`");
     expect(main).toContain("p.gold.toLocaleString('pt-BR')");
   });
+
+  it('seção A com a arte de folhas: retrato, nota, classe/defesa, arma e atributos (R-UI-16)', () => {
+    for (const n of ['retrato', 'nota', 'placa', 'arma', 'cartao']) expect(existsSync(`public/assets/ficha/a-${n}.webp`)).toBe(true);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.hud-avatar-thumb \{ box-sizing: border-box; padding: 1\.7rem 1\.5rem 3\.3rem 2\.1rem;/);
+    expect(css).toMatch(/\.hud-player-info::before \{ left: 0; right: 0; top: -1\.9rem; bottom: 0; background-image: url\("\/assets\/ficha\/a-nota\.webp"\); \}/);
+    expect(css).toMatch(/\.defense-crest::before \{ inset: 0; background-image: url\("\/assets\/ficha\/a-placa\.webp"\); \}/);
+    expect(css).toMatch(/\.weapon-box \{ position: relative; padding: 0; background: none; border: 0; border-radius: 0; aspect-ratio: 588 \/ 522; \}/);
+    expect(css).toMatch(/\.profile-stats-panel\.compact \{ aspect-ratio: 1262 \/ 426; background: none; border: 0; padding: 0; \}/);
+  });
 });
