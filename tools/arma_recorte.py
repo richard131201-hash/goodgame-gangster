@@ -63,11 +63,14 @@ wgt = np.clip(np.minimum(ramp_y[:, None], ramp_x[None, :]), 0, 1)[..., None]
 clean[ry0:ry1, rx0:rx1] = patch * wgt + clean[ry0:ry1, rx0:rx1] * (1 - wgt)
 
 # --- corta papel liso do topo para a proporção do painel -------------------------------------------------------------
-CUT = (260, 262)
-F = 36
+ADD = 44   # papel liso a MAIS no topo (copiado da faixa lisa de cima), para o título respirar
+F = 20
+band = clean[170:170 + ADD]
+a_ = clean[:260]
 ramp = np.linspace(0, 1, F)[:, None, None]
-blend = clean[CUT[0] - F:CUT[0]] * (1 - ramp) + clean[CUT[1] - F:CUT[1]] * ramp
-img = np.vstack([clean[:CUT[0] - F], blend, clean[CUT[1]:]])
+top_blend = a_[-F:] * (1 - ramp) + band[:F] * ramp
+img = np.vstack([a_[:-F], top_blend, band[F:], clean[260:]])
+cy = -ADD
 Lp = img.mean(axis=2)
 paper = ndi.binary_fill_holes(ndi.binary_opening(Lp > 70, iterations=2))
 lab, n = ndi.label(paper)
@@ -81,5 +84,4 @@ Image.fromarray(rgba, "RGBA").save("public/assets/ficha/a-arma.webp", "WEBP", qu
 Image.fromarray(np.clip(img, 0, 255).astype(np.uint8)[y0:y1, x0:x1]).save("docs/arte/arma_ajustada.png")
 sw_, sh_ = x1 - x0, y1 - y0
 print("folha", sw_, sh_, "proporção", round(sw_ / sh_, 3))
-cy = CUT[1] - CUT[0]
 print("miolo da moldura (slot): left %.2f%% right %.2f%% top %.2f%% bottom %.2f%%" % ((FX0 - x0) / sw_ * 100, (sw_ - (FX1 - x0)) / sw_ * 100, (FY0 - cy - y0) / sh_ * 100, (sh_ - (FY1 - cy - y0)) / sh_ * 100))

@@ -4477,11 +4477,11 @@ html[data-ui="v2"] #app[data-tab="perfil"] .cc-lbl, html[data-ui="v2"] #app[data
 html[data-ui="v2"] #app[data-tab="perfil"] .crest-def .dc-val { top: 2.1rem; color: #3a2a14; }
 html[data-ui="v2"] #app[data-tab="perfil"] .crest-def .dc-lbl { top: 4.1rem; }
 /* arma: o lugar do item é a moldura de tinta da folha */
-html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box { position: relative; padding: 0; background: none; border: 0; border-radius: 0; aspect-ratio: 1840 / 1827; }
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box { position: relative; padding: 0; background: none; border: 0; border-radius: 0; aspect-ratio: 1840 / 1853; }
 html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box::before { inset: 0; background-image: url("/assets/ficha/a-arma.webp"); }
 html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box .panel-header-banner { position: absolute; top: 0.75rem; left: 1.5rem; margin: 0; padding: 0; border: 0; }
 html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box .panel-header-banner h3 { color: #3a2a14; }
-html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box .weapon-slot { position: absolute; left: 7.17%; right: 7.17%; top: 21.13%; bottom: 8.98%; width: auto; height: auto; aspect-ratio: auto; background: none; border: 0; outline: 0; }
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box .weapon-slot { position: absolute; left: 7.17%; right: 7.17%; top: 23.31%; bottom: 7.77%; width: auto; height: auto; aspect-ratio: auto; background: none; border: 0; outline: 0; }
 /* atributos: cartão rígido com 4 linhas; o + fica dentro do contorno desenhado */
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact { aspect-ratio: 1262 / 426; background: none; border: 0; padding: 0; }
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact::before { inset: 0; background-image: url("/assets/ficha/a-cartao.webp"); }
@@ -4554,4 +4554,6 @@ html[data-ui="v2"] #app[data-tab="perfil"] .weapon-slot-art.empty-weapon { backg
 html[data-ui="v2"] #app[data-tab="perfil"] .weapon-slot-art.empty-weapon > * { display: none; }
 /* a coluna da arma cabe na altura do Equipamento (placa 6,6 + vão + folha 13,9 <= 20,95 rem) e o título da arma é um pouco menor, para respirar acima da moldura */
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-weapon-panel { gap: 0.4rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box .panel-header-banner h3 { font-size: 1rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .defense-crest { height: 6.4rem; }
+/* os 3 títulos de seção (EQUIPAMENTO, ARMA, MALA) têm o mesmo tamanho: 1,1 rem */
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-gear-panel .panel-header-banner h3, html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box .panel-header-banner h3 { font-size: 1.1rem; }
