@@ -4448,8 +4448,23 @@ html[data-ui="v2"] #app[data-tab="perfil"] .stack::after { display: none; }
 /* ---- Ficha: controle alinhado à borda do conteúdo, carimbo idem, e fundo de teste (R-UI-10) ---- */
 html[data-ui="v2"] #app[data-tab="perfil"] .hud-system-actions { margin-right: 3.1rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .folder-stamp { right: 4.4rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] { background-image: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url("/assets/login-bg.webp"); background-size: cover; background-position: center; background-repeat: no-repeat; }
+html[data-ui="v2"] #app[data-tab="perfil"] { background-image: url("/assets/ficha/folha.webp"); background-size: cover; background-position: center; background-repeat: no-repeat; }
 
 /* Ouro: a largura extra é para caber mais dígitos; o "+" fica colado na direita (R-UI-13) */
 html[data-ui="v2"] .res-card.res-gold .res-details { flex: 1 1 auto; min-width: 0; }
 html[data-ui="v2"] .res-card.res-gold .res-gold-plus { margin-left: auto; }
+
+/* ================================================================================================ */
+/* IDENTIDADE "FOLHA" DA FICHA (R-UI-15): a Ficha é uma folha de papel; só os lugares dos itens têm moldura de tinta */
+/* ================================================================================================ */
+html[data-ui="v2"] #app[data-tab="perfil"] { --paper: #f2e8cd; --paper-2: rgba(236, 224, 190, 0.8); --ink: #2b2015; --soft: #5f4a2c; --line: #8a7048; --gold: #a9741d; --gold-text: #7a4e0a; --gold-ink: #fff4d6; --stamp: #a82a1b; --slot: rgba(255, 249, 232, 0.35); --slot-line: #6b5638; --good: #2f7a3a; --bad: #b5372a; --glyph: #4a3a22; --stitch: rgba(92, 64, 24, 0.85); }
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact, html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box, html[data-ui="v2"] #app[data-tab="perfil"] .defense-crest, html[data-ui="v2"] #app[data-tab="perfil"] .profile-gear-panel, html[data-ui="v2"] #app[data-tab="perfil"] .inventory-slots-grid { background: none; border-color: transparent; box-shadow: none; }
+html[data-ui="v2"] #app[data-tab="perfil"] .defense-crest { border-color: var(--line); }
+html[data-ui="v2"] #app[data-tab="perfil"] .duel-free { background: none; border: 0.1rem dashed var(--line); }
+/* lugar do item: moldura de tinta com quadro interno fino (como as marcações desenhadas na folha) */
+html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot, html[data-ui="v2"] #app[data-tab="perfil"] .weapon-slot, html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot { background: var(--slot); border: 0.12rem solid var(--slot-line); border-radius: 0.1rem; outline: 0.0625rem solid rgba(43, 32, 21, 0.45); outline-offset: -0.4rem; box-shadow: none; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.locked { background: repeating-linear-gradient(135deg, transparent 0 0.5rem, rgba(43, 32, 21, 0.07) 0.5rem 1rem), var(--slot); }
+/* barra de abas também em papel (sem couro) */
+html[data-ui="v2"] #app[data-tab="perfil"] .game-main-nav { background: var(--paper-2); border-color: var(--line); box-shadow: 0 0.2rem 0.6rem rgba(43, 32, 21, 0.3); }
+html[data-ui="v2"] #app[data-tab="perfil"] .game-nav-tab { background: transparent; border-color: var(--line); color: var(--soft); }
+html[data-ui="v2"] #app[data-tab="perfil"] .game-nav-tab.active { background: rgba(255, 249, 232, 0.55); border-color: var(--gold); }
