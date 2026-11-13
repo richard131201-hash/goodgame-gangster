@@ -4355,3 +4355,14 @@ html[data-ui="v2"] #app[data-tab="perfil"] .profile-gear-panel { height: auto; o
 html[data-ui="v2"] #app[data-tab="perfil"] .equipped-slots-grid { flex: 0 0 auto; grid-template-columns: repeat(4, 1fr); grid-template-rows: none; grid-auto-rows: 6.6rem; gap: 0.8rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .inventory-slots-grid { grid-template-rows: none; grid-auto-rows: 6.6rem; gap: 0.5rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .duel-free { height: 20.8rem; }
+
+/* ---- BRASÃO DE DEFESA e 4ª FILEIRA DA MALA (R-UI-5, R-MALA-11) ---- */
+.defense-crest, .inv-slot.locked-soon { display: none; }
+html[data-ui="v2"] #app[data-tab="perfil"] .defense-crest { position: relative; display: block; width: 6.3rem; height: 7.2rem; margin: 0 auto 0.8rem; cursor: help; }
+html[data-ui="v2"] #app[data-tab="perfil"] .defense-crest svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+html[data-ui="v2"] #app[data-tab="perfil"] .defense-crest svg path { fill: #30261a; stroke: var(--gold); stroke-width: 2.2; stroke-linejoin: round; }
+html[data-ui="v2"] #app[data-tab="perfil"] .defense-crest svg .dc-in { fill: none; stroke: rgba(212, 175, 55, 0.45); stroke-width: 1; }
+html[data-ui="v2"] #app[data-tab="perfil"] .defense-crest .dc-val { position: absolute; left: 0; right: 0; top: 1.5rem; text-align: center; font: 400 2.3rem/1 var(--font-num); color: var(--gold-text); }
+html[data-ui="v2"] #app[data-tab="perfil"] .defense-crest .dc-lbl { position: absolute; left: 0; right: 0; top: 4.5rem; text-align: center; font: 700 0.7rem/1 var(--font-sans); letter-spacing: 0.1rem; color: var(--soft); }
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.locked-soon { display: flex; cursor: default; }
+html[data-ui="v2"] #app[data-tab="perfil"] .duel-free { height: 27.9rem; }

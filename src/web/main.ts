@@ -79,6 +79,9 @@ import { initUi } from './fichaNova.js';
 import { weaponArtImg, sellableInShop } from './weaponArt.js';
 import { positionAmongNpcs, positionInRows, rankLabel } from './rankPosition.js';
 import { BAG_CAPACITY_MAX, BAG_UPGRADE_SLOTS, BIG_BAG_PRICE_GOLD } from '../shared/bag.js';
+
+/** Slots que a Mala MOSTRA no Estilo 2 (os além do máximo real são só desenho, "em breve"). */
+const BAG_DISPLAY_SLOTS = 20;
 import { isGearItem, rollRandomGear, GEAR_ICONS } from '../shared/gear.js';
 import { ITEM_SLOT_LABELS } from '../shared/itemRoll.js';
 
@@ -735,9 +738,14 @@ function renderInventoryGrid() {
     html += `<div class="inv-slot locked" data-locked="1" data-name="Mala maior · ${BIG_BAG_PRICE_GOLD} de ouro" role="button" tabindex="0" aria-label="Fileira bloqueada: comprar mala maior"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg></div>`;
   }
 
+  // Fileiras "em breve" (R-MALA-11): só desenho, sem compra; aparecem no Estilo 2 (a Mala visual tem 20 slots)
+  for (let i = Math.max(totalSlots, BAG_CAPACITY_MAX); i < BAG_DISPLAY_SLOTS; i++) {
+    html += `<div class="inv-slot locked locked-soon" aria-hidden="true"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg></div>`;
+  }
+
   grid.innerHTML = html;
 
-  grid.querySelectorAll<HTMLElement>('.inv-slot.locked').forEach(slot => {
+  grid.querySelectorAll<HTMLElement>('.inv-slot.locked:not(.locked-soon)').forEach(slot => {
     slot.addEventListener('click', offerBiggerBag);
     slot.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') {

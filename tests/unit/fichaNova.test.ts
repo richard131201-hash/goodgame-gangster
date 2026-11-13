@@ -80,4 +80,17 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/\.equipped-slots-grid \{[^}]*grid-auto-rows: 6\.6rem;/);
     expect(css).toMatch(/\.inventory-slots-grid \{[^}]*grid-auto-rows: 6\.6rem;/);
   });
+
+  it('brasão de defesa acima da arma e Mala com 4 fileiras (R-UI-5, R-MALA-11)', () => {
+    const html = readFileSync('index.html', 'utf8');
+    expect(html).toMatch(/<div class="profile-weapon-panel">\s*<div class="defense-crest" id="defense-crest"/);
+    expect(html).toContain('id="defense-val"');
+    expect(css).toMatch(/\.defense-crest, \.inv-slot\.locked-soon \{ display: none; \}/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.defense-crest \{ position: relative; display: block; width: 6\.3rem; height: 7\.2rem;/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.inv-slot\.locked-soon \{ display: flex;/);
+    expect(css).toMatch(/#app\[data-tab="perfil"\] \.duel-free \{ height: 27\.9rem; \}/);
+    // a 4ª fileira é só desenho: o clique de compra não vale para ela
+    expect(main).toContain('const BAG_DISPLAY_SLOTS = 20;');
+    expect(main).toContain(".inv-slot.locked:not(.locked-soon)");
+  });
 });
