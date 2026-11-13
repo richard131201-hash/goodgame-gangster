@@ -4118,7 +4118,11 @@ html[data-skin="bege"] .game-nav-tab .ico-img.ico-ficha, html[data-skin="bege"] 
   border: 0.22rem solid var(--stamp);
   border-radius: 0.4rem;
   opacity: 1;
-  filter: url(#stamp-grunge);
+  /* tinta falhada como MÁSCARA que escala com o carimbo (igual em qualquer zoom/tamanho de janela; o filtro antigo usava pixels fixos) */
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 96' preserveAspectRatio='none'%3E%3Cfilter id='g' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.3' numOctaves='2' seed='4'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 -9 6.5'/%3E%3C/filter%3E%3Crect width='300' height='96' filter='url(%23g)'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 96' preserveAspectRatio='none'%3E%3Cfilter id='g' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.3' numOctaves='2' seed='4'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 -9 6.5'/%3E%3C/filter%3E%3Crect width='300' height='96' filter='url(%23g)'/%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
   z-index: 25;
 }
 .folder-stamp { padding: 0.15rem 0.95rem; }

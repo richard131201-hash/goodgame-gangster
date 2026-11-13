@@ -49,8 +49,8 @@ describe('costura que contorna a aba ativa (R-PASTA-1)', () => {
 
   it('o selo é o "Papel" (R-SELO-1): fundo de papel opaco que cobre o que estiver atrás, moldura dupla, tinta falhada', () => {
     const html = readFileSync('index.html', 'utf8');
-    expect(html).toContain('id="stamp-grunge"');
-    expect(css).toMatch(/\.folder-stamp, \.notice-stamp \{[^}]*background: var\(--paper\);[^}]*opacity: 1;[^}]*filter: url\(#stamp-grunge\);/);
+    expect(html).not.toContain('stamp-grunge');
+    expect(css).toMatch(/\.folder-stamp, \.notice-stamp \{[^}]*background: var\(--paper\);[^}]*opacity: 1;[^}]*mask-image: url\(\"data:image\/svg\+xml,[^}]*feTurbulence[^}]*mask-size: 100% 100%;/);
     expect(css).toMatch(/\.folder-stamp::before, \.notice-stamp::before \{/);
   });
 
