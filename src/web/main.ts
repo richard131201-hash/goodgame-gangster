@@ -2355,7 +2355,6 @@ function initStitches() {
       host: shell,
       body: () => shell.querySelector<HTMLElement>('.stack > .folder'),
       top: () => document.getElementById('folder-title'),
-      left: () => shell.querySelector<HTMLElement>('.game-nav-tab.active'),
       insetRem: STITCH_INSET_REM,
     });
   }

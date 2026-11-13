@@ -4254,3 +4254,30 @@ html[data-ficha="nova"] #app[data-tab="perfil"] .attr-c-arrow { display: block; 
 html[data-ficha="nova"] #app[data-tab="perfil"] .doll-clip { display: block; position: absolute; left: 64.2%; top: -3.9%; width: 11.1%; height: 23.6%; right: auto; z-index: 7; color: #cfcab8; filter: drop-shadow(0 0.08rem 0.1rem rgba(0, 0, 0, 0.45)); }
 /* slot vazio da Mala: o carimbo VAZIO volta, em tinta marrom sobre o papel */
 html[data-ficha="nova"] #app[data-tab="perfil"] .inv-slot.empty::after { color: #6b4a22; opacity: 0.55; }
+
+/* ================================================================================================ */
+/* BARRA DE BOTÕES FLUTUANTE EMBAIXO, NO CENTRO (R-NAV-1): no lugar das abas de ícone na lateral esquerda */
+/* ================================================================================================ */
+#app { position: relative; }
+.hud-header { margin-bottom: 0.2rem; }
+.shell { grid-template-columns: minmax(0, 1fr); padding-top: 1.7rem; padding-bottom: 3.8rem; }
+.game-main-nav {
+  position: absolute;
+  left: 50%;
+  bottom: -0.9rem;
+  transform: translateX(-50%);
+  z-index: 60;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.5rem 0.75rem 0.45rem;
+  background: var(--cover-dark);
+  border: 0.1rem solid var(--cover-edge);
+  border-radius: 0.9rem 0.9rem 0.5rem 0.5rem;
+  box-shadow: 0 0.2rem 0.9rem rgba(0, 0, 0, 0.55);
+}
+.game-nav-tab { width: 4.3rem; height: 3.3rem; margin: 0; border: 0.1rem solid var(--cover-edge); border-radius: 0.6rem; transition: transform 0.12s, background 0.12s; }
+.game-nav-tab.active { width: 4.3rem; border-color: var(--cover-edge); transform: translateY(-0.4rem); box-shadow: inset 0 -0.2rem 0 var(--gold); }
+.game-nav-tab::after { left: 50%; top: auto; bottom: calc(100% + 0.7rem); transform: translateX(-50%); }
+.game-nav-tab.active::after { bottom: calc(100% + 0.9rem); }

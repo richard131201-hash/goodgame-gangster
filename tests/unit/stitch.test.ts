@@ -33,7 +33,7 @@ describe('costura que contorna a aba ativa (R-PASTA-1)', () => {
 
   it('está ligada à pasta principal, à subpasta da Mala e aos avisos; a costura antiga some', () => {
     expect(main).toContain('attachStitch({');
-    expect(main).toContain("left: () => shell.querySelector<HTMLElement>('.game-nav-tab.active')");
+    expect(main).not.toContain("left: () => shell.querySelector"); // as abas de ícone saíram da lateral: a costura só contorna o título e as subabas
     expect(main).toContain("top: () => sub.querySelector<HTMLElement>('.sub-tab.active')");
     expect(notice).toContain("top: () => card.querySelector<HTMLElement>('.notice-ear')");
     expect(css).toMatch(/\.folder\.has-stitch::after, \.sub-folder\.has-stitch::after, \.notice-card\.has-stitch::after \{ display: none; \}/);

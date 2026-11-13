@@ -23,7 +23,8 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
   it('todo o visual novo fica atrás de html[data-ficha="nova"] na aba Ficha (nada muda na antiga)', () => {
     const i = css.indexOf('FICHA NOVA, EM TESTE');
     expect(i).toBeGreaterThan(0);
-    const bloco = css.slice(i);
+    const fim = css.indexOf('BARRA DE BOTÕES FLUTUANTE', i);
+    const bloco = css.slice(i, fim > 0 ? fim : undefined);
     const regras = bloco.split('\n').filter(l => l.includes('{') && !l.trim().startsWith('/*') && !l.trim().startsWith('@'));
     expect(regras.length).toBeGreaterThan(20);
     for (const l of regras) expect(l.startsWith('html[data-ficha="nova"] #app[data-tab="perfil"]')).toBe(true);

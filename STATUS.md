@@ -25,6 +25,7 @@ Jogo de navegador de gângsteres, nostálgico (era Goodgame Gangster), meta de r
 | Nome | **Corrigido (C4):** título da aba e tela de criação dizem "Mobster Rise". Comentários internos e a chave do save ainda têm o nome antigo (jogador não vê) | `index.html` |
 
 ## Banco de dados (2026-11-11)
+- **Barra inferior (2026-11-12):** os botões de navegação saíram da lateral e estão numa barra no centro, embaixo (R-NAV-1). Visto no localhost (Ficha e Missões). Não visto: conta real, trocar de aba clicando, celular, tema bege, Mercado Negro com a barra.
 - **Ficha nova, ajustes (2026-11-12):** clipe por cima da foto, atributos menores e voltaram a alternar com o mouse, carimbo VAZIO na Mala. Moldura nova da IA sem quinas; os fantasmas da Mala foram apagados para aparecer o VAZIO. Visto no localhost com dados simulados (equipamento cheio, mala vazia, 3ª fileira liberada e trancada).
 - **Ficha nova oficial (2026-11-12):** a Ficha usa a moldura desenhada por IA (R-FICHA-ARTE-1). Visto no localhost com dados simulados (equipamento, mala, cadeados, caderno). Não visto: conta real com itens e avatar, arrastar e soltar, tema bege, celular, trocar de subaba, Mercado Negro.
 - **Cena de Missões, protótipo (2026-11-12):** a aba Missões mostra o fundo aprovado com 3 bonecos provisórios (leve, médio e pesado) e missões de exemplo sorteadas (R-MISSAO-CENA-1). Visto no localhost, tema escuro. Falta: arte dos chefões, sorteio no servidor, ligar às missões reais, celular, tema bege.
