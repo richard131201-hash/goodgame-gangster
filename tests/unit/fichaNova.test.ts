@@ -284,7 +284,7 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
   it('cartão de atributos na folha da Arma: proporção 1540/460, 4 faixas iguais e caixas dos botões na medida (R-UI-22)', () => {
     expect(existsSync('public/assets/ficha/a-cartao.webp')).toBe(true);
     expect(css).toMatch(/\.profile-stats-panel\.compact \{ aspect-ratio: 1540 \/ 460;/);
-    expect(css).toMatch(/\.attr-compact-list \{ position: absolute; left: 6\.1%; right: 5\.55%; top: 9\.83%; bottom: 9\.57%;[^}]*grid-template-rows: repeat\(4, 1fr\);/);
+    expect(css).toMatch(/\.attr-compact-list \{ position: absolute; left: 5\.7%; right: 5\.7%; top: 9\.83%; bottom: 9\.57%;[^}]*grid-template-rows: repeat\(4, 1fr\);/);
     expect(css).toMatch(/\.attr-c-row \{ border: 0; grid-template-columns: 1fr 4\.6rem 0\.7rem 3\.4rem; \}/);
     expect(css).toMatch(/\.btn-attr-plus \{ width: 3\.3rem; height: 1\.2rem;/);
   });
