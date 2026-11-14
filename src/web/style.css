@@ -4559,7 +4559,7 @@ html[data-ui="v2"] #app[data-tab="perfil"] .profile-gear-panel .panel-header-ban
 /* ================================================================================================ */
 /* MOUSE DO JOGO (R-UI-20): três cursores desenhados na identidade (papel e tinta): normal, clicar (mão apontando) e arrastar (mão fechada) */
 /* ================================================================================================ */
-html[data-ui="v2"] { --cur-normal: url("/assets/cursors/normal.png") 1 1, auto; --cur-pointer: url("/assets/cursors/pointer.png") 7 1, pointer; --cur-grab: url("/assets/cursors/grab.png") 20 18, grab; }
+html[data-ui="v2"] { --cur-normal: url("/assets/cursors/normal.png") 1 1, auto; --cur-pointer: url("/assets/cursors/pointer.png") 7 1, pointer; --cur-grab: url("/assets/cursors/grab.png") 15 14, grab; }
 html[data-ui="v2"] body { cursor: var(--cur-normal); }
 html[data-ui="v2"] #app [draggable="true"] { cursor: var(--cur-grab); }
 /* o cadeado abre na hora, sem transição */

@@ -1,9 +1,12 @@
-# Cursores do jogo (arte da IA, fundo verde): tira o verde (vira transparência), recorta, reduz para 40 px e imprime o ponto do clique. (R-UI-20)
+# Cursores do jogo (arte da IA, fundo verde): tira o verde (vira transparência), recorta, reduz para 32 px e imprime o ponto do clique. (R-UI-20)
 # Uso: python -I tools/cursores_recorte.py        Entrada: docs/arte/cursores/{seta,clicavel,segurando}.jpg   Saída: public/assets/cursors/*.png
 import numpy as np
 from PIL import Image
+from scipy import ndimage as ndi
 
-S = 40
+S = 32          # tamanho final do cursor (px)
+CONTEUDO = 28   # lado maior do desenho dentro dele
+GROSSURA = 11   # engrossa o contorno vermelho em px da imagem original (2000 px)
 ARQ = {"normal": "seta", "pointer": "clicavel", "grab": "segurando"}
 for nome, arq in ARQ.items():
     A = np.array(Image.open(f"docs/arte/cursores/{arq}.jpg").convert("RGB")).astype(float)
@@ -13,11 +16,15 @@ for nome, arq in ARQ.items():
     alpha[alpha > 0.97] = 1
     g2 = np.minimum(g, np.maximum(r, b) + 6)            # tira o respingo verde das bordas
     rgb = np.dstack([r, g2, b])
+    vermelho = (r > g + 50) & (r > b + 50)
+    perto = ndi.distance_transform_edt(~vermelho) <= GROSSURA     # contorno mais grosso (cresce para dentro e para fora)
+    rgb[perto] = (140, 28, 28)
+    alpha[perto] = 1
     ys, xs = np.where(alpha > 0.5)
     y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
     rgba = np.dstack([rgb, alpha * 255])[y0:y1, x0:x1].astype(np.uint8)
     im = Image.fromarray(rgba, "RGBA")
-    k = (S - 2) / max(im.size)
+    k = CONTEUDO / max(im.size)
     im = im.resize((max(1, round(im.width * k)), max(1, round(im.height * k))), Image.LANCZOS)
     tela = Image.new("RGBA", (S, S), (0, 0, 0, 0))
     ox, oy = (S - im.width) // 2, (S - im.height) // 2
