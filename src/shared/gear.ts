@@ -1,5 +1,5 @@
 import { hashSeed, createPRNG } from '../engine/prng.js';
-import { LEGACY_GEAR_ITEMS, type GameItem, type GearInfo } from '../web/gameData.js';
+import { LEGACY_GEAR_ITEMS, SHOP_ITEMS, type GameItem, type GearInfo } from '../web/gameData.js';
 import { ITEM_ATTRS, ITEM_SLOTS, itemPoints, rollItem, type ItemAttr, type ItemSlot } from './itemRoll.js';
 
 /**
@@ -144,6 +144,23 @@ export function migrateLegacyGear(p: Convertible): boolean {
     if (item.id === p.equipped.armorId || item.id === p.equipped.accessoryId) p.equipped.gear![slot] = converted.id;
     changed = true;
     return converted;
+  });
+  // item gravado só com o essencial (id, posição e dados do sorteio), como o banco pode guardar numa concessão: monta o item inteiro
+  // (nome, ícone, tipo...), senão a Mala mostraria "undefined" e a arte não apareceria
+  p.inventory = p.inventory.map(item => {
+    const raw = item as GameItem & { gear?: GearInfo };
+    if (raw.gear && (raw.type !== 'gear' || !raw.name || !raw.icon)) {
+      changed = true;
+      return { ...buildGearItem(raw.id, raw.gear), ...(raw.slot === undefined ? {} : { slot: raw.slot }) };
+    }
+    if (!raw.name || !raw.icon || !raw.type) {
+      const shop = SHOP_ITEMS.find(i => i.id === raw.id);
+      if (shop) {
+        changed = true;
+        return { ...shop, ...(raw.slot === undefined ? {} : { slot: raw.slot }) };
+      }
+    }
+    return item;
   });
   if ('armorId' in p.equipped || 'accessoryId' in p.equipped) {
     delete p.equipped.armorId;
