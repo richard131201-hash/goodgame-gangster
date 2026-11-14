@@ -265,7 +265,7 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
 
   it('mouse do jogo: normal, clicar e arrastar, desenhados na identidade (R-UI-20)', () => {
     for (const n of ['normal', 'pointer', 'grab']) expect(existsSync(`public/assets/cursors/${n}.png`)).toBe(true);
-    expect(css).toMatch(/html\[data-ui="v2"\] \{ --cur-normal: url\("\/assets\/cursors\/normal\.png"\) 1 1, auto; --cur-pointer: url\("\/assets\/cursors\/pointer\.png"\) 7 1, pointer; --cur-grab: url\("\/assets\/cursors\/grab\.png"\) 15 14, grab; \}/);
+    expect(css).toMatch(/html\[data-ui="v2"\] \{ --cur-normal: url\("\/assets\/cursors\/normal\.png"\) 1 1, auto; --cur-pointer: url\("\/assets\/cursors\/pointer\.png"\) 7 1, pointer; --cur-grab: url\("\/assets\/cursors\/grab\.png"\) 17 16, grab; \}/);
     expect(css).toMatch(/html\[data-ui="v2"\] body \{ cursor: var\(--cur-normal\); \}/);
     expect(css).not.toMatch(/cursor: pointer;/);
     expect(css).toMatch(/cursor: var\(--cur-pointer, pointer\)/);
