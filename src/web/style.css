@@ -4483,14 +4483,14 @@ html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box .panel-header-banner { po
 html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box .panel-header-banner h3 { color: #3a2a14; }
 html[data-ui="v2"] #app[data-tab="perfil"] .weapon-box .weapon-slot { position: absolute; left: 7.17%; right: 7.17%; top: 23.31%; bottom: 7.77%; width: auto; height: auto; aspect-ratio: auto; background: none; border: 0; outline: 0; }
 /* atributos: cartão rígido com 4 linhas; o + fica dentro do contorno desenhado */
-html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact { aspect-ratio: 1877 / 460; background: none; border: 0; padding: 0; }
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact { aspect-ratio: 1540 / 460; background: none; border: 0; padding: 0; }
 html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact::before { inset: 0; background-image: url("/assets/ficha/a-cartao.webp"); }
-html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact .attr-compact-list { position: absolute; left: 5%; right: 4.55%; top: 9.83%; bottom: 9.57%; height: auto; display: grid; grid-template-rows: repeat(4, 1fr); }
-html[data-ui="v2"] #app[data-tab="perfil"] .attr-c-row { border: 0; grid-template-columns: 1fr 4.2rem 0.6rem 2.8rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact .attr-compact-list { position: absolute; left: 6.1%; right: 5.55%; top: 9.83%; bottom: 9.57%; height: auto; display: grid; grid-template-rows: repeat(4, 1fr); }
+html[data-ui="v2"] #app[data-tab="perfil"] .attr-c-row { border: 0; grid-template-columns: 1fr 4.6rem 0.7rem 3.4rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .attr-c-name, html[data-ui="v2"] #app[data-tab="perfil"] .attr-c-pts { color: #2b2015; }
-html[data-ui="v2"] #app[data-tab="perfil"] .btn-attr-plus { width: 2.7rem; height: 0.95rem; font-size: 0.95rem; justify-self: center; }
-html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact .attr-c-name { font-size: 0.9rem; }
-html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact .attr-c-pts { font-size: 1.1rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .btn-attr-plus { width: 3.3rem; height: 1.2rem; font-size: 1.1rem; justify-self: center; }
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact .attr-c-name { font-size: 1.05rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .profile-stats-panel.compact .attr-c-pts { font-size: 1.3rem; }
 
 /* ================================================================================================ */
 /* SEÇÃO B (EQUIPAMENTO) COM A ARTE DE FOLHA (R-UI-17): uma folha com 8 molduras de tinta e o desenho fantasma de cada item */

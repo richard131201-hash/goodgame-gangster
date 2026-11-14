@@ -14,6 +14,12 @@ ys, xs = np.where(paper)
 x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1
 img = A[y0:y1, x0:x1]
 pap = paper[y0:y1, x0:x1].astype(float)
+CUT_A, CUT_B, FEATHER = 600, 913, 24   # faixa de papel liso (entre o nome e os botões) que sai: a folha fica menos comprida
+f = np.linspace(0, 1, FEATHER)
+def splice_x(a):
+    ra = f[None, :] if a.ndim == 2 else f[None, :, None]
+    blend = a[:, CUT_A - FEATHER:CUT_A] * (1 - ra) + a[:, CUT_B:CUT_B + FEATHER] * ra
+    return np.concatenate([a[:, :CUT_A - FEATHER], blend, a[:, CUT_B + FEATHER:]], axis=1)
 H, W = img.shape[:2]
 
 # linhas horizontais (moldura de cima, 3 divisórias, moldura de baixo), medidas no meio da folha
@@ -38,8 +44,9 @@ def remap(a):
     i0 = np.clip(np.floor(ysrc).astype(int), 0, H - 2)
     t = (ysrc - i0)[:, None] if a.ndim == 2 else (ysrc - i0)[:, None, None]
     return a[i0] * (1 - t) + a[i0 + 1] * t
-img2 = remap(img)
-pap2 = remap(pap)
+img2 = splice_x(remap(img))
+pap2 = splice_x(remap(pap))
+W = img2.shape[1]
 alpha = np.clip(ndi.gaussian_filter(ndi.binary_erosion(pap2 > 0.5, iterations=1).astype(float), 0.8), 0, 1)
 rgba = np.dstack([np.clip(img2, 0, 255).astype(np.uint8), (alpha * 255).astype(np.uint8)])
 Image.fromarray(rgba, "RGBA").save("public/assets/ficha/a-cartao.webp", "WEBP", quality=90, method=6)
@@ -51,6 +58,6 @@ Lc = img2.mean(axis=2)
 print("linhas y%:", [round(v / H * 100, 2) for v in dst])
 colp = (200 - Lc[60:-60, :]).clip(0).mean(axis=0)
 print("colunas escuras x%:", [round(i / W * 100, 2) for i in range(2, W - 2) if colp[i] > 40 and colp[i] >= colp[i - 2] and colp[i] >= colp[i + 2]])
-bx = (200 - Lc[:, 1700:1710]).clip(0).mean(axis=1)
+bx = (200 - Lc[:, 1700 - (CUT_B - CUT_A):1710 - (CUT_B - CUT_A)]).clip(0).mean(axis=1)
 runs = [i for i in range(H) if bx[i] > 40]
 print("caixas (varredura x=1700-1710) y%:", [round(i / H * 100, 2) for i in runs][:40])
