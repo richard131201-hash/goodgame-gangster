@@ -76,6 +76,7 @@ import { attachStitch, STITCH_INSET_REM } from './stitch.js';
 import { initMissionScene } from './missionScene.js';
 import { initUi } from './fichaNova.js';
 import { weaponArtImg, sellableInShop } from './weaponArt.js';
+import { gearArtImg } from './gearArt.js';
 import { positionAmongNpcs, positionInRows, rankLabel } from './rankPosition.js';
 import { bagBuyableRow, bagRowOf, bagSlotIsOpen, bagSlotPrice } from '../shared/bag.js';
 
@@ -717,7 +718,7 @@ function renderGearSlots() {
       return `<div class="gear-slot" data-gear-slot="${slot}" title="${ITEM_SLOT_LABELS[slot]}: vazio"><span class="slot-badge">${ITEM_SLOT_LABELS[slot]}</span><svg class="gear-ico ghost" aria-hidden="true"><use href="#g-${slot}"/></svg></div>`;
     }
     const idx = p.inventory.indexOf(item);
-    return `<div class="gear-slot filled" data-gear-slot="${slot}" data-bag-tip="${idx}" draggable="true"><span class="slot-badge">${ITEM_SLOT_LABELS[slot]}</span><svg class="gear-ico" aria-hidden="true"><use href="#g-${slot}"/></svg></div>`;
+    return `<div class="gear-slot filled${gearArtImg(item) ? ' has-art' : ''}" data-gear-slot="${slot}" data-bag-tip="${idx}" draggable="true"><span class="slot-badge">${ITEM_SLOT_LABELS[slot]}</span>${gearArtImg(item, 'gear-art') || `<svg class="gear-ico" aria-hidden="true"><use href="#g-${slot}"/></svg>`}</div>`;
   }).join('');
 }
 
@@ -741,7 +742,7 @@ function renderInventoryGrid() {
       html += `
         <div class="inv-slot ${weaponDef ? 'is-weapon' : ''}" data-inv-idx="${index}" data-slot="${i}" draggable="true"
              data-bag-tip="${index}" ${weaponDef ? `data-weapon-id="${weaponDef.id}"` : ''}>
-          ${weaponDef && weaponArtImg(weaponDef.id) ? weaponArtImg(weaponDef.id, 'inv-art') : `<span>${item.icon}</span>`}
+          ${weaponDef && weaponArtImg(weaponDef.id) ? weaponArtImg(weaponDef.id, 'inv-art') : gearArtImg(item, 'inv-art') || `<span>${item.icon}</span>`}
         </div>
       `;
     } else if (bagSlotIsOpen(open, i)) {
@@ -928,7 +929,7 @@ function showBagItemTooltip(el: HTMLElement) {
       ? `${ITEM_SLOT_LABELS[item.gear.slot]} · nível ${item.gear.level}`
       : ITEM_TYPE_LABEL[item.type] ?? item.type;
   weaponTooltip.innerHTML = `
-    ${weaponDef ? weaponArtImg(weaponDef.id, 'wtip-art') : ''}
+    ${weaponDef ? weaponArtImg(weaponDef.id, 'wtip-art') : gearArtImg(item, 'wtip-art')}
     <div class="wtip-title">${item.icon} ${escHtml(item.name)}</div>
     <div class="wtip-cat">${cat}</div>
     ${lines.map(l => `<div class="wtip-dmg">${l}</div>`).join('')}

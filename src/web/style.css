@@ -4583,3 +4583,8 @@ html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot:nth-child(n+11):nth-child(-
 html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot:nth-child(n+16) { --fy: 0.015rem; }
 html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot:nth-child(n+11):not(.locked) { background: url("/assets/ficha/c-slot-livre.webp") var(--fx) var(--fy) / 101.79% 103.11% no-repeat; }
 html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.empty:nth-child(n+11) { background: url("/assets/ficha/c-mala-vazia.webp") 49.3% 59.5% / 51.52% 62.16% no-repeat, url("/assets/ficha/c-slot-livre.webp") var(--fx) var(--fy) / 101.79% 103.11% no-repeat; }
+
+/* ===============================================================
+   R-ARTE-6 | Arte dos equipamentos (chapéus por enquanto): imagem 4:3 sem fundo, no slot do Equipamento e na Mala
+   =============================================================== */
+html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot.filled .gear-art { position: relative; width: 84%; height: 82%; object-fit: contain; filter: drop-shadow(0 0 0.07rem rgba(255, 250, 235, 0.95)) drop-shadow(0 0.18rem 0.22rem rgba(0, 0, 0, 0.5)); }
