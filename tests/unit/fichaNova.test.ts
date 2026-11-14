@@ -290,9 +290,9 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
   });
 
   it('texto do cartão de atributos em Courier Prime negrito, nomes em maiúsculas e números com espaço de 0,05 (R-UI-23)', () => {
-    expect(css).toMatch(/\.attr-c-name, [^{]*\.attr-c-pts \{ font-family: "Courier Prime"[^}]*font-weight: 700; font-size: 1rem; line-height: 1; color: #2b2015;/);
+    expect(css).toMatch(/\.attr-c-name, [^{]*\.attr-c-pts \{ font-family: "Courier Prime"[^}]*font-weight: 700; font-size: 1rem; line-height: 1; color: #2b2015; position: relative; top: 0\.12rem;/);
     expect(css).toMatch(/\.profile-stats-panel\.compact \.attr-c-name \{ letter-spacing: 0\.06em; text-transform: uppercase; \}/);
-    expect(css).toMatch(/\.profile-stats-panel\.compact \.attr-c-pts \{ letter-spacing: 0\.05em; text-align: right; justify-self: end; padding-right: 0\.3em; font-size: 1\.04rem;/);
+    expect(css).toMatch(/\.profile-stats-panel\.compact \.attr-c-pts \{ letter-spacing: 0\.05em; text-align: right; justify-self: end; padding-right: 0\.3em; font-size: 1\.09rem;/);
     expect(css).toMatch(/\.show-eff \.attr-c-name, [^{]*\.show-eff \.attr-c-pts \{ color: #2b2015; \}/);
     expect(readFileSync('index.html', 'utf8')).toContain('family=Courier+Prime:wght@700');
   });
