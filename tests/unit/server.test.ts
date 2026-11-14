@@ -182,17 +182,24 @@ describe('servidor: conferir o save (R-SERVIDOR-3)', () => {
     expect((await send(db, s)).status).toBe(422);
   });
 
-  it('mala maior (R-MALA-10): capacidade só 10 ou 15, nunca diminui, e não vale sem ouro para pagar', async () => {
+  it('slots da Mala (R-MALA-12): só 10 a 19, fileira de cima completa antes da de baixo, nunca diminui, e não vale sem ouro para pagar', async () => {
     const db = await setup();
     const s = saveOf(db);
-    for (const ruim of [11, 9, 16, 20, 14.5, -5]) expect((await send(db, { ...s, bagCapacity: ruim })).status, String(ruim)).toBe(422);
-    // nível 1 nunca teve 300 de ouro: a mala maior não cola
+    for (const ruim of [[9], [20], [10, 10], [15], [10, 11, 12, 13, 15], [10.5]]) {
+      expect((await send(db, { ...s, bagOpen: ruim, bagCapacity: 10 + ruim.length })).status, JSON.stringify(ruim)).toBe(422);
+    }
+    // capacidade que não bate com os slots
+    expect((await send(db, { ...s, bagOpen: [10], bagCapacity: 15 })).status).toBe(422);
+    // nível 1 nunca teve ouro para pagar um slot: não cola
+    expect((await send(db, { ...s, bagOpen: [10], bagCapacity: 11 })).status).toBe(422);
+    // save antigo só com a capacidade 15 também precisa ter pago
     expect((await send(db, { ...s, bagCapacity: 15 })).status).toBe(422);
-    // quem já tem a mala maior não pode voltar para 10
-    db.rows.get('u1')!.save.bagCapacity = 15;
-    expect((await send(db, { ...s, bagCapacity: 10 })).status).toBe(422);
-    expect((await send(db, { ...s, bagCapacity: 15 })).status).toBe(200);
-    expect((db.rows.get('u1')!.save as { bagCapacity?: number }).bagCapacity).toBe(15);
+    // quem já tem slots não pode perdê-los
+    db.rows.get('u1')!.save.bagOpen = [10, 11];
+    db.rows.get('u1')!.save.bagCapacity = 12;
+    expect((await send(db, { ...s, bagOpen: [10], bagCapacity: 11 })).status).toBe(422);
+    expect((await send(db, { ...s, bagOpen: [10, 11], bagCapacity: 12 })).status).toBe(200);
+    expect((db.rows.get('u1')!.save as { bagOpen?: number[] }).bagOpen).toEqual([10, 11]);
   });
 
   it('a posição de cada item na Mala (slot) é guardada; posição inválida é recusada (R-MALA-4)', async () => {

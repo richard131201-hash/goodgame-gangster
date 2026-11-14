@@ -41,7 +41,6 @@ import {
   compareWeapons,
   formatDelta,
   bagEntries,
-  bagSlotCount,
   isWeaponItem,
   type WeaponComparison,
 } from './weaponSlot.js';
@@ -78,7 +77,7 @@ import { initMissionScene } from './missionScene.js';
 import { initUi } from './fichaNova.js';
 import { weaponArtImg, sellableInShop } from './weaponArt.js';
 import { positionAmongNpcs, positionInRows, rankLabel } from './rankPosition.js';
-import { BAG_CAPACITY_MAX, BAG_UPGRADE_SLOTS, BIG_BAG_PRICE_GOLD } from '../shared/bag.js';
+import { bagBuyableRow, bagRowOf, bagSlotIsOpen, bagSlotPrice } from '../shared/bag.js';
 
 /** Slots que a Mala MOSTRA no Estilo 2 (os além do máximo real são só desenho, "em breve"). */
 const BAG_DISPLAY_SLOTS = 20;
@@ -732,6 +731,8 @@ function renderInventoryGrid() {
   const totalSlots = layout.length;
   let html = '';
 
+  const open = gameState.getBagOpen();
+  const buyRow = bagBuyableRow(open);
   for (let i = 0; i < totalSlots; i++) {
     const entry = layout[i];
     if (entry) {
@@ -743,29 +744,26 @@ function renderInventoryGrid() {
           ${weaponDef && weaponArtImg(weaponDef.id) ? weaponArtImg(weaponDef.id, 'inv-art') : `<span>${item.icon}</span>`}
         </div>
       `;
-    } else {
+    } else if (bagSlotIsOpen(open, i)) {
       html += `<div class="inv-slot empty" data-slot="${i}"></div>`;
+    } else if (bagRowOf(i) === buyRow) {
+      // slot que pode ser comprado agora (R-MALA-12): um por vez, na ordem que o jogador quiser dentro da fileira
+      html += `<div class="inv-slot locked" data-locked="1" data-lock-slot="${i}" data-name="Slot · ${bagSlotPrice(i)} de ouro" role="button" tabindex="0" aria-label="Slot bloqueado: comprar por ${bagSlotPrice(i)} de ouro"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg></div>`;
+    } else {
+      // fileira de baixo: só fica disponível depois que a de cima for toda comprada
+      html += `<div class="inv-slot locked locked-soon" aria-hidden="true"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg></div>`;
     }
-  }
-
-  // Fileira bloqueada (R-MALA-10): enquanto a Mala não está no máximo, mostra a próxima fileira trancada
-  for (let i = totalSlots; i < BAG_CAPACITY_MAX; i++) {
-    html += `<div class="inv-slot locked" data-locked="1" data-name="Mala maior · ${BIG_BAG_PRICE_GOLD} de ouro" role="button" tabindex="0" aria-label="Fileira bloqueada: comprar mala maior"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg></div>`;
-  }
-
-  // Fileiras "em breve" (R-MALA-11): só desenho, sem compra; aparecem no Estilo 2 (a Mala visual tem 20 slots)
-  for (let i = Math.max(totalSlots, BAG_CAPACITY_MAX); i < BAG_DISPLAY_SLOTS; i++) {
-    html += `<div class="inv-slot locked locked-soon" aria-hidden="true"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg></div>`;
   }
 
   grid.innerHTML = html;
 
   grid.querySelectorAll<HTMLElement>('.inv-slot.locked:not(.locked-soon)').forEach(slot => {
-    slot.addEventListener('click', offerBiggerBag);
+    const slotIdx = parseInt(slot.dataset.lockSlot ?? '-1', 10);
+    slot.addEventListener('click', () => offerBagSlot(slotIdx));
     slot.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        offerBiggerBag();
+        offerBagSlot(slotIdx);
       }
     });
   });
@@ -778,25 +776,26 @@ function renderInventoryGrid() {
   });
 }
 
-/** Clicar na fileira bloqueada: oferece a mala maior por ouro (R-MALA-10). */
-function offerBiggerBag() {
+/** Clicar num slot bloqueado: oferece a compra DESSE slot (R-MALA-12). */
+function offerBagSlot(slot: number) {
   const p = gameState.getPlayer();
-  const reason = gameState.bagUpgradeBlockReason();
-  if (reason === 'maximo') return;
+  const reason = gameState.bagSlotBlockReason(slot);
+  if (reason === 'indisponivel') return;
+  const price = bagSlotPrice(slot);
   if (reason === 'ouro') {
-    void notify({ kind: 'ouro', title: 'Faltam ouros', message: `A mala maior custa ${BIG_BAG_PRICE_GOLD} de ouro e você tem ${p.gold}. Faltam ${BIG_BAG_PRICE_GOLD - p.gold}.` });
+    void notify({ kind: 'ouro', title: 'Faltam ouros', message: `Este slot custa ${price} de ouro e você tem ${p.gold}. Faltam ${price - p.gold}.` });
     return;
   }
   void ask({
     kind: 'ouro',
-    title: 'Mala maior',
-    message: `Uma mala maior libera mais ${BAG_UPGRADE_SLOTS} slots (uma fileira) por ${BIG_BAG_PRICE_GOLD} de ouro. Você tem ${p.gold}. Deseja comprar?`,
+    title: 'Comprar slot',
+    message: `Liberar este slot da Mala custa ${price} de ouro. Você tem ${p.gold}. Deseja comprar?`,
     okLabel: 'Comprar',
     cancelLabel: 'Agora não',
   }).then(ok => {
-    if (!ok || !gameState.buyBiggerBag()) return;
+    if (!ok || !gameState.buyBagSlot(slot)) return;
     renderInventoryGrid();
-    void notify({ kind: 'sucesso', title: 'Mala maior', message: 'Você liberou mais uma fileira de slots na Mala.', autoCloseMs: 2400 });
+    void notify({ kind: 'sucesso', title: 'Slot liberado', message: 'Você liberou mais um slot na Mala.', autoCloseMs: 2400 });
   });
 }
 

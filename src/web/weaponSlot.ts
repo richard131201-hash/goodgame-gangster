@@ -1,6 +1,6 @@
 import { FISTS, getWeaponById, type WeaponDef } from '../engine/weapons.js';
 import type { GameItem } from './gameData.js';
-import { BAG_CAPACITY_INITIAL, BAG_COLUMNS } from '../shared/bag.js';
+import { BAG_CAPACITY_INITIAL, BAG_COLUMNS, BAG_CAPACITY_MAX, bagOpenOf, bagCapacityFromOpen, bagSlotIsOpen } from '../shared/bag.js';
 export { BAG_CAPACITY_INITIAL, BAG_COLUMNS };
 
 /**
@@ -102,8 +102,8 @@ export function bagEntries(inventory: GameItem[], weaponId: string | null | unde
 /** Capacidade inicial da mochila (R-MOCHILA-1): 10 itens, em 2 linhas de 5. */
 
 /** Capacidade do jogador: saves antigos não têm o campo e valem a capacidade inicial. */
-export function bagCapacityOf(player: { bagCapacity?: number }): number {
-  return Math.max(BAG_CAPACITY_INITIAL, player.bagCapacity ?? BAG_CAPACITY_INITIAL);
+export function bagCapacityOf(player: { bagCapacity?: number; bagOpen?: number[] }): number {
+  return bagCapacityFromOpen(bagOpenOf(player));
 }
 
 /** Quantos itens estão na mochila (a arma do espaço da arma não conta). */
@@ -126,17 +126,20 @@ export function bagLayout(
   weaponId: string | null | undefined,
   totalSlots: number,
   gearIds: readonly string[] = [],
+  open: readonly number[] = Array.from({ length: BAG_CAPACITY_MAX - BAG_CAPACITY_INITIAL }, (_, i) => BAG_CAPACITY_INITIAL + i),
 ): (BagEntry | null)[] {
   const cells: (BagEntry | null)[] = Array.from({ length: totalSlots }, () => null);
   const pending: BagEntry[] = [];
   for (const entry of bagEntries(inventory, weaponId, gearIds)) {
     const s = entry.item.slot;
-    if (typeof s === 'number' && Number.isInteger(s) && s >= 0 && s < totalSlots && cells[s] === null) cells[s] = entry;
+    if (typeof s === 'number' && Number.isInteger(s) && s >= 0 && s < totalSlots && cells[s] === null && bagSlotIsOpen(open, s)) cells[s] = entry;
     else pending.push(entry);
   }
   for (const entry of pending) {
-    const i = cells.indexOf(null);
-    if (i === -1) break; // não cabe (save com itens demais): o chamador usa bagSlotCount para nunca esconder item
+    // primeiro os slots liberados; só se não couber (save antigo com itens demais) usa um bloqueado, para nunca esconder item
+    let i = cells.findIndex((c, k) => c === null && bagSlotIsOpen(open, k));
+    if (i === -1) i = cells.indexOf(null);
+    if (i === -1) break;
     cells[i] = entry;
   }
   return cells;
@@ -148,8 +151,10 @@ export function firstEmptyBagSlot(
   weaponId: string | null | undefined,
   totalSlots: number,
   gearIds: readonly string[] = [],
+  open?: readonly number[],
 ): number {
-  return bagLayout(inventory, weaponId, totalSlots, gearIds).indexOf(null);
+  const cells = bagLayout(inventory, weaponId, totalSlots, gearIds, open);
+  return cells.findIndex((c, k) => c === null && bagSlotIsOpen(open ?? bagOpenOf({ bagCapacity: BAG_CAPACITY_MAX }), k));
 }
 
 /**

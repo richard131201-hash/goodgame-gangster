@@ -33,6 +33,8 @@ export interface PlayerState {
   shopSerial?: number;
   /** Capacidade da mochila. Ausente em saves antigos = 10 (R-MOCHILA-1). */
   bagCapacity?: number;
+  /** Slots da Mala comprados (posições 10 a 19), um a um (R-MALA-12). Ausente em saves antigos: vale a capacidade. */
+  bagOpen?: number[];
   respect: number;
 
   points: Points; // Total base + level points

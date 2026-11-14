@@ -3,12 +3,12 @@ import { DEFAULT_CARRASCO } from './paperdoll.js';
 import { SHOP_ITEMS, MAFIA_FAMILIES_LIST, type GameItem } from './gameData.js';
 import { regenEnergy } from './energy.js';
 import { GOLD } from '../shared/gold.js';
-import { BAG_CAPACITY_MAX, BAG_UPGRADE_SLOTS, BIG_BAG_PRICE_GOLD } from '../shared/bag.js';
+import { BAG_CAPACITY_MAX, BAG_COLUMNS, bagOpenOf, bagCanBuySlot, bagSlotPrice, bagSlotIsOpen, bagCapacityFromOpen } from '../shared/bag.js';
 import { migrateLegacyGear, isGearItem, shopStock } from '../shared/gear.js';
 import { ITEM_SLOTS, type ItemSlot } from '../shared/itemRoll.js';
 import { saveKeyFor } from './saveKey.js';
 import { sellableInShop } from './weaponArt.js';
-import { isWeaponItem, equippedInventoryIndex, bagCapacityOf, bagCount, bagHasRoom, bagLayout, bagSlotCount } from './weaponSlot.js';
+import { isWeaponItem, equippedInventoryIndex, bagCapacityOf, bagCount, bagHasRoom, bagLayout } from './weaponSlot.js';
 import {
   applyXp,
   combatPointsOf,
@@ -241,18 +241,25 @@ export class GameStateManager {
     return bagCapacityOf(this.player);
   }
 
-  /** Por que a mala maior não pode ser comprada agora (ou null se pode). */
-  bagUpgradeBlockReason(): 'maximo' | 'ouro' | null {
-    if (this.getBagCapacity() >= BAG_CAPACITY_MAX) return 'maximo';
-    if (this.player.gold < BIG_BAG_PRICE_GOLD) return 'ouro';
+  /** Slots da Mala comprados (posições 10 a 19). */
+  getBagOpen(): number[] {
+    return bagOpenOf(this.player);
+  }
+
+  /** Por que este slot não pode ser comprado agora (ou null se pode): 'indisponivel' = já liberado ou fileira de cima incompleta. */
+  bagSlotBlockReason(slot: number): 'indisponivel' | 'ouro' | null {
+    if (!bagCanBuySlot(this.getBagOpen(), slot)) return 'indisponivel';
+    if (this.player.gold < bagSlotPrice(slot)) return 'ouro';
     return null;
   }
 
-  /** Compra a mala maior (R-MALA-10): cobra o ouro e libera mais uma fileira. Confere tudo antes de cobrar. */
-  buyBiggerBag(): boolean {
-    if (this.bagUpgradeBlockReason() !== null) return false;
-    this.spendGold(BIG_BAG_PRICE_GOLD);
-    this.player.bagCapacity = this.getBagCapacity() + BAG_UPGRADE_SLOTS;
+  /** Compra UM slot da Mala (R-MALA-12): cobra o ouro do slot e libera só ele. Confere tudo antes de cobrar. */
+  buyBagSlot(slot: number): boolean {
+    if (this.bagSlotBlockReason(slot) !== null) return false;
+    this.spendGold(bagSlotPrice(slot));
+    const open = [...this.getBagOpen(), slot].sort((a, b) => a - b);
+    this.player.bagOpen = open;
+    this.player.bagCapacity = bagCapacityFromOpen(open);
     this.notify();
     return true;
   }
@@ -267,19 +274,20 @@ export class GameStateManager {
     return bagCount(this.player.inventory, this.player.equipped.weaponId, this.equippedGearIds());
   }
 
-  /** Quantos slots a Mala mostra agora. */
+  /** Quantos slots a Mala mostra agora: sempre a Mala visual inteira (20); mais só se um save antigo tiver itens demais. */
   getBagSlotCount(): number {
-    return bagSlotCount(this.getBagCount(), this.getBagCapacity());
+    return Math.max(BAG_CAPACITY_MAX, Math.ceil(this.getBagCount() / BAG_COLUMNS) * BAG_COLUMNS);
   }
 
   /** Onde cada item aparece na Mala (R-MALA-4): um valor por slot, o item ou null. */
   getBagLayout() {
-    return bagLayout(this.player.inventory, this.player.equipped.weaponId, this.getBagSlotCount(), this.equippedGearIds());
+    return bagLayout(this.player.inventory, this.player.equipped.weaponId, this.getBagSlotCount(), this.equippedGearIds(), this.getBagOpen());
   }
 
   /** Primeiro slot vazio (ou undefined se a Mala está cheia). */
   private firstEmptySlot(): number | undefined {
-    const i = this.getBagLayout().indexOf(null);
+    const open = this.getBagOpen();
+    const i = this.getBagLayout().findIndex((c, k) => c === null && bagSlotIsOpen(open, k));
     return i === -1 ? undefined : i;
   }
 
@@ -289,7 +297,7 @@ export class GameStateManager {
    */
   moveBagItem(invIndex: number, targetSlot: number): boolean {
     const layout = this.getBagLayout();
-    if (!Number.isInteger(targetSlot) || targetSlot < 0 || targetSlot >= layout.length) return false;
+    if (!Number.isInteger(targetSlot) || targetSlot < 0 || targetSlot >= layout.length || !bagSlotIsOpen(this.getBagOpen(), targetSlot)) return false;
     const from = layout.findIndex(c => c?.index === invIndex);
     if (from === -1) return false;
     if (from === targetSlot) return true;
@@ -406,7 +414,7 @@ export class GameStateManager {
     if (typeof targetSlot === 'number') {
       const idx = equippedInventoryIndex(this.player.inventory, current);
       const layout = this.getBagLayout();
-      if (idx !== -1 && targetSlot >= 0 && targetSlot < layout.length && layout[targetSlot] === null) {
+      if (idx !== -1 && targetSlot >= 0 && targetSlot < layout.length && layout[targetSlot] === null && bagSlotIsOpen(this.getBagOpen(), targetSlot)) {
         this.player.inventory[idx].slot = targetSlot;
       }
     }
