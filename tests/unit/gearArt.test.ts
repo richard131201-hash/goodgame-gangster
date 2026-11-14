@@ -10,8 +10,12 @@ const item = (slot: (typeof ITEM_SLOTS)[number], variant: number) =>
   buildGearItem(`g_${slot}_t${variant}`, { slot, level: 5, points: { attack: 1, life: 1, astucia: 0, tenacidade: 0 }, variant });
 
 describe('arte dos equipamentos (R-ARTE-6)', () => {
-  it('os 4 chapéus têm imagem 4:3 em public/assets/gear, na ordem dos nomes do slot', () => {
+  it('os 4 chapéus e os 4 peitorais têm imagem 4:3 em public/assets/gear, na ordem dos nomes do slot', () => {
     expect(GEAR_ART_SLOTS.chapeu).toBe(4);
+    expect(GEAR_ART_SLOTS.peitoral).toBe(4);
+    expect(GEAR_NAMES.peitoral).toEqual(['Sobretudo Noir', 'Colete de Couro', 'Paletó Risca de Giz', 'Casaco do Cais']);
+    for (let n = 1; n <= 4; n++) expect(existsSync(`public/assets/gear/peitoral_${n}.comum.webp`)).toBe(true);
+    expect(gearArtUrl(item('peitoral', 2))).toBe('/assets/gear/peitoral_3.comum.webp');
     expect(GEAR_NAMES.chapeu).toEqual(['Fedora de Feltro', 'Chapéu Panamá', 'Boina do Porto', 'Cartola Velha']);
     for (let n = 1; n <= 4; n++) expect(existsSync(`public/assets/gear/chapeu_${n}.comum.webp`)).toBe(true);
     expect(gearArtUrl(item('chapeu', 0))).toBe('/assets/gear/chapeu_1.comum.webp');
@@ -20,9 +24,9 @@ describe('arte dos equipamentos (R-ARTE-6)', () => {
 
   it('variação fora da lista dá a volta; slot sem arte e item que não é equipamento ficam sem imagem', () => {
     expect(gearArtUrl(item('chapeu', 5))).toBe('/assets/gear/chapeu_2.comum.webp');
-    for (const slot of ITEM_SLOTS.filter(s => s !== 'chapeu')) expect(gearArtUrl(item(slot, 0))).toBeNull();
+    for (const slot of ITEM_SLOTS.filter(s => s !== 'chapeu' && s !== 'peitoral')) expect(gearArtUrl(item(slot, 0))).toBeNull();
     expect(gearArtUrl(null)).toBeNull();
-    expect(gearArtImg(item('peitoral', 0))).toBe('');
+    expect(gearArtImg(item('calca', 0))).toBe('');
     expect(gearArtImg(item('chapeu', 1), 'inv-art')).toContain('class="warr inv-art" src="/assets/gear/chapeu_2.comum.webp"');
   });
 

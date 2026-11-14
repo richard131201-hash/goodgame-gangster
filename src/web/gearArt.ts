@@ -8,7 +8,7 @@ import type { ItemSlot } from '../shared/itemRoll.js';
  * sua imagem: a 1ª imagem é o 1º nome, e assim por diante. Por enquanto só existe a moldura "comum" (borda preta).
  * Slot ou variação sem imagem cai no ícone de texto de sempre.
  */
-export const GEAR_ART_SLOTS: Readonly<Partial<Record<ItemSlot, number>>> = { chapeu: 4 };
+export const GEAR_ART_SLOTS: Readonly<Partial<Record<ItemSlot, number>>> = { chapeu: 4, peitoral: 4 };
 
 /** Endereço da imagem do equipamento, ou null se ele ainda não tem arte. */
 export function gearArtUrl(item: GameItem | null | undefined): string | null {

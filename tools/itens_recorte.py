@@ -1,34 +1,40 @@
 # Itens de equipamento (arte da IA, 4 itens em 2x2 sobre fundo verde): separa cada item, tira o verde (vira transparência),
 # põe cada um numa tela 4:3 (800 x 600) com folga, e salva em public/assets/gear/<slot>_<n>.comum.webp. (R-ARTE-6)
-# Uso: python -I tools/itens_recorte.py chapeu        Entrada: docs/arte/itens/<slot>s_original.jpg (chapeus)
+# Os 4 itens são achados pelos 4 maiores pedaços (um cabide ou gancho que passa da metade da imagem não é cortado).
+# Ordem: 1 cima-esquerda, 2 cima-direita, 3 baixo-esquerda, 4 baixo-direita (a mesma ordem dos nomes do slot).
+# Uso: python -I tools/itens_recorte.py chapeu|peitoral        Entrada: docs/arte/itens/<slot>s_original.jpg
 import sys
 import numpy as np
 from PIL import Image
 from scipy import ndimage as ndi
 
 SLOT = sys.argv[1] if len(sys.argv) > 1 else "chapeu"
-ARQ = {"chapeu": "docs/arte/itens/chapeus_original.jpg"}[SLOT]
+ARQ = {"chapeu": "docs/arte/itens/chapeus_original.jpg", "peitoral": "docs/arte/itens/peitorais_original.jpg"}[SLOT]
 W4, H4 = 800, 600
 FIT = 0.88          # o item ocupa no máximo 88% da largura e da altura da tela 4:3
 
 A = np.array(Image.open(ARQ).convert("RGB")).astype(float)
 H, W, _ = A.shape
-quads = [(0, 0), (W // 2, 0), (0, H // 2), (W // 2, H // 2)]   # 1 2 / 3 4
-for n, (qx, qy) in enumerate(quads, start=1):
-    c = A[qy:qy + H // 2, qx:qx + W // 2]
-    r, g, b = c[..., 0], c[..., 1], c[..., 2]
-    verde = np.clip(g - np.maximum(r, b), 0, None)
-    alpha = np.clip(1 - verde / 150.0, 0, 1)
-    alpha[alpha > 0.97] = 1
-    rgb = np.dstack([r, np.minimum(g, np.maximum(r, b) + 4), b])
-    # só o maior pedaço (o item): tira respingos soltos
-    lab, k = ndi.label(alpha > 0.5)
-    sizes = ndi.sum(alpha > 0.5, lab, range(1, k + 1))
-    keep = ndi.binary_dilation(lab == (1 + int(np.argmax(sizes))), iterations=6)
-    alpha = alpha * keep
-    ys, xs = np.where(alpha > 0.5)
+r, g, b = A[..., 0], A[..., 1], A[..., 2]
+verde = np.clip(g - np.maximum(r, b), 0, None)
+alpha = np.clip(1 - verde / 150.0, 0, 1)
+alpha[alpha > 0.97] = 1
+rgb = np.dstack([r, np.minimum(g, np.maximum(r, b) + 4), b])
+
+lab, k = ndi.label(ndi.binary_dilation(alpha > 0.5, iterations=4))
+sizes = ndi.sum(alpha > 0.5, lab, range(1, k + 1))
+top4 = list(np.argsort(sizes)[::-1][:4] + 1)
+cent = {i: ndi.center_of_mass(lab == i) for i in top4}                         # (y, x)
+top = sorted([i for i in top4 if cent[i][0] < H / 2], key=lambda i: cent[i][1])
+bot = sorted([i for i in top4 if cent[i][0] >= H / 2], key=lambda i: cent[i][1])
+ordem = top + bot
+assert len(ordem) == 4, "esperava 4 itens"
+for n, i in enumerate(ordem, start=1):
+    m = lab == i
+    a_ = alpha * ndi.binary_dilation(m, iterations=6)
+    ys, xs = np.where(a_ > 0.5)
     y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
-    im = Image.fromarray(np.dstack([rgb, alpha * 255])[y0:y1, x0:x1].astype(np.uint8), "RGBA")
+    im = Image.fromarray(np.dstack([rgb, a_ * 255])[y0:y1, x0:x1].astype(np.uint8), "RGBA")
     s = min(W4 * FIT / im.width, H4 * FIT / im.height)
     im = im.resize((round(im.width * s), round(im.height * s)), Image.LANCZOS)
     tela = Image.new("RGBA", (W4, H4), (0, 0, 0, 0))
