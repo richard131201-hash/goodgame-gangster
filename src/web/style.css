@@ -4564,3 +4564,18 @@ html[data-ui="v2"] body { cursor: var(--cur-normal); }
 html[data-ui="v2"] #app [draggable="true"] { cursor: var(--cur-grab); }
 /* o cadeado abre na hora, sem transição */
 html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.locked, html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.locked::before { transition: none; }
+
+/* ===============================================================
+   R-UI-21 | Slot comprado fica IGUAL ao livre (mesma moldura clara das fileiras 1 e 2)
+   A folha da Mala nasceu com as fileiras 3 e 4 escuras (de bloqueadas). O slot comprado (da 11ª posição em diante, sem cadeado)
+   ganha por cima um retalho da moldura clara; a malinha de "vazio" e o item colado ficam acima do retalho.
+   =============================================================== */
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot:nth-child(5n+1) { --fx: -0.147rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot:nth-child(5n+2) { --fx: -0.072rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot:nth-child(5n+3) { --fx: 0.028rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot:nth-child(5n+4) { --fx: 0.146rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot:nth-child(5n+5) { --fx: 0.264rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot:nth-child(n+11):nth-child(-n+15) { --fy: -0.095rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot:nth-child(n+16) { --fy: 0.015rem; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot:nth-child(n+11):not(.locked) { background: url("/assets/ficha/c-slot-livre.webp") var(--fx) var(--fy) / 101.79% 103.11% no-repeat; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.empty:nth-child(n+11) { background: url("/assets/ficha/c-mala-vazia.webp") 49.3% 59.5% / 51.52% 62.16% no-repeat, url("/assets/ficha/c-slot-livre.webp") var(--fx) var(--fy) / 101.79% 103.11% no-repeat; }

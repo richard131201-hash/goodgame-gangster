@@ -274,4 +274,10 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
   it('cadeado abre instantaneamente, sem transição (R-UI-18)', () => {
     expect(css).toMatch(/\.inv-slot\.locked, [^{]*\.inv-slot\.locked::before \{ transition: none; \}/);
   });
+
+  it('slot comprado (11º em diante, sem cadeado) usa o retalho da moldura clara, igual aos livres (R-UI-21)', () => {
+    expect(existsSync('public/assets/ficha/c-slot-livre.webp')).toBe(true);
+    expect(css).toMatch(/\.inv-slot:nth-child\(n\+11\):not\(\.locked\) \{ background: url\("\/assets\/ficha\/c-slot-livre\.webp"\) var\(--fx\) var\(--fy\) \/ 101\.79% 103\.11% no-repeat; \}/);
+    expect(css).toMatch(/\.inv-slot\.empty:nth-child\(n\+11\) \{ background: url\("\/assets\/ficha\/c-mala-vazia\.webp"\)[^}]*c-slot-livre\.webp/);
+  });
 });

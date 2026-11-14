@@ -114,6 +114,12 @@ Image.fromarray(np.clip(img, 0, 255).astype(np.uint8)[cy0:cy1, cx0:cx1]).save("d
 sw, sh = cx1 - cx0, cy1 - cy0
 print("folha", sw, sh, "proporção", round(sw / sh, 3))
 
+# moldura de slot LIVRE (clara, sem malinha): vira um retalho para cobrir os slots comprados (3ª fileira em diante), que na folha nasceram escuros
+fx0 = (X0S[2] - 80 if X0S[2] >= 180 else X0S[2]) - cx0
+fy0 = Y0S[1] - cy0
+Image.fromarray(rgba[fy0:fy0 + FH, fx0:fx0 + FW], "RGBA").save("public/assets/ficha/c-slot-livre.webp", "WEBP", quality=92, method=6)
+print("moldura livre", FW, FH)
+
 def nx(x):  # x original -> x% na folha nova
     return ((x - 80 if x >= 180 else x) - cx0) / sw * 100
 
