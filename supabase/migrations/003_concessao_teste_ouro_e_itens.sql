@@ -1,8 +1,6 @@
 -- ===== INICIO DA MIGRACAO 003 (003_concessao_teste_ouro_e_itens.sql) =====
 -- CONCESSÃO DE TESTE (pedido do fundador, 2026-11-14): +10.000 de ouro e os 8 itens com arte (4 chapéus e 4 peitorais) na Mala
--- de 2 jogadores: "kyaa" e o personagem do fundador.
---
--- ANTES DE RODAR: na linha marcada com <<< TROQUE, escreva o nome do SEU personagem (igual ao do jogo).
+-- de 2 jogadores: "kyaa" e "Chacal" (o personagem do fundador). Pronta para colar e rodar, sem mudar nada.
 --
 -- O que faz, em cada jogador achado pelo nome (sem diferenciar maiúscula de minúscula):
 --  * soma 10.000 ao ouro e ao campo goldGrant (o servidor só aceita ouro acima do teto normal para quem tem goldGrant);
@@ -14,7 +12,7 @@
 with nomes as (
   select unnest(array[
     'kyaa',
-    'NOME_DO_FUNDADOR'   -- <<< TROQUE por o nome do seu personagem
+    'Chacal'
   ]) as n
 ),
 novos as (
@@ -47,5 +45,5 @@ where lower(p.name) in (select lower(n) from nomes);
 -- Conferência: deve mostrar os 2 jogadores, ouro com +10.000 e a Mala com os 8 itens (mais o que estiver equipado)
 select name, save->>'gold' as ouro, save->>'goldGrant' as concedido, jsonb_array_length(save->'inventory') as itens_na_lista
 from public.players
-where lower(name) in ('kyaa');
+where lower(name) in ('kyaa', 'chacal');
 -- ===== FIM DA MIGRACAO 003 (003_concessao_teste_ouro_e_itens.sql) =====
