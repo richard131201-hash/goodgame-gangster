@@ -4506,9 +4506,8 @@ html[data-ui="v2"] #app[data-tab="perfil"] .equipped-slots-grid { position: abso
 html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot { position: relative; aspect-ratio: auto; background: none; border: 0; border-radius: 0; outline: 0; justify-content: center; align-items: center; padding: 0; }
 html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot .gear-ico.ghost { display: none; }
 html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot .slot-badge { display: none; }
-/* item equipado: um retalho de papel cobre o desenho fantasma da arte */
+/* item equipado: SEM fundo. O desenho fantasma agora é um sprite à parte (R-ARTE-6): só aparece no slot vazio */
 html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot.filled { border: 0; }
-html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot.filled::before { content: ""; position: absolute; inset: 9% 8%; background: #efe2c4; }
 html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot.filled > * { position: relative; }
 html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot.filled .gear-ico { color: #5b4524; }
 /* Equipamento na proporção exata da folha (sem esticar): fica um pouco mais alto, com a coluna da arma se distribuindo e mais respiro para a seção de baixo */
@@ -4588,3 +4587,14 @@ html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.empty:nth-child(n+11) { bac
    R-ARTE-6 | Arte dos equipamentos (chapéus por enquanto): imagem 4:3 sem fundo, no slot do Equipamento e na Mala
    =============================================================== */
 html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot.filled .gear-art { position: relative; width: 84%; height: 82%; object-fit: contain; filter: drop-shadow(0 0 0.07rem rgba(255, 250, 235, 0.95)) drop-shadow(0 0.18rem 0.22rem rgba(0, 0, 0, 0.5)); }
+
+/* O desenho fantasma de cada slot vazio é um sprite (tools/secaoB_fantasmas.py); o slot cheio mostra só o item, sem retalho */
+html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot:not(.filled)[data-gear-slot="chapeu"] { background: url("/assets/ficha/b-fantasma-chapeu.webp") 49.53% 51.15% / 59.86% 48.39% no-repeat; }
+html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot:not(.filled)[data-gear-slot="peitoral"] { background: url("/assets/ficha/b-fantasma-peitoral.webp") 50.83% 49.68% / 39.31% 73.68% no-repeat; }
+html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot:not(.filled)[data-gear-slot="calca"] { background: url("/assets/ficha/b-fantasma-calca.webp") 49.76% 55.38% / 31.40% 78.84% no-repeat; }
+html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot:not(.filled)[data-gear-slot="calcado"] { background: url("/assets/ficha/b-fantasma-calcado.webp") 50.22% 51.61% / 64.61% 46.22% no-repeat; }
+html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot:not(.filled)[data-gear-slot="amuleto"] { background: url("/assets/ficha/b-fantasma-amuleto.webp") 49.47% 54.65% / 43.37% 65.86% no-repeat; }
+html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot:not(.filled)[data-gear-slot="pet"] { background: url("/assets/ficha/b-fantasma-pet.webp") 48.41% 51.21% / 39.08% 74.06% no-repeat; }
+html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot:not(.filled)[data-gear-slot="relicia"] { background: url("/assets/ficha/b-fantasma-relicia.webp") 49.92% 52.05% / 41.11% 57.10% no-repeat; }
+html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot:not(.filled)[data-gear-slot="veiculo"] { background: url("/assets/ficha/b-fantasma-veiculo.webp") 51.88% 53.78% / 77.94% 54.27% no-repeat; }
+html[data-ui="v2"] #app[data-tab="perfil"] .equipped-slots-grid { width: auto; }

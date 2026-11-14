@@ -1236,6 +1236,8 @@ function bindWeaponDropZones() {
     if (drag.kind === 'inv') {
       gameState.moveBagItem(drag.index, target);
       renderProfileView();
+    } else if (drag.kind === 'gear') {
+      tryUnequipGear(drag.slot, target); // equipamento arrastado de um slot do perfil para um slot da Mala (a arma NÃO sai)
     } else {
       tryUnequipWeapon(target); // arma do espaço da arma solta direto num slot
     }

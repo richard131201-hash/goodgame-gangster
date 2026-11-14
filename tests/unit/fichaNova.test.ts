@@ -296,4 +296,21 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/\.show-eff \.attr-c-name, [^{]*\.show-eff \.attr-c-pts \{ color: #2b2015; \}/);
     expect(readFileSync('index.html', 'utf8')).toContain('family=Courier+Prime:wght@700');
   });
+
+  it('equipamento no slot SEM fundo: o desenho fantasma é um sprite por slot e some quando há item; sem retalho bege (R-ARTE-6)', () => {
+    for (const k of ['chapeu', 'peitoral', 'calca', 'calcado', 'amuleto', 'pet', 'relicia', 'veiculo']) {
+      expect(existsSync(`public/assets/ficha/b-fantasma-${k}.webp`)).toBe(true);
+      expect(css).toContain(`.gear-slot:not(.filled)[data-gear-slot="${k}"] { background: url("/assets/ficha/b-fantasma-${k}.webp")`);
+    }
+    expect(css).not.toMatch(/\.gear-slot\.filled::before \{ content: ""; position: absolute; inset: 9% 8%; background: #efe2c4; \}/);
+  });
+
+  it('a grade do Equipamento respeita left e right (width: auto), então as células casam com as molduras da folha (R-ARTE-7)', () => {
+    expect(css).toMatch(/\.equipped-slots-grid \{ width: auto; \}/);
+  });
+
+  it('arrastar um equipamento do perfil para um slot da Mala guarda o equipamento e NÃO a arma (R-MALA-4, R-MALA-7)', () => {
+    const main = readFileSync('src/web/main.ts', 'utf8');
+    expect(main).toMatch(/else if \(drag\.kind === 'gear'\) \{\s*tryUnequipGear\(drag\.slot, target\);/);
+  });
 });
