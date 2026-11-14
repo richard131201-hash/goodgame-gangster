@@ -204,7 +204,7 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/\.hud-player-info::before \{ left: 0; right: 0; top: -1\.9rem; bottom: 0; background-image: url\("\/assets\/ficha\/a-nota\.webp"\); \}/);
     expect(css).toMatch(/\.defense-crest::before \{ inset: 0; background-image: url\("\/assets\/ficha\/a-placa\.webp"\); \}/);
     expect(css).toMatch(/\.weapon-box \{ position: relative; padding: 0; background: none; border: 0; border-radius: 0; aspect-ratio: 1840 \/ 1853; \}/);
-    expect(css).toMatch(/\.profile-stats-panel\.compact \{ aspect-ratio: 1262 \/ 426; background: none; border: 0; padding: 0; \}/);
+    expect(css).toMatch(/\.profile-stats-panel\.compact \{ aspect-ratio: 1877 \/ 460; background: none; border: 0; padding: 0; \}/);
   });
 
   it('seção B (equipamento) com a folha de 8 molduras e o desenho fantasma de cada item (R-UI-17)', () => {
@@ -279,5 +279,13 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(existsSync('public/assets/ficha/c-slot-livre.webp')).toBe(true);
     expect(css).toMatch(/\.inv-slot:nth-child\(n\+11\):not\(\.locked\) \{ background: url\("\/assets\/ficha\/c-slot-livre\.webp"\) var\(--fx\) var\(--fy\) \/ 101\.79% 103\.11% no-repeat; \}/);
     expect(css).toMatch(/\.inv-slot\.empty:nth-child\(n\+11\) \{ background: url\("\/assets\/ficha\/c-mala-vazia\.webp"\)[^}]*c-slot-livre\.webp/);
+  });
+
+  it('cartão de atributos na folha da Arma: proporção 1877/460, 4 faixas iguais e caixas dos botões na medida (R-UI-22)', () => {
+    expect(existsSync('public/assets/ficha/a-cartao.webp')).toBe(true);
+    expect(css).toMatch(/\.profile-stats-panel\.compact \{ aspect-ratio: 1877 \/ 460;/);
+    expect(css).toMatch(/\.attr-compact-list \{ position: absolute; left: 5%; right: 4\.55%; top: 9\.83%; bottom: 9\.57%;[^}]*grid-template-rows: repeat\(4, 1fr\);/);
+    expect(css).toMatch(/\.attr-c-row \{ border: 0; grid-template-columns: 1fr 4\.2rem 0\.6rem 2\.8rem; \}/);
+    expect(css).toMatch(/\.btn-attr-plus \{ width: 2\.7rem; height: 0\.95rem;/);
   });
 });
