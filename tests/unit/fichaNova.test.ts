@@ -288,4 +288,10 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/\.attr-c-row \{ border: 0; grid-template-columns: 1fr 4\.6rem 0\.7rem 3\.4rem; \}/);
     expect(css).toMatch(/\.btn-attr-plus \{ width: 3\.3rem; height: 1\.2rem;/);
   });
+
+  it('texto do cartão de atributos em Courier Prime negrito, nomes em maiúsculas e números com espaço de 0,05 (R-UI-23)', () => {
+    expect(css).toMatch(/\.profile-stats-panel\.compact \.attr-c-name \{ font-family: "Courier Prime"[^}]*font-weight: 700; font-size: 0\.9rem; letter-spacing: 0\.06em; text-transform: uppercase; \}/);
+    expect(css).toMatch(/\.profile-stats-panel\.compact \.attr-c-pts \{ font-family: "Courier Prime"[^}]*font-weight: 700; font-size: 1\.17rem; letter-spacing: 0\.05em;/);
+    expect(readFileSync('index.html', 'utf8')).toContain('family=Courier+Prime:wght@700');
+  });
 });
