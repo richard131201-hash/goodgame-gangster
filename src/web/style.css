@@ -4606,3 +4606,6 @@ html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.dragging { opacity: 1; }
 html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.dragging > *, html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot.dragging > .gear-art, html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot.dragging > .gear-ico { visibility: hidden; }
 html[data-ui="v2"] #app[data-tab="perfil"] .weapon-slot-body.dragging { opacity: 1; }
 html[data-ui="v2"] #app[data-tab="perfil"] .weapon-slot-body.dragging .weapon-slot-art { visibility: hidden; }
+
+/* Chapéus no slot do Equipamento 15% menores (pedido do fundador); só nessa seção, a Mala não muda */
+html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot[data-gear-slot="chapeu"].filled .gear-art { width: 85%; height: 81.6%; }

@@ -309,6 +309,10 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/\.equipped-slots-grid \{ width: auto; \}/);
   });
 
+  it('chapéus no slot do Equipamento ficam 15% menores que os outros itens (só nessa seção)', () => {
+    expect(css).toMatch(/\.gear-slot\[data-gear-slot="chapeu"\]\.filled \.gear-art \{ width: 85%; height: 81\.6%; \}/);
+  });
+
   it('ao arrastar, só o item se move: a imagem do arrastar é o desenho do item e o slot de origem só esconde o item (R-ARTE-8)', () => {
     const main = readFileSync('src/web/main.ts', 'utf8');
     expect(main).toContain('e.dataTransfer.setDragImage(art, r.width / 2, r.height / 2);');
