@@ -175,6 +175,21 @@ describe('servidor: conferir o save (R-SERVIDOR-3)', () => {
     expect((await send(db, s)).status).toBe(422);
   });
 
+  it('ouro concedido pelo fundador (goldGrant, só no banco) sobe o teto só de quem recebeu; o navegador não consegue enviar esse campo', async () => {
+    const db = await setup();
+    const s = saveOf(db);
+    s.gold = goldCap(1, 0) + 10000;
+    expect((await send(db, s)).status).toBe(422); // sem concessão: recusado
+    db.rows.get('u1')!.save.goldGrant = 10000;
+    expect((await send(db, s)).status).toBe(200);
+    s.gold = goldCap(1, 0) + 10001;
+    expect((await send(db, s)).status).toBe(422); // passou do teto + concessão
+    // tentar se conceder pelo navegador não vale: o campo vem do banco
+    const db2 = await setup();
+    const s2 = { ...saveOf(db2), gold: goldCap(1, 0) + 5000, goldGrant: 999999 };
+    expect((await send(db2, s2)).status).toBe(422);
+  });
+
   it('ouro acima do inicial é recusado', async () => {
     const db = await setup();
     const s = saveOf(db);

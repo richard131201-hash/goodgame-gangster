@@ -36,7 +36,7 @@ describe('arte dos equipamentos (R-ARTE-6)', () => {
     expect(main).toContain("gearArtImg(item, 'gear-art')");
     expect(main).toContain("gearArtImg(item, 'wtip-art')");
     const css = ler('src/web/style.css');
-    expect(css).toMatch(/\.gear-slot\.filled \.gear-art \{ position: relative; width: 84%; height: 82%; object-fit: contain;/);
+    expect(css).toMatch(/\.gear-slot\.filled \.gear-art \{ position: relative; width: 100%; height: 96%; object-fit: contain;/);
     expect(css.split('R-ARTE-6')[1]).not.toMatch(/\dpx/);
   });
 });

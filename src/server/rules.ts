@@ -257,7 +257,9 @@ export function validateSave(db: DbPlayerRow, raw: unknown, now: number): SaveRe
   }
 
   // Dinheiro
-  if (n.gold > goldCap(n.level, missions)) return { ok: false, reason: 'ouro acima do possível' };
+  // goldGrant: ouro concedido pelo fundador, gravado só no banco (o navegador não consegue enviar esse campo)
+  const goldGrant = Math.max(0, Math.floor(Number(db.save.goldGrant ?? 0)) || 0);
+  if (n.gold > goldCap(n.level, missions) + goldGrant) return { ok: false, reason: 'ouro acima do possível' };
   const cashCap =
     LIMITS.cashSlack +
     LIMITS.cashPerMission * (missions + 1) +
@@ -300,7 +302,7 @@ export function validateSave(db: DbPlayerRow, raw: unknown, now: number): SaveRe
   if (!previousOpen.every(slot => bagOpen.includes(slot))) return { ok: false, reason: 'a mochila não pode diminuir' };
   // quem comprou slots pagou em ouro: o ouro que sobrou mais o preço dos slots novos não pode passar do que era possível ter
   const bagCost = bagOpenCost(previousOpen, bagOpen);
-  if (bagCost > 0 && n.gold + bagCost > goldCap(n.level, missions)) return { ok: false, reason: 'mala maior sem ouro para pagar' };
+  if (bagCost > 0 && n.gold + bagCost > goldCap(n.level, missions) + goldGrant) return { ok: false, reason: 'mala maior sem ouro para pagar' };
 
   // Equipamento: precisa existir e estar na mochila
   const { weaponId } = n.equipped;

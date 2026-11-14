@@ -35,6 +35,8 @@ export interface PlayerState {
   bagCapacity?: number;
   /** Slots da Mala comprados (posições 10 a 19), um a um (R-MALA-12). Ausente em saves antigos: vale a capacidade. */
   bagOpen?: number[];
+  /** Ouro concedido pelo fundador (teste ou prêmio), só gravado pelo banco: soma ao teto de ouro. Nunca vem do navegador. */
+  goldGrant?: number;
   respect: number;
 
   points: Points; // Total base + level points
