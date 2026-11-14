@@ -4598,3 +4598,11 @@ html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot:not(.filled)[data-gear-slo
 html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot:not(.filled)[data-gear-slot="relicia"] { background: url("/assets/ficha/b-fantasma-relicia.webp") 49.92% 52.05% / 41.11% 57.10% no-repeat; }
 html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot:not(.filled)[data-gear-slot="veiculo"] { background: url("/assets/ficha/b-fantasma-veiculo.webp") 51.88% 53.78% / 77.94% 54.27% no-repeat; }
 html[data-ui="v2"] #app[data-tab="perfil"] .equipped-slots-grid { width: auto; }
+
+/* ===============================================================
+   R-ARTE-8 | Ao arrastar, SÓ o item se move: o slot, a moldura e o papel ficam parados. O item some do slot de origem
+   =============================================================== */
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.dragging { opacity: 1; }
+html[data-ui="v2"] #app[data-tab="perfil"] .inv-slot.dragging > *, html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot.dragging > .gear-art, html[data-ui="v2"] #app[data-tab="perfil"] .gear-slot.dragging > .gear-ico { visibility: hidden; }
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-slot-body.dragging { opacity: 1; }
+html[data-ui="v2"] #app[data-tab="perfil"] .weapon-slot-body.dragging .weapon-slot-art { visibility: hidden; }

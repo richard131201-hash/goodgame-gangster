@@ -1045,6 +1045,17 @@ window.addEventListener('blur', hideWeaponTooltip);
 type WeaponDrag = { kind: 'inv'; index: number } | { kind: 'slot' } | { kind: 'gear'; slot: ItemSlot };
 let weaponDrag: WeaponDrag | null = null;
 
+/**
+ * A imagem que acompanha o mouse é SÓ o desenho do item (R-ARTE-8): nunca o slot, a moldura nem o papel, que são estáticos.
+ * Sem isto o navegador fotografa o quadrado do slot inteiro, com bordas e papel.
+ */
+function setItemDragImage(e: DragEvent, el: HTMLElement) {
+  const art = el.querySelector<HTMLElement>('img.warr, img, svg:not(.ghost), span:not(.slot-badge)');
+  if (!art || !e.dataTransfer) return;
+  const r = art.getBoundingClientRect();
+  e.dataTransfer.setDragImage(art, r.width / 2, r.height / 2);
+}
+
 document.addEventListener('dragstart', e => {
   const el = (e.target as HTMLElement).closest?.('[draggable="true"]') as HTMLElement | null;
   if (!el) return;
@@ -1056,7 +1067,8 @@ document.addEventListener('dragstart', e => {
   hideWeaponTooltip();
   e.dataTransfer?.setData('text/plain', JSON.stringify(weaponDrag));
   if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
-  el.classList.add('dragging');
+  setItemDragImage(e, el);
+  window.setTimeout(() => el.classList.add('dragging'), 0); // depois da foto do navegador: o item some do slot, mas o slot e o papel ficam
   document.body.classList.add('dragging-weapon');
 });
 

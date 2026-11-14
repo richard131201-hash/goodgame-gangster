@@ -309,6 +309,15 @@ describe('Ficha nova em teste (R-FICHA-ARTE-1)', () => {
     expect(css).toMatch(/\.equipped-slots-grid \{ width: auto; \}/);
   });
 
+  it('ao arrastar, só o item se move: a imagem do arrastar é o desenho do item e o slot de origem só esconde o item (R-ARTE-8)', () => {
+    const main = readFileSync('src/web/main.ts', 'utf8');
+    expect(main).toContain('e.dataTransfer.setDragImage(art, r.width / 2, r.height / 2);');
+    expect(main).toMatch(/setItemDragImage\(e, el\);\s*window\.setTimeout\(\(\) => el\.classList\.add\('dragging'\), 0\);/);
+    expect(css).toMatch(/\.inv-slot\.dragging \{ opacity: 1; \}/);
+    expect(css).toMatch(/\.inv-slot\.dragging > \*, [^{]*\.gear-slot\.dragging > \.gear-art, [^{]*\.gear-slot\.dragging > \.gear-ico \{ visibility: hidden; \}/);
+    expect(css.split('R-ARTE-8')[1]).not.toMatch(/\dpx/);
+  });
+
   it('arrastar um equipamento do perfil para um slot da Mala guarda o equipamento e NÃO a arma (R-MALA-4, R-MALA-7)', () => {
     const main = readFileSync('src/web/main.ts', 'utf8');
     expect(main).toMatch(/else if \(drag\.kind === 'gear'\) \{\s*tryUnequipGear\(drag\.slot, target\);/);
